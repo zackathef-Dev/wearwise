@@ -1,0 +1,60 @@
+# --- dependencies & build output ---
+node_modules/
+apps/mobile/android/app/build/
+apps/mobile/android/build/
+apps/mobile/android/.gradle/
+apps/mobile/ios/build/
+apps/mobile/ios/Pods/
+apps/mobile/.expo/
+
+# --- secrets: never tracked, no exceptions ---
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+key.properties
+local.properties
+*.p12
+*.p8
+*.key
+*.pem
+*service-account*.json
+*service_account*.json
+credentials.json
+*.mobileprovision
+*.provisionprofile
+*.certSigningRequest
+*.cer
+*.der
+.idea/
+*.iml
+/.vscode/
+/.vs/
+
+# --- Supabase local state (the CLI also writes supabase/.gitignore) ---
+supabase/.temp/
+supabase/.branches/
+
+# --- OS noise ---
+.DS_Store
+Thumbs.db
+*.tmp
+__pycache__/
+
+# Local tool state and native build output (not source)
+.expo/
+.codex/
+apps/mobile/modules/*/android/build/
+
+# App builds, device database pulls and Office lock files: never source
+*.apk
+*.aab
+*.ipa
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+~$*
+google-services.json
+GoogleService-Info.plist

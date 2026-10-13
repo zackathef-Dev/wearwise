@@ -1,0 +1,52 @@
+// Local private material is never bundled, tracked, or printed.
+def signingFile = rootProject.file('../key.properties')
+def releaseKeys = new Properties()
+def releaseRequested = gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
+// Read signing material only for release tasks, so debug builds never depend on it.
+if (releaseRequested && signingFile.exists()) signingFile.withInputStream { releaseKeys.load(it) }
+if (releaseRequested && System.getenv('NODE_ENV') != 'production') {
+    throw new GradleException('Release requires NODE_ENV=production and the reviewed .env.production file.')
+}
+if (releaseRequested) {
+    def check = providers.exec {
+        commandLine 'node', rootProject.file('../scripts/check-release-config.cjs').absolutePath
+    }
+    check.result.get().assertNormalExitValue()
+}
+if (releaseRequested && ['storeFile', 'storePassword', 'keyAlias', 'keyPassword'].any { !releaseKeys[it] }) {
+    throw new GradleException('Release signing missing. Create the ignored apps/mobile/key.properties and release keystore.')
+}
+android {
+    defaultConfig {
+        externalNativeBuild {
+            cmake {
+                arguments "-DCMAKE_PROJECT_INCLUDE=${rootProject.file('../release/privacy.cmake').absolutePath.replace('\\', '/')}"
+            }
+        }
+    }
+    sourceSets {
+        release {
+            manifest.srcFile rootProject.file('../release/AndroidManifest.xml')
+            res.srcDir rootProject.file('../release/res')
+        }
+    }
+    signingConfigs {
+        release {
+            if (releaseKeys['storeFile']) {
+                storeFile rootProject.file('../' + releaseKeys['storeFile'])
+                storePassword releaseKeys['storePassword']
+                keyAlias releaseKeys['keyAlias']
+                keyPassword releaseKeys['keyPassword']
+            }
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            debuggable false
+            // Keep shrinking off until BLE/native release behavior has device coverage.
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+}

@@ -1,0 +1,128 @@
+:root{
+/* Brand */
+--ww-navy:#0F2747;
+--ww-navy-800:#17385f;
+--ww-navy-600:#2b5183;
+--ww-teal:#18B6A4;
+--ww-teal-600:#13A091;
+--ww-teal-700:#0F8A7D;
+--ww-teal-100:#B6EAE3;
+--ww-aqua:#DDF7F3;
+--ww-white:#FFFFFF;
+
+/* Neutrals */
+--ww-charcoal:#1F2937;
+--ww-grey-cool:#667085;
+--ww-grey-mid:#98A2B3;
+--ww-grey-light:#E5E7EB;
+--ww-grey-faint:#F8FAFC;
+
+/* Status */
+--ww-success:#22C55E;
+--ww-warning:#F5C542;
+--ww-error:#F97066;
+--ww-info:#3B82F6;
+
+/* Data viz */
+--ww-data-ecg:#18B6A4;
+--ww-data-spo2:#3B82F6;
+--ww-data-temp:#F59E0B;
+--ww-data-heart:#E23A6B;
+--ww-data-accel:#8B5CF6;
+--ww-data-generic:#0F2747;
+--ww-data-reference:#98A2B3;
+
+/* Semantic aliases — use these in components */
+--text-heading:var(--ww-navy);
+--text-body:var(--ww-charcoal);
+--text-secondary:var(--ww-grey-cool);
+--text-muted:var(--ww-grey-mid);
+--text-on-dark:var(--ww-white);
+--text-on-dark-secondary:#A8BBD4;
+--text-link:var(--ww-teal);
+--text-accent:var(--ww-teal);
+
+--surface-page:var(--ww-grey-faint);
+--surface-card:var(--ww-white);
+--surface-info:var(--ww-aqua);
+--surface-dark:var(--ww-navy);
+--surface-subtle:var(--ww-grey-faint);
+--surface-selected:var(--ww-aqua);
+
+--border-default:var(--ww-grey-light);
+--border-strong:var(--ww-grey-mid);
+--border-focus:var(--ww-teal);
+--border-on-dark:rgba(255,255,255,.16);
+
+--action-primary:var(--ww-teal);
+--action-primary-hover:#13a091;
+--action-primary-press:#0f8a7d;
+--action-primary-text:var(--ww-white);
+--action-secondary-text:var(--ww-navy);
+--action-secondary-border:var(--ww-grey-light);
+--action-secondary-hover-bg:var(--ww-grey-faint);
+--action-destructive-text:#C2453B;
+--action-destructive-bg:#FEECEB;
+
+--state-live:var(--ww-teal);
+--state-connected:var(--ww-success);
+--state-pending:var(--ww-warning);
+--state-failed:var(--ww-error);
+--state-offline:var(--ww-grey-cool);
+
+--status-success-bg:#E7F9EE;
+--status-success-text:#158041;
+--status-warning-bg:#FEF6E0;
+--status-warning-text:#8A6412;
+--status-error-bg:#FEECEB;
+--status-error-text:#C2453B;
+--status-info-bg:#EAF1FE;
+--status-info-text:#1D5FD0;
+--status-neutral-bg:var(--ww-grey-faint);
+--status-neutral-text:var(--ww-grey-cool);
+
+/* Added for the dark ("night canvas") mobile direction. Light values here so the
+   new components render correctly in BOTH themes — the dark layer overrides them. */
+--surface-raised:var(--ww-white);
+--surface-track:var(--ww-grey-light);
+--glow-accent:none;
+--action-destructive-border:#F8D3D0;
+--action-destructive-hover:#FDE0DD;
+--action-disabled-bg:var(--ww-teal-100);
+--action-disabled-text:var(--ww-white);
+--border-info:#C4EFE8;
+--border-success:#C7EFD7;
+--border-warning:#F6E4AE;
+--border-error:#F8D3D0;
+--border-info-blue:#CFE0FC;
+--control-knob:#FFFFFF;
+--scrim:rgba(15,39,71,.42);
+--badge-teal-bg:#C4EFE8;
+--badge-teal-text:#0B7F72;
+--fill-muted-accent:#D6F3EE;
+
+/* Ink — the dark neutral ramp.
+   Lives in :root rather than in the dark theme layer because it is a PALETTE, not a
+   theme mapping: a page that frames a dark surface inside a light one (the device
+   mock on the web build) needs these values without being inside [data-theme="dark"].
+   The theme layer maps --surface-* and --text-* onto them; it does not own them. */
+--ww-ink-950:#05070C;
+--ww-ink-900:#0A0E17;
+--ww-ink-850:#0D141F;
+--ww-ink-800:#141C2A;
+--ww-ink-700:#1E2A3B;
+--ww-ink-600:#2B3A50;
+
+/* Lifted data hues. Each ring arc is a gradient from its base colour to its lift,
+   which is what stops a thick concentric ring reading as a flat plastic band. */
+--ww-data-ecg-lift:#4FD8C8;
+--ww-data-spo2-lift:#6FA5F5;
+--ww-data-temp-lift:#F9CB61;
+--ww-data-heart-lift:#FB6F92;
+--ww-data-accel-lift:#A78BFA;
+
+/* The ground a device mock sits on. Distinct from --surface-page so the phone still
+   reads as an object on the page rather than blending into it. */
+--surface-stage:#E4E9F0;
+--control-track-off:var(--ww-grey-mid);
+}

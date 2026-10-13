@@ -1,0 +1,8 @@
+{
+  "name": "@wearwise/password",
+  "version": "0.1.0",
+  "private": true,
+  "description": "How strong a new WearWise password is, and what would make it stronger: one set of rules for the phone app and the web dashboard.",
+  "main": "src/index.ts",
+  "types": "src/index.ts"
+}

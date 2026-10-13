@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="WearWise">
+  <title>WearWise icon</title>
+  <defs>
+    <linearGradient id="wwiTail" gradientUnits="userSpaceOnUse" x1="95.5" y1="0" x2="148.8" y2="0">
+      <stop offset="0" stop-color="#76D5C8"/>
+      <stop offset=".45" stop-color="#65CDBE"/>
+      <stop offset=".72" stop-color="#2FC2B0"/>
+      <stop offset="1" stop-color="#18B6A4"/>
+    </linearGradient>
+    <linearGradient id="wwiRing" gradientUnits="userSpaceOnUse" x1="383.7" y1="0" x2="462.5" y2="0">
+      <stop offset="0" stop-color="#A1E5DB"/>
+      <stop offset="1" stop-color="#90DED2"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="104" fill="#0F2747"/>
+  <path d="M68.9 181.6L80.1 181.6Q96.1 181.6 101.41 196.69L158.07 357.83Q164.7 376.7 172.23 358.17L240.17 191.03Q247.7 172.5 255.04 191.11L320.86 358.09Q328.2 376.7 335.81 358.2L413.3 169.9" fill="none" stroke="url(#wwiTail)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="423.1" cy="173.8" r="22.2" fill="#18B6A4"/>
+  <circle cx="423.1" cy="173.8" r="30.5" fill="none" stroke="url(#wwiRing)" stroke-width="17.8"/>
+</svg>

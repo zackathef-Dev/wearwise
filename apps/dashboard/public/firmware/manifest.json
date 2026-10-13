@@ -1,0 +1,30 @@
+{
+  "project": "wearwise-esp32",
+  "version": "0.9.6",
+  "chip": "esp32",
+  "builtAt": "Oct 13 2026 21:29:39",
+  "commit": null,
+  "parts": [
+    {
+      "file": "bootloader.bin",
+      "offset": 4096,
+      "role": "bootloader",
+      "size": 25968,
+      "sha256": "ea13ef429ace0d2494ca892c90c66893af4715d961552512f240f6f0da7fea46"
+    },
+    {
+      "file": "partition-table.bin",
+      "offset": 32768,
+      "role": "partition-table",
+      "size": 3072,
+      "sha256": "7e47893573c17340f684e5e610b3e6f6499fee4bfc5ccb7fdedc8d7dc1a97106"
+    },
+    {
+      "file": "wearwise-esp32.bin",
+      "offset": 65536,
+      "role": "app",
+      "size": 1146016,
+      "sha256": "23b5ce39497e32bdc56bf5382842ece3ee82a50a017f29263978764d9492a5e0"
+    }
+  ]
+}

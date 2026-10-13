@@ -1,0 +1,18 @@
+:root{
+--ease-standard:cubic-bezier(.2,.6,.2,1); /* @kind other */
+--ease-out:cubic-bezier(.16,.84,.44,1); /* @kind other */
+--ease-in-out:cubic-bezier(.4,0,.2,1); /* @kind other */
+--dur-instant:80ms; /* @kind other */
+--dur-fast:140ms; /* @kind other */
+--dur-base:220ms; /* @kind other */
+--dur-slow:400ms; /* @kind other */
+--dur-pulse:2000ms; /* @kind other */
+
+/* Reveal durations. Longer than the 220ms interaction step on purpose: an
+   interaction should feel instant, but a value arriving is information, and the
+   sweep is what makes the size of it legible. Still nothing bounces or springs —
+   physiological data must never feel frantic. */
+--dur-enter:320ms;   /* a screen arriving */
+--dur-reveal:900ms;  /* a gauge or chart drawing itself in */
+--stagger-step:110ms;
+}

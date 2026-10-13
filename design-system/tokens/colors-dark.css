@@ -1,0 +1,137 @@
+/* WearWise dark theme — the "night canvas" the mobile app ships on.
+ *
+ * Scoped to [data-theme="dark"], never :root, so the research dashboard, the
+ * guideline cards and every print asset keep the light palette untouched.
+ *
+ * This is NOT an inversion of the light theme. Three rules govern it:
+ *   1. The canvas is near-black with a navy cast (#05070C), not neutral grey.
+ *      Pure #000 is available to OLED but reads as "generic dark mode"; the
+ *      navy cast keeps the surface recognisably WearWise.
+ *   2. Cards separate from the canvas by SPACE first, a 4% lift second, and a
+ *      7% hairline third — never by a heavy border. Boxes-inside-boxes is the
+ *      failure mode of dark UI.
+ *   3. Data colours are re-picked for black, not reused from light. #18B6A4 is
+ *      tuned for contrast against white; on black it goes muddy. Every data hue
+ *      is brightened and desaturated slightly so the three signals stay
+ *      distinguishable at 2px stroke on a phone.
+ */
+[data-theme="dark"]{
+/* Ink ramp moved to colors.css — see the note there. This layer only maps
+   semantic tokens onto it. */
+
+/* Brand, held for dark. Teal brightens; navy is no longer a surface here —
+   on a near-black canvas the brand navy IS the canvas, so it steps back to
+   being a tint used only for pressed states. */
+--ww-teal:#22D3BE;
+--ww-teal-600:#18B6A4;
+--ww-teal-700:#13A091;
+--ww-teal-100:#0E3B39;
+--ww-aqua:#0E2E31;
+
+/* Status — brightened for black */
+--ww-success:#3DDC84;
+--ww-warning:#FBBF24;
+--ww-error:#FF8078;
+--ww-info:#5FA0FF;
+
+/* Data viz — re-picked, see rule 3 above */
+--ww-data-ecg:#22D3BE;
+--ww-data-spo2:#5FA0FF;
+--ww-data-temp:#FBBF24;
+--ww-data-heart:#FB6F92;
+--ww-data-accel:#A78BFA;
+--ww-data-generic:#93A6BF;
+--ww-data-reference:#4A5A72;
+
+/* Text. Contrast against the #05070C canvas:
+     heading   16.9:1     body      12.4:1
+     secondary  7.0:1     muted      5.3:1   (all AA at body size) */
+--text-heading:#F4F8FF;
+--text-body:#D6E1EF;
+--text-secondary:#93A6BF;
+--text-muted:#72859E;
+--text-on-dark:#F4F8FF;
+--text-on-dark-secondary:#93A6BF;
+--text-link:var(--ww-teal);
+--text-accent:var(--ww-teal);
+
+/* Surfaces */
+--surface-page:var(--ww-ink-950);
+--surface-card:var(--ww-ink-900);
+--surface-info:var(--ww-aqua);
+--surface-dark:var(--ww-ink-850);
+--surface-subtle:var(--ww-ink-850);
+--surface-selected:#0E3B39;
+--surface-raised:var(--ww-ink-800);
+--surface-track:var(--ww-ink-700);
+
+/* Borders — hairlines, never structural lines */
+--border-default:rgba(255,255,255,.07);
+--border-strong:rgba(255,255,255,.14);
+--border-focus:var(--ww-teal);
+--border-on-dark:rgba(255,255,255,.12);
+
+--action-primary:var(--ww-teal);
+--action-primary-hover:#3FE0CC;
+--action-primary-press:#18B6A4;
+--action-primary-text:#04120F;
+--action-secondary-text:var(--text-heading);
+--action-secondary-border:rgba(255,255,255,.16);
+--action-secondary-hover-bg:rgba(255,255,255,.06);
+--action-destructive-text:#FF8078;
+--action-destructive-bg:rgba(255,128,120,.12);
+
+--state-live:var(--ww-teal);
+--state-connected:var(--ww-success);
+--state-pending:var(--ww-warning);
+--state-failed:var(--ww-error);
+--state-offline:var(--text-muted);
+
+/* Status chips — tinted glass rather than pastel fills */
+--status-success-bg:rgba(61,220,132,.14);
+--status-success-text:#5BE79B;
+--status-warning-bg:rgba(251,191,36,.10);
+--status-warning-text:#FBBF24;
+--status-error-bg:rgba(255,128,120,.11);
+--status-error-text:#FF9B94;
+--status-info-bg:rgba(95,160,255,.14);
+--status-info-text:#8FBCFF;
+--status-neutral-bg:rgba(255,255,255,.06);
+--status-neutral-text:var(--text-secondary);
+
+/* Elevation. Shadows are invisible on black — depth comes from a rim light on
+   the top edge and, for the hero ring only, a coloured glow. */
+--shadow-card:inset 0 1px 0 rgba(255,255,255,.04);
+--shadow-raised:inset 0 1px 0 rgba(255,255,255,.06), 0 8px 24px rgba(0,0,0,.6);
+--shadow-dialog:0 24px 70px rgba(0,0,0,.75);
+--shadow-nav:0 -1px 0 rgba(255,255,255,.07);
+--ring-focus:0 0 0 3px rgba(34,211,190,.35);
+--ring-error:0 0 0 3px rgba(255,128,120,.3);
+--glow-accent:0 0 34px rgba(34,211,190,.28);
+/* Counterparts for the tokens that used to be hardcoded pastels in components.
+   Every one of these was a light-theme literal that would have glowed on black. */
+--action-destructive-border:rgba(255,128,120,.28);
+--action-destructive-hover:rgba(255,128,120,.20);
+--action-disabled-bg:rgba(255,255,255,.07);
+--action-disabled-text:var(--text-muted);
+--border-info:rgba(34,211,190,.22);
+--border-success:rgba(61,220,132,.22);
+--border-warning:rgba(251,191,36,.22);
+--border-error:rgba(255,128,120,.22);
+--border-info-blue:rgba(95,160,255,.22);
+--control-knob:#F4F8FF;
+--scrim:rgba(0,0,0,.72);
+--badge-teal-bg:rgba(34,211,190,.14);
+--badge-teal-text:#5BE7D6;
+/* Past periods in a TrendBars strip: same metric, receded. A neutral grey here
+   would read as "no data" rather than "earlier". */
+--fill-muted-accent:rgba(34,211,190,.20);
+
+--ww-data-ecg-lift:#5CF0DF;
+--ww-data-spo2-lift:#93C2FF;
+--ww-data-temp-lift:#FDD968;
+--ww-data-heart-lift:#FF9DB8;
+--ww-data-accel-lift:#C4B5FD;
+--surface-stage:var(--ww-ink-800);
+--control-track-off:rgba(255,255,255,.22);
+}

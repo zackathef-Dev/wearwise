@@ -1,0 +1,11 @@
+{
+  "name": "@wearwise/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WearWise design tokens for React Native, generated from design-system/tokens/*.css. Do not hand-edit src/generated — run `npm run generate`.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "generate": "node scripts/generate.mjs"
+  }
+}

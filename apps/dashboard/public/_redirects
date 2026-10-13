@@ -1,0 +1,3 @@
+# Netlify and Cloudflare Pages: the app uses real URL paths (/participants/…), so
+# any path that isn't a file gets index.html. Vercel: the rewrite in vercel.json.
+/*  /index.html  200

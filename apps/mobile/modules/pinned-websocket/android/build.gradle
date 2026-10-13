@@ -1,0 +1,23 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'io.wearwise'
+version = '1.0.0'
+
+android {
+  namespace "expo.modules.pinnedwebsocket"
+  defaultConfig {
+    versionCode 1
+    versionName "1.0.0"
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  // Same OkHttp React Native already ships (react-native/gradle/libs.versions.toml).
+  implementation "com.squareup.okhttp3:okhttp:4.9.2"
+}

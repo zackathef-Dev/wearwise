@@ -1,0 +1,8 @@
+* text=auto
+*.png binary
+*.pdf binary
+*.woff2 binary
+*.mp4 binary
+*.pptx binary
+*.apk binary
+*.wwch binary

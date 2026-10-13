@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.local
+# Secrets: the root .gitignore already ignores these; repeated so this app stays
+# safe if it is ever moved out of the monorepo.
+.env
+.env.*
+!.env.example
