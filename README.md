@@ -341,7 +341,7 @@ retention controls, over-the-air firmware updates, and an independent security r
 | [docs/database.md](docs/database.md) | Schema, RLS, migrations, seed, tests |
 | [docs/firmware.md](docs/firmware.md) · [docs/hardware.md](docs/hardware.md) · [docs/ble-protocol.md](docs/ble-protocol.md) | Patch |
 | [docs/deployment.md](docs/deployment.md) | Cloud, self-hosted, release builds |
-| [docs/security.md](docs/security.md) | Controls, secrets, responsibilities |
+| [docs/security.md](docs/security.md) | Controls, secrets, responsibilities ([full security documentation, PDF](docs/security/WearWise-Security-Documentation.pdf)) |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | When something doesn't work |
 | `apps/dashboard/README.md` | Dashboard features, Patch setup |
 | `docs/architecture/`, `docs/database/`, `docs/testing/`, `docs/security/` | Design notes, schema history, test reports, audits |

@@ -11,6 +11,12 @@ History of reviews and fixes: `docs/security/audit-2026-10-13.md`,
 `docs/security/WearWise-release-security-report.md`, `docs/database/cloud-schema.md`
 (security review section).
 
+**Full security documentation (PDF):**
+[`docs/security/WearWise-Security-Documentation.pdf`](security/WearWise-Security-Documentation.pdf),
+by Zakiul Atheef, 14 October 2026. It consolidates these notes, the audits and the handover
+tests, brought up to date with the current code: data inventory, threat model, controls per
+layer, secrets, incident response, test evidence, risk register and owner responsibilities.
+
 ## What is protected, and how
 
 | Layer | Control | Where |
@@ -68,10 +74,10 @@ credentials and personal data.
 | Board Bluetooth MAC addresses | test evidence, a test fixture | kept: they identify the prototype patches handed over with the project | No |
 | Team names on presentation material (slides, trade-show, video) | presentation folders | **not included**: presentation material stays with the team | No |
 
-**Git history.** The full history contains the developer's commit email, an older copy of
-that screenshot, and absolute paths that were later removed. If the repository is shared
-beyond the project owner, publish it as a fresh history (the current tree as one initial
-commit) or rewrite history first. Either way, check again with
+**Git history.** The original development history contains the developer's commit email, an
+older copy of that screenshot, and absolute paths that were later removed. The handover
+repository was therefore published as a **fresh history** (the reviewed tree as one initial
+commit, 14 October 2026), so none of that is in it. Before sharing any other copy, check with
 `git log --all -p | grep -iE '<what you are looking for>'`.
 
 ## Local development security
