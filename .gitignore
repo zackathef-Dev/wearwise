@@ -39,6 +39,11 @@ supabase/.branches/
 # people's email addresses, so they never go into Git.
 supabase/snippets/
 
+# --- PDF guide builds (docs/guides/source/build.py) ---
+docs/guides/source/.chrome/
+docs/guides/source/_build.html
+docs/guides/source/_pass*.pdf
+
 # --- OS noise ---
 .DS_Store
 Thumbs.db
