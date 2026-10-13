@@ -6,6 +6,8 @@ share chosen signals with a researcher. It reports prototype sensor measurements
 not a medical device, its measurements are not clinically validated, and fall detection
 reports a *possible fall* that can be wrong.
 
+![WearWise system architecture](images/architecture.svg)
+
 ## The pieces
 
 | Piece | Path | Technology | Role |

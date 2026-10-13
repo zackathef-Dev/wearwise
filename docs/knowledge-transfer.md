@@ -13,6 +13,8 @@ a medical device, measurements not clinically validated, and fall detection repo
 
 ## A. System overview
 
+![WearWise system architecture](images/architecture.svg)
+
 A participant wears an ESP32 **patch** with up to four sensor modules: MAX30102 (heart
 rate, SpO₂, pulse wave), MAX30205 (skin temperature), MMA8452Q (movement, used for
 possible-fall detection) and AD8232 (ECG). The **phone app** pairs with it over Bluetooth

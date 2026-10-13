@@ -24,14 +24,9 @@ streaming live data. Nothing in it depends on the original developer's accounts 
 
 ## 1. Architecture
 
-```
- Sensors ──I²C/analog──▶ ESP32 patch ──Bluetooth LE (encrypted, PIN)──▶ Phone app ──▶ encrypted local database
-                          (firmware)    (optional: pinned TLS on Wi-Fi)    │              (source of truth, works offline)
-                                                                          │ when online
-                                                                          ▼
-                                     Web dashboard ◀──── Supabase: Postgres + RLS, Auth, Storage, Realtime
-                                     (researchers)        (local Docker · your Supabase Cloud · self-hosted)
-```
+![WearWise system architecture: sensors, ESP32 patch, phone app, Supabase backend and web dashboard](docs/images/architecture.svg)
+
+(A PNG copy for documents and slides: [`docs/images/architecture.png`](docs/images/architecture.png).)
 
 - **Offline-first.** The phone's encrypted database is the source of truth. Finished
   recordings are uploaded when the backend is reachable.
