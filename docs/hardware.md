@@ -54,22 +54,11 @@ matters if you ever move them:
 
 ## Wiring diagram
 
-```
-                ESP32 (ESP-WROOM-32 dev board)
-               ┌──────────────────────────────┐
-     3V3 ──────┤ 3V3                     GPIO21├──── SDA ──┬── MAX30102 SDA
-     GND ──────┤ GND                     GPIO22├──── SCL ──┼── MAX30205 SDA/SCL
-               │                               │           └── MMA8452Q SDA/SCL
-               │                         GPIO27├──── (INT1, MMA8452Q — reserved)
-               │                         GPIO34├──── AD8232 OUTPUT
-               │                         GPIO32├──── AD8232 LO+
-               │                         GPIO33├──── AD8232 LO−
-               │                          GPIO0├──── BOOT button (on the board)
-               │                    USB (CP210x)├──── computer / power bank
-               └──────────────────────────────┘
-```
+![WearWise pin diagram: AD8232 to GPIO34/32/33, I²C sensors on GPIO21/22, MMA8452Q INT1 to GPIO27, power from 3V3 and GND](images/pin-diagram.svg)
 
-All four I²C devices share the same two wires (SDA, SCL) plus 3V3 and GND.
+(PNG copy for documents: [`images/pin-diagram.png`](images/pin-diagram.png).) The three I²C modules share
+the same two wires (SDA, SCL) plus 3V3 and GND. The diagram is drawn by GPIO label, not by
+physical header position, because 30-pin and 38-pin ESP32 boards place the pins differently.
 
 ## Patch identity and the label
 

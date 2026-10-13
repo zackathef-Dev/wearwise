@@ -241,6 +241,8 @@ Each step says what you should see.
   MMA8452Q); AD8232 output **GPIO34**, LO+ **GPIO32**, LO− **GPIO33**; MMA8452Q INT1
   **GPIO27** (reserved); SPI 18/19/23 reserved. Full table and safety notes:
   [docs/hardware.md](docs/hardware.md).
+
+![WearWise pin diagram](docs/images/pin-diagram.svg)
 - Bluetooth interface and packet format: [docs/ble-protocol.md](docs/ble-protocol.md).
 
 ## 11. Testing
