@@ -1,5 +1,7 @@
 -- WearWise admin: read-only overview. Changes nothing.
--- Supabase Dashboard → SQL Editor → paste → Run. Two result tables.
+-- Supabase Dashboard → SQL Editor → paste → Run. There are two queries, and the SQL Editor
+-- shows only the result of the last one (2. who shares with whom). To see list 1, select
+-- its lines and click "Run selected".
 
 -- 1. Every researcher and clinician, and how many participants share with them now.
 select u.email, p.display_name, p.account_role, p.account_status, p.created_at::date as created,

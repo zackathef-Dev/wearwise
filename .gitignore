@@ -35,6 +35,9 @@ credentials.json
 # --- Supabase local state (the CLI also writes supabase/.gitignore) ---
 supabase/.temp/
 supabase/.branches/
+# Studio (supabase start) autosaves SQL Editor queries here; admin snippets can hold
+# people's email addresses, so they never go into Git.
+supabase/snippets/
 
 # --- OS noise ---
 .DS_Store

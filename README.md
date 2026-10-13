@@ -335,7 +335,7 @@ retention controls, over-the-air firmware updates, and an independent security r
 | Document | For |
 |---|---|
 | [docs/knowledge-transfer.md](docs/knowledge-transfer.md) | **Start here**: the handover guide |
-| [docs/guides/](docs/guides/) | Illustrated PDFs: **User Guide** (app and dashboard) and **Setup Guide** (for people new to development) |
+| [docs/guides/](docs/guides/) | Illustrated PDFs: **User Guide** (app and dashboard), **Setup Guide** (for people new to development) and **Adding a Researcher or Clinician** (for administrators) |
 | [docs/architecture.md](docs/architecture.md) | How the pieces fit, key decisions |
 | [docs/mobile-app.md](docs/mobile-app.md) | Phone app internals |
 | [docs/database.md](docs/database.md) | Schema, RLS, migrations, seed, tests |

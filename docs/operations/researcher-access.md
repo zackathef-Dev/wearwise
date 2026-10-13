@@ -19,6 +19,23 @@ Full technical detail: `docs/database/cloud-schema.md` → "Data sharing".
 All snippets live in `supabase/admin/`. For each: Supabase Dashboard → **SQL Editor** →
 **New query** → paste the whole file → change the lines marked `<-- CHANGE` → **Run**.
 
+What the SQL Editor does along the way (seen on Supabase Studio, which the local stack and the
+hosted Dashboard share):
+
+- `create-viewer.sql` and `reset-password.sql` make a temporary table, so the editor may stop
+  with **"Potential issues detected"** (destructive operation, table without Row Level
+  Security). Choose **Run without RLS**: the table is a scratch table in the session's
+  `pg_temp` schema, gone when the session ends and never reachable through the API.
+- `overview.sql` has two queries and the editor shows only the last result. Select the
+  first query's lines and click **Run selected** to see the list of viewers.
+- The editor autosaves every query, including the email addresses you typed, under
+  **Private** in its side list. Delete it when you're done (right-click it → **Delete
+  query**) so people's addresses aren't kept there. The local stack writes them as files to
+  `supabase/snippets/` (gitignored; local Studio can't delete them, so remove the files).
+
+The illustrated version of this runbook, with screenshots, is
+[`docs/guides/WearWise-Adding-a-Researcher.pdf`](../guides/WearWise-Adding-a-Researcher.pdf).
+
 | Task | Snippet | Notes |
 |---|---|---|
 | **Add a researcher or clinician** | `create-viewer.sql` | Set email, role (`researcher` or `clinician` only) and display name. The result shows a **one-time password** — send it privately (not in the same message as the email address). They sign in at the dashboard, accept the current terms themselves, and use **Change password** in the top bar. |
