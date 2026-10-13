@@ -109,9 +109,11 @@ The domain layer has no React Native or Supabase imports. It talks to ports
   Devices tab (or **Use simulated data instead** on the Pair screen) runs the whole app
   without hardware. Simulated data is always
   labelled as simulated on screen and in the database (`simulated = true`). The simulated
-  movement signal contains a textbook fall about 12 s after the simulation starts and then
-  every 3 minutes, so the possible-fall alarm can be tested. Answer **I'm OK**, or let it
-  time out.
+  movement signal contains a textbook fall about 12 s after each stream start and then
+  every 3 minutes, so the possible-fall alarm can be tested. The stream starts again from
+  the beginning whenever streaming (re)starts: on connecting, when a recording starts, and
+  when it stops and the live preview resumes. So expect the alarm about 12 s into every
+  recording and again just after it. Answer **I'm OK**, or let it time out.
 
 Android asks for *Nearby devices* (Bluetooth scan/connect, with `neverForLocation`); iOS asks
 for Bluetooth and, for the Wi-Fi stream, Local Network. Emulators and simulators have no

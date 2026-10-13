@@ -20,6 +20,10 @@ This README takes someone who has never seen the project from a fresh clone to a
 system: a local backend, the app on a phone or emulator, the web dashboard, and a patch
 streaming live data. Nothing in it depends on the original developer's accounts or machine.
 
+New to development? The illustrated PDF guides in [`docs/guides/`](docs/guides/) cover the same
+setup step by step ([Setup Guide](docs/guides/WearWise-Setup-Guide.pdf)) and every screen of the
+app and dashboard ([User Guide](docs/guides/WearWise-User-Guide.pdf)).
+
 ---
 
 ## 1. Architecture
@@ -185,8 +189,10 @@ name, e.g. `Pixel_8_API_36`, or the phone's model).
 
 > Every development build on your network loads its JavaScript from the Metro bundler running
 > on this computer, port 8081, including other phones that once ran a development build from
-> it. Switching `backend:local` / `backend:cloud` and restarting Metro switches all of them. For a physical iPhone: `npx expo run:ios --device`, with your Apple
-team chosen in Xcode (see [docs/deployment.md](docs/deployment.md#ios-macos-with-xcode)).
+> it. Switching `backend:local` / `backend:cloud` and restarting Metro switches all of them.
+
+For a physical iPhone: `npx expo run:ios --device`, with your Apple team chosen in Xcode (see
+[docs/deployment.md](docs/deployment.md#ios-macos-with-xcode)).
 
 ## 9. Start from zero: the full runbook
 
@@ -241,9 +247,9 @@ Each step says what you should see.
   MMA8452Q); AD8232 output **GPIO34**, LO+ **GPIO32**, LO− **GPIO33**; MMA8452Q INT1
   **GPIO27** (reserved); SPI 18/19/23 reserved. Full table and safety notes:
   [docs/hardware.md](docs/hardware.md).
+- Bluetooth interface and packet format: [docs/ble-protocol.md](docs/ble-protocol.md).
 
 ![WearWise pin diagram](docs/images/pin-diagram.svg)
-- Bluetooth interface and packet format: [docs/ble-protocol.md](docs/ble-protocol.md).
 
 ## 11. Testing
 
@@ -329,6 +335,7 @@ retention controls, over-the-air firmware updates, and an independent security r
 | Document | For |
 |---|---|
 | [docs/knowledge-transfer.md](docs/knowledge-transfer.md) | **Start here**: the handover guide |
+| [docs/guides/](docs/guides/) | Illustrated PDFs: **User Guide** (app and dashboard) and **Setup Guide** (for people new to development) |
 | [docs/architecture.md](docs/architecture.md) | How the pieces fit, key decisions |
 | [docs/mobile-app.md](docs/mobile-app.md) | Phone app internals |
 | [docs/database.md](docs/database.md) | Schema, RLS, migrations, seed, tests |

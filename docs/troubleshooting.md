@@ -43,7 +43,7 @@ they show up.
 | A deployed dashboard can't sign in (browser console: CSP `connect-src` violation) | Headers deployed for another backend | As above, then redeploy |
 | A participant can't see Participants / Patch setup | Those pages are for researchers and clinicians | Make the account a viewer with `supabase/admin/set-role.sql` (Studio → SQL editor) |
 | Share code "invalid or expired" | Codes are single-use, last 24 h, and a new code replaces an unused one; 10 failed tries per hour lock the viewer out for the hour | Ask for a new code; wait an hour after repeated failures |
-| Live view: the researcher sees nothing | Live view is off on the phone, its time ran out, the grant was revoked, or the app is in the background (shows "Paused") | Start live view on the phone's Home; keep the app open |
+| Live view: the researcher sees nothing | Live view is off on the phone, its time ran out, the grant was revoked, or the app is in the background (shows "Paused") | Start live view in the app (Profile → Privacy & access; Home then shows a banner with time left and Stop); keep the app open |
 | Fall alarm sound doesn't play on the dashboard | The browser blocks sound until the page is clicked | Click the page once (the banner says so) |
 
 ## Patch setup (firmware over USB)
@@ -64,7 +64,7 @@ they show up.
 | A third phone or tablet can't pair | The patch remembers two devices | Press BOOT, pair with the PIN; the oldest remembered device is dropped |
 | No patch found when scanning | Another phone is connected (one connection at a time), the patch isn't powered, or Bluetooth / Nearby-devices permission is off | Close the app on the other phone; check power and permissions |
 | Emulator / simulator shows no Bluetooth | They have no Bluetooth | Use **Use Simulation** on the Devices tab, or a physical phone |
-| A possible-fall alarm keeps appearing while using the simulation | The simulated movement signal contains a fall 12 s after starting and then every 3 minutes, on purpose | Answer **I'm OK**, or leave Movement out of the recording; the alarm is part of what the simulation tests |
+| A possible-fall alarm keeps appearing while using the simulation | The simulated movement signal contains a fall about 12 s after each stream start (on connecting, and again each time a recording starts or stops) and then every 3 minutes, on purpose | Answer **I'm OK**, or leave Movement out of the recording; the alarm is part of what the simulation tests |
 | No ECG on a patch | No AD8232 fitted (detected at boot), or a module wired without LO+/LO− | Wire LO+/LO−, or set `WW_AD8232_DETECT 0` in `FirmwareConfig.h` and rebuild |
 | ECG says "leads off" | An electrode isn't touching skin | Check the electrodes and lead colours |
 | Heart rate about double at first, or SpO₂ around 80 % | Pulse estimate not yet settled; poor finger contact; an uncalibrated or weak MAX30102 module | Hold still for 10–20 s with steady, light pressure; try another module; SpO₂ is uncalibrated (known limitation) |
