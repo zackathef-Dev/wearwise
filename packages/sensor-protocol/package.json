@@ -2,6 +2,7 @@
   "name": "@wearwise/sensor-protocol",
   "version": "0.1.0",
   "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
   "description": "WearWise sensor packet protocol v1: envelope, binary codec, checksum, and the shared fixtures the phone and the ESP32 firmware both decode.",
   "main": "src/index.ts",
   "types": "src/index.ts",

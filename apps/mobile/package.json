@@ -61,6 +61,7 @@
     "test": "jest"
   },
   "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
   "op-sqlite": {
     "sqlcipher": true
   }

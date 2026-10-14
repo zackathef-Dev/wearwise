@@ -330,6 +330,18 @@ interrupt-driven motion (GPIO27), more sensors through the driver interface
 retention controls, over-the-air firmware updates, and an independent security review. See
 [docs/knowledge-transfer.md](docs/knowledge-transfer.md#t-future-improvements).
 
+## Licence and team
+
+WearWise is made by the **WearWise Project Team**: Zakiul Atheef, Hari Bethelli, Siri Bethelli
+and Thevindu Kodagoda Munasinghage.
+
+It is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE): anyone may use, copy,
+change and share it for any **noncommercial** purpose, including study, research, teaching and
+use by educational, research, health, charitable and government organisations. Selling it, or
+any other commercial use, needs written permission from the team. Copies must include
+[LICENSE](LICENSE) with its "Required Notice" line. Third-party components keep their own
+licences: see [NOTICE](NOTICE).
+
 ## Documentation map
 
 | Document | For |

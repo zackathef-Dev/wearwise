@@ -2,6 +2,7 @@
   "name": "@wearwise/legal",
   "version": "0.1.0",
   "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
   "description": "WearWise legal and compliance documents (terms, privacy policy, collection notice, health and safety, research participation, researcher terms, accessibility), shared by the phone app and the web dashboard so both show the same text and version.",
   "main": "src/index.ts",
   "types": "src/index.ts"

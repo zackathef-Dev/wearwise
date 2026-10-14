@@ -3,8 +3,8 @@ Pod::Spec.new do |s|
   s.version        = '1.0.0'
   s.summary        = 'wss:// WebSocket pinned to one certificate fingerprint (WearWise sensor).'
   s.description    = 'A WebSocket that trusts only the sensor certificate whose SHA-256 the app read over Bluetooth.'
-  s.license        = 'UNLICENSED'
-  s.author         = 'WearWise'
+  s.license        = 'PolyForm-Noncommercial-1.0.0'
+  s.author         = 'WearWise Project Team'
   s.homepage       = 'https://wearwise.example'
   s.platforms      = { :ios => '16.4' }
   s.source         = { git: '' }

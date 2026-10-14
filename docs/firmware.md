@@ -173,7 +173,10 @@ npm run firmware:export -w dashboard     # from the repo root; --build <dir> for
 ```
 
 The export refuses builds for another chip, encrypted builds, and builds without the
-`wwcfg` partition.
+`wwcfg` partition. It records the git commit in `manifest.json` (with `-dirty` if
+`firmware/wearwise-esp32` has uncommitted changes), so build releases from a clean
+checkout. `LICENSE-Apache-2.0.txt` in the same folder is the licence of ESP-IDF, NimBLE and
+Mbed TLS, which the images contain; the export leaves it in place.
 
 ## Setting up a patch
 

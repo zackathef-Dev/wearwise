@@ -1,6 +1,7 @@
 {
   "name": "wearwise",
   "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
   "description": "WearWise \u2014 wearable data, shown plainly. Monorepo: participant mobile app, shared packages, firmware, backend.",
   "workspaces": [
     "apps/*",
