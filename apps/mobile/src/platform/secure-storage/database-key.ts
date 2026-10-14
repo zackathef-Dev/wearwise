@@ -13,7 +13,7 @@ import * as Crypto from 'expo-crypto';
  * backup to another device — the data it protects is health data, and a restore
  * onto someone else's phone must not bring the key along.
  */
-const KEY = 'wearwise.db.key.v1';
+const KEY = 'wearwise.db.key.v1'; // gitleaks:allow (the slot's name, not a secret)
 
 export async function getOrCreateDatabaseKey(): Promise<string> {
   const existing = await SecureStore.getItemAsync(KEY);

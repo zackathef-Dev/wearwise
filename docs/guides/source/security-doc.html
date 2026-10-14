@@ -48,7 +48,7 @@
     <tr><td>Version and date</td><td>1.0, 14 October 2026</td></tr>
     <tr><td>Applies to</td><td>Handover release v1.0.0: phone app 0.1.0 (Expo SDK 57, React Native 0.86), web dashboard 0.1.0, patch firmware 0.9.6 (ESP-IDF 5.4), Supabase backend with 11 database migrations</td></tr>
     <tr><td>Audience</td><td>The project owner, the organisation's IT and privacy staff, ethics reviewers, and developers who maintain WearWise</td></tr>
-    <tr><td>Classification</td><td>Internal: for the project owner and authorised maintainers. It contains no secrets.</td></tr>
+    <tr><td>Classification</td><td>Public: contains no secrets, credentials or personal data. Intended for the project owner, maintainers and, once publication is approved, the public repository. Vulnerability reports go through <code>SECURITY.md</code>.</td></tr>
     <tr><td>Status</td><td>Engineering documentation of a <b>research prototype</b>. Not a certification, a penetration-test report or a medical-device assessment.</td></tr>
     <tr><td>Next review</td><td>Before any use with real participants, after any major upgrade, and at least once a year</td></tr>
   </tbody>
@@ -370,6 +370,8 @@
     <tr><td>Git history of the published repository (7 commits, 661 file versions): keys, tokens, private keys, personal data, local paths, sensitive files, Claude traces</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> none found. Patch MAC addresses (now redacted) remain in older commits</td></tr>
     <tr><td>Dependency alerts (Dependabot, 13)</td><td>14 Oct 2026</td><td><span class="sev ok">8 fixed</span> 5 assessed, none reachable in the app unmitigated (section 26)</td></tr>
     <tr><td>Bundled firmware rebuilt from the committed tree</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> manifest records commit <code>52e94d8</code>; code byte-identical to the previous bundle (only build timestamps and hashes differ)</td></tr>
+    <tr><td>Fresh clone from GitHub, documentation only: install, type checks, lint, unit tests, dashboard build, Android native build, firmware build, backend from the migrations</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> all automated steps; hardware steps manual</td></tr>
+    <tr><td>gitleaks 8.21.2 on the published history, all local branches and the working tree</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> no secrets; one false positive (the name of a Keystore slot) recorded in <code>.gitleaksignore</code></td></tr>
     <tr><td>Release APK inspection (signing, permissions, FLAG_SECURE, bundle scan)</td><td>20 Sep 2026</td><td><span class="sev ok">Pass</span> for build 0.1.0. Repeat for every release with <code>tools/audit-apk.ps1</code></td></tr>
   </tbody>
 </table>
@@ -397,7 +399,7 @@
     <tr><td>Web dashboard (D1–D11)</td><td>11</td><td>9 fixed. D10 mitigated by CSP. D11 capped by the bucket's file limit.</td></tr>
     <tr><td>Database, storage and sign-in (B1–B14)</td><td>14</td><td>9 fixed. Partly: B1 (no 2FA, R-02), B4 (sign-up abuse, R-03), B10 (session metadata, R-07), B12 (hosted settings, R-05). B3 fixed for the study team.</td></tr>
     <tr><td>Firmware (F1–F10)</td><td>10</td><td>8 fixed. F2 open (R-01). F9 partly (R-10).</td></tr>
-    <tr><td>Repository (R1–R10)</td><td>10</td><td>R1, R2, R4, R5, R7, R9 resolved. R6 mostly fixed. R3 tracked (section 26). R8 is local only. R10 (no CI or secret scanning) open (R-09).</td></tr>
+    <tr><td>Repository (R1–R10)</td><td>10</td><td>R1, R2, R4, R5, R7, R9 resolved. R6 mostly fixed. R3 tracked (section 26). R8 is local only. R10 (no CI or secret scanning) addressed at handover (R-09).</td></tr>
   </tbody>
 </table>
 
@@ -408,6 +410,7 @@
   <li><b>Test infrastructure:</b> plain-SQL suites moved to <code>supabase/sql-tests/</code>. A bare <code>supabase test db</code> could otherwise have run a stub granting full default privileges on a real stack (fixed during the dry run). Database checks went from 261 to 277, plus 8 pgTAP.</li>
   <li><b>Documentation:</b> the admin runbook now covers the SQL Editor's warnings and saved queries, and the guide <i>Adding a Researcher or Clinician</i> was added.</li>
   <li><b>Public-release review (14 October):</b> patch MAC addresses and the device IDs derived from them were redacted from test evidence, screenshots and test fixtures; the stale September change list was removed; 8 of 13 dependency alerts were fixed; the bundled firmware was rebuilt from the committed tree so its manifest records the commit; and the published git history was audited (section 21).</li>
+  <li><b>Handover readiness (14 October):</b> CI (GitHub Actions) and Dependabot added; <code>SECURITY.md</code> for private vulnerability reports; this document reclassified from internal to public, as it contains no secrets or personal data.</li>
 </ul>
 
 <!-- ======================= PART 6 ======================= -->
@@ -429,7 +432,7 @@
     <tr><td>R-06</td><td>The label PIN is fixed per patch: anyone who reads it and presses BOOT can pair</td><td><span class="sev low">Low</span></td><td>Keep patches under supervision. Use <b>New PIN</b> whenever a patch changes hands.</td></tr>
     <tr><td>R-07</td><td>Viewers see all columns of shareable sessions (device name, firmware, settings)</td><td><span class="sev low">Low</span></td><td>A column-limited view for viewers.</td></tr>
     <tr><td>R-08</td><td>No audit log of researcher reads beyond Supabase's own logs</td><td><span class="sev low">Low</span></td><td>Retain Supabase logs per the protocol, or add read auditing for viewer RPCs.</td></tr>
-    <tr><td>R-09</td><td>No CI, automated tests on change, or secret scanning</td><td><span class="sev low">Low</span></td><td>A gitleaks pre-commit hook and a CI job running the unit tests and database suites.</td></tr>
+    <tr><td>R-09</td><td>No CI, automated tests on change, or secret scanning</td><td><span class="sev ok">Mitigated</span></td><td>Added at handover: GitHub Actions run type checks, lint, unit tests, the dashboard build, the database suites, the firmware build and a gitleaks secret scan on every push; Dependabot proposes monthly minor updates. Optional: a local gitleaks pre-commit hook (<code>CONTRIBUTING.md</code>).</td></tr>
     <tr><td>R-10</td><td>Wi-Fi proof-of-possession is 4 bytes, per boot, shared by bonded phones</td><td><span class="sev low">Low</span></td><td>A longer, per-phone value in a future protocol version.</td></tr>
     <tr><td>R-11</td><td>Five dependency advisories with no non-breaking fix (section 26)</td><td><span class="sev low">Low</span></td><td>Upgrade the Expo SDK and retest on devices; then dismiss or close the remaining alerts.</td></tr>
     <tr><td>R-12</td><td>No retention or purge policy in the app or backend</td><td><span class="sev med">Medium</span> (privacy)</td><td>Define retention with the ethics approval, and implement purge and consent-withdrawal handling.</td></tr>
@@ -453,7 +456,7 @@
 </ul>
 
 <h3 id="s-deps"><span class="num">26</span>Dependency advisories</h3>
-<p>GitHub Dependabot raised <b>13 alerts</b> on the repository (from <code>package-lock.json</code>). On 14 October 2026 <b>8 were fixed</b> by lockfile updates within the version ranges the dependents already allow (no forced upgrades), including the only critical one. After the fix <code>npm audit</code> reports 65 entries across the workspace (0 critical, 49 high, 16 moderate), or 44 without development-only packages. These are counted once per dependent path; they come from <b>five underlying packages</b>:</p>
+<p>GitHub Dependabot raised <b>13 alerts</b> on the repository (from <code>package-lock.json</code>). On 14 October 2026 <b>8 were fixed</b> by lockfile updates within the version ranges the dependents already allow (no forced upgrades), including the only critical one. After the fix <code>npm audit</code> reports 65 entries across the workspace (0 critical, 49 high, 16 moderate), or 43 without development-only packages. These are counted once per dependent path; they come from <b>five underlying packages</b>:</p>
 <table class="compact">
   <thead><tr><th style="width:21%">Package</th><th style="width:11%">Severity</th><th style="width:15%">Status</th><th>Path and assessment</th></tr></thead>
   <tbody>

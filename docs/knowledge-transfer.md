@@ -5,6 +5,8 @@ WearWise works and why, how to run and change it, and what to watch out for. Eac
 points to the detailed document. The root [README](../README.md) has the step-by-step setup.
 The same handover, with what is handed over, its verification and the owner's first steps, is
 also a PDF: [`guides/WearWise-Handover-Documentation.pdf`](guides/WearWise-Handover-Documentation.pdf).
+Index of all documents: [README.md](README.md). Exactly what is handed over:
+[HANDOVER-MANIFEST.md](HANDOVER-MANIFEST.md).
 
 **Status at handover (October 2026):** firmware 0.9.6, mobile app 0.1.0 (Expo SDK 57), web
 dashboard 0.1.0, 11 database migrations. WearWise is a **capstone research prototype**: not
@@ -222,23 +224,12 @@ Read: [security.md](security.md).
 
 ## S. Known limitations
 
-- Research prototype; measurements not clinically validated. SpO₂ is uncalibrated (a board
-  read about 80 % at rest). Heart rate can read about double before settling, or on a weak
-  module (real-device test 2026-10-13, findings 19–20).
-- Possible-fall detection is a threshold heuristic; nothing outside WearWise is alerted.
-- Emulators and simulators have no Bluetooth. iOS has had less real-device testing than
-  Android, including the pinned Wi-Fi stream.
-- One phone connected to a patch at a time; a patch remembers two devices. The label PIN is
-  fixed until changed with *New PIN*.
-- Firmware updates are USB-only (Patch setup or `idf.py`).
-- No MFA for dashboard accounts; no in-app retention or purge; no audit log of researcher reads.
-- Local development: email confirmation off; the local stack is reachable from your network.
-- The legal documents are drafts until the organisation's details are filled in.
-- Home's "Backed up x/y" counts a recording still in progress as backed up until it stops
-  (cosmetic; `apps/mobile/src/app/(tabs)/home.tsx`).
-- Five dependency advisories remain (Dependabot), all in build or test tooling or mitigated in
-  the app; none has a fix short of an Expo SDK upgrade. Assessment:
-  `docs/security/dependency-advisories.md`.
+The authoritative, current list is [known-limitations.md](known-limitations.md). In short: a
+research prototype with measurements that are not clinically validated (SpO₂ uncalibrated,
+heart rate slow to settle), a threshold-based possible-fall heuristic, BLE only (NFC deferred
+by agreement), one active wearable at a time (agreed for the proof of concept), unencrypted
+patch flash, no staff MFA or sign-up abuse protection, no retention or purge, and less iOS
+device testing than Android.
 
 ## T. Future improvements
 
@@ -246,11 +237,14 @@ Read: [security.md](security.md).
   reference (the AD8232 on the same board is a good start: `docs/HRValidation.md`).
 - Hold back heart rate until the estimate has settled.
 - Emergency-contact notification for falls, and interrupt-driven motion (MMA8452Q INT1 on GPIO27).
+- NFC connectivity and several patches streaming at once (deferred by agreement with the
+  project owner for the proof of concept).
 - More sensors through the driver interface; an SPI sensor on the reserved pins.
 - MFA for staff accounts; a column-limited view for viewers; read audit logging.
 - Retention controls and data export for participants.
 - Over-the-air firmware updates.
-- CI: run the mobile, dashboard and database suites (`run-on-local-stack.sh`) on every change.
+- CI runs the app, dashboard, database and firmware checks and a secret scan on every push
+  (added at handover); extend it with an iOS build and on-device tests if a device farm is available.
 - An independent security review before any wider use.
 
 ## Maintenance checklist

@@ -1,0 +1,96 @@
+# Automated checks for every push and pull request. Everything here runs without secrets,
+# signing keys or hardware: Bluetooth, sensors and patches are tested by hand
+# (docs/testing/hardware-test-matrix.md).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apps:
+    name: App and dashboard
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Phone app – type check, lint, unit tests
+        run: |
+          npm run typecheck -w mobile
+          npm run lint -w mobile
+          npm test -w mobile -- --ci
+      - name: Dashboard and shared legal package – type check, unit tests
+        run: |
+          npm run typecheck -w dashboard
+          npm test -w dashboard
+      - name: Dashboard – production build
+        # Placeholder backend: matches the committed public/_headers. Not a real project.
+        env:
+          VITE_SUPABASE_URL: https://your-project-ref.supabase.co
+          VITE_SUPABASE_ANON_KEY: sb_publishable_placeholderplaceholder00
+        run: npm run build -w dashboard
+
+  database:
+    name: Database (RLS and security suites)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.120.0
+      - name: Start a local Supabase stack (migrations + synthetic demo seed)
+        run: supabase start
+      - name: Plain-SQL suites on the real stack
+        run: bash supabase/sql-tests/run-on-local-stack.sh
+      - name: pgTAP
+        run: supabase test db
+      - if: always()
+        run: supabase stop --no-backup
+
+  firmware:
+    name: Firmware build and host test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Host test (label-PIN record)
+        working-directory: firmware/wearwise-esp32
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror -Imain/core -Imain/communication \
+             test/host/test_factory_config.c main/core/factory_config.c -o /tmp/factory_config_test
+          /tmp/factory_config_test
+      - name: Build with ESP-IDF 5.4.2
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.4.2
+          target: esp32
+          path: firmware/wearwise-esp32
+
+  secrets:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan the full history
+        # Known false positives are listed in .gitleaksignore. --redact keeps values out of the log.
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.21.2 \
+            detect --source /repo --redact --no-banner --verbose

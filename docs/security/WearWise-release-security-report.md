@@ -1,5 +1,8 @@
 # WearWise release security report
 
+> **Historical.** The current, authoritative security documentation is
+> [WearWise-Security-Documentation.pdf](WearWise-Security-Documentation.pdf) (14 October 2026).
+>
 > **Superseded in part by [audit-2026-10-13.md](audit-2026-10-13.md).** Since this report, Wi-Fi
 > streaming is enabled (pinned `wss://` after passkey Bluetooth pairing), the vibrate and
 > notification permissions are back for alerts and the fall alarm, and FLAG_SECURE / the

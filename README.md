@@ -42,6 +42,27 @@ The project owner provided the project brief and stakeholder direction. WearWise
 and implemented by the WearWise Project Team, the student development team (see
 [Team and licence](#team-and-licence)).
 
+## Current release
+
+**`v1.0.0-handover`** (October 2026): phone app 0.1.0, web dashboard 0.1.0, patch firmware
+0.9.6, 11 database migrations. Exactly what is handed over:
+[docs/HANDOVER-MANIFEST.md](docs/HANDOVER-MANIFEST.md) · changes: [CHANGELOG.md](CHANGELOG.md).
+
+## Documentation
+
+The full index is [docs/README.md](docs/README.md). The main entry points:
+
+| For | Read |
+|---|---|
+| **The handover** | [Handover Documentation (PDF)](docs/guides/WearWise-Handover-Documentation.pdf) · [knowledge-transfer.md](docs/knowledge-transfer.md) · [owner checklist](docs/OWNER-HANDOVER-CHECKLIST.md) |
+| **Using WearWise** | [User Guide (PDF)](docs/guides/WearWise-User-Guide.pdf): the phone app and the dashboard |
+| **Running it** | [Setup Guide (PDF)](docs/guides/WearWise-Setup-Guide.pdf) for people new to development, or sections 3–9 below · [deployment.md](docs/deployment.md) · [troubleshooting.md](docs/troubleshooting.md) |
+| **Administering accounts** | [Adding a Researcher or Clinician (PDF)](docs/guides/WearWise-Adding-a-Researcher.pdf) · [operations/researcher-access.md](docs/operations/researcher-access.md) |
+| **How it works** | [architecture.md](docs/architecture.md) · [mobile-app.md](docs/mobile-app.md) · [firmware.md](docs/firmware.md) · [hardware.md](docs/hardware.md) · [ble-protocol.md](docs/ble-protocol.md) · [database.md](docs/database.md) |
+| **Security** | [Security Documentation (PDF, current)](docs/security/WearWise-Security-Documentation.pdf) · [security.md](docs/security.md) · [SECURITY.md](SECURITY.md) (reporting) · [dependencies.md](docs/dependencies.md) |
+| **Scope and limits** | [requirements-traceability.md](docs/requirements-traceability.md) · [known-limitations.md](docs/known-limitations.md) · [future work](docs/knowledge-transfer.md#t-future-improvements) |
+| **Changing it** | [CONTRIBUTING.md](CONTRIBUTING.md) · [testing/](docs/testing/) |
+
 ---
 
 ## 1. Architecture
@@ -71,7 +92,8 @@ packages/           Shared TypeScript: sensor-protocol, legal, password, design-
 firmware/           ESP32 firmware (ESP-IDF 5.4): wearwise-esp32/
 supabase/           Backend: config.toml, migrations/, seed.sql + seed/, tests/, sql-tests/, admin/, scripts/
 scripts/            use-backend.mjs (switch the apps between local and cloud)
-docs/               Documentation (start with docs/knowledge-transfer.md)
+docs/               Documentation (index: docs/README.md)
+.github/            CI workflow and Dependabot configuration
 design-system/tokens/  Brand design tokens (CSS): the source packages/design-tokens is generated from
 tools/audit-apk.ps1    Checks a release APK for leaked secrets or developer paths
 ```
@@ -281,6 +303,10 @@ Each step says what you should see.
 | Firmware: host test of the PIN record | see [docs/firmware.md](docs/firmware.md#tests) |
 | Hardware procedures | `docs/testing/hardware-test-matrix.md` |
 
+Every push and pull request runs the type checks, lint, unit tests, dashboard build, database
+suites, firmware build and a secret scan in GitHub Actions ([.github/workflows/ci.yml](.github/workflows/ci.yml)).
+Hardware tests stay manual.
+
 ## 12. Building for release
 
 - **Android:** `.env.production` with an **https** backend, your own signing key
@@ -314,6 +340,7 @@ Self-hosted Supabase works the same way over HTTPS. Full guide: [docs/deployment
 - The local stack is reachable from your network while running. Use a trusted network.
 - Security practices are informed by relevant guidance (OWASP MASVS and Top 10, Supabase
   guidance). Nothing is certified.
+- Report vulnerabilities privately, never in a public issue: see [SECURITY.md](SECURITY.md).
 
 ## 15. Known limitations
 
@@ -326,7 +353,8 @@ Self-hosted Supabase works the same way over HTTPS. Full guide: [docs/deployment
 - No over-the-air firmware updates (USB only), no MFA for the dashboard, no data retention
   policy in the app.
 
-More in [docs/knowledge-transfer.md](docs/knowledge-transfer.md#s-known-limitations).
+The complete, current list, including the scope agreed with the project owner (BLE first,
+NFC deferred, one active wearable): [docs/known-limitations.md](docs/known-limitations.md).
 
 ## 16. Troubleshooting
 
@@ -342,7 +370,8 @@ See [docs/troubleshooting.md](docs/troubleshooting.md). The usual suspects:
 
 ## 17. Future development
 
-Calibrated SpO₂ against a reference oximeter, emergency-contact notification for falls,
+NFC connectivity and several patches streaming at once (deferred by agreement for the proof of
+concept), calibrated SpO₂ against a reference oximeter, emergency-contact notification for falls,
 interrupt-driven motion (GPIO27), more sensors through the driver interface
 ([docs/firmware.md](docs/firmware.md#adding-a-new-sensor)), MFA for staff accounts,
 retention controls, over-the-air firmware updates, and an independent security review. See
@@ -372,19 +401,3 @@ licences: see [NOTICE](NOTICE).
 We acknowledge the project owner, Shanmuga Sundar Dhanabalan (Deputy Director, CTI), and
 La Trobe University for providing the project brief, stakeholder direction, and feedback
 throughout the capstone project.
-
-## Documentation map
-
-| Document | For |
-|---|---|
-| [docs/knowledge-transfer.md](docs/knowledge-transfer.md) | **Start here**: the handover guide |
-| [docs/guides/](docs/guides/) | PDFs: **Handover Documentation**, **User Guide** (app and dashboard), **Setup Guide** (for people new to development) and **Adding a Researcher or Clinician** (for administrators) |
-| [docs/architecture.md](docs/architecture.md) | How the pieces fit, key decisions |
-| [docs/mobile-app.md](docs/mobile-app.md) | Phone app internals |
-| [docs/database.md](docs/database.md) | Schema, RLS, migrations, seed, tests |
-| [docs/firmware.md](docs/firmware.md) · [docs/hardware.md](docs/hardware.md) · [docs/ble-protocol.md](docs/ble-protocol.md) | Patch |
-| [docs/deployment.md](docs/deployment.md) | Cloud, self-hosted, release builds |
-| [docs/security.md](docs/security.md) | Controls, secrets, responsibilities ([full security documentation, PDF](docs/security/WearWise-Security-Documentation.pdf)) |
-| [docs/troubleshooting.md](docs/troubleshooting.md) | When something doesn't work |
-| `apps/dashboard/README.md` | Dashboard features, Patch setup |
-| `docs/architecture/`, `docs/database/`, `docs/testing/`, `docs/security/` | Design notes, schema history, test reports, audits |

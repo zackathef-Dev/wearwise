@@ -1,5 +1,8 @@
 # WearWise mobile architecture
 
+> **Design notes from Milestone 3.** For the current structure of the phone app, read
+> [`docs/mobile-app.md`](../mobile-app.md); where they differ, `mobile-app.md` is right.
+
 _Milestone 3 state. This document grows with the code; it is not a plan for code
 that does not exist yet._
 

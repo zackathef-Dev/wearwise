@@ -146,7 +146,7 @@
     <tr><td>Retention policy</td><td><span class="sev med">Medium</span> No automatic retention or purge exists; it must match the ethics approval.</td></tr>
   </tbody>
 </table>
-<p class="small">The full risk register is in the Security Documentation, section 24.</p>
+<p class="small">The full risk register is in the Security Documentation, section 24; every limitation is listed in <code>docs/known-limitations.md</code>.</p>
 
 <!-- ======================= PART 2 ======================= -->
 <div class="part" data-part="Part 2">
@@ -330,6 +330,7 @@
 
 <h3 id="s-limits"><span class="num">20</span>Known limitations</h3>
 <ul>
+  <li><b>Scope agreed with the project owner:</b> Bluetooth LE only, with NFC deferred; one active wearable at a time for the proof of concept; no App Store publication; research use only. These are future work, not defects.</li>
   <li><b>Measurements:</b> research prototype, not clinically validated. SpO₂ is uncalibrated (a board read about 80 % at rest). Heart rate can read about double before settling, or on a weak module.</li>
   <li><b>Falls:</b> possible-fall detection is a threshold heuristic; nothing outside WearWise is alerted.</li>
   <li><b>Testing coverage:</b> emulators have no Bluetooth; iOS has had less real-device testing than Android, including the pinned Wi-Fi stream.</li>
@@ -349,7 +350,8 @@
   <li>Two-factor sign-in for staff; a column-limited view for viewers; read audit logging.</li>
   <li>Retention controls and data export for participants.</li>
   <li>Patch hardening (Secure Boot, flash encryption) with signed over-the-air firmware updates.</li>
-  <li>Continuous integration running the app, dashboard and database suites on every change, with secret scanning.</li>
+  <li>NFC connectivity and several patches streaming at once (deferred by agreement for the proof of concept).</li>
+  <li>Extend the CI added at handover with an iOS build and on-device tests where a device farm is available.</li>
   <li>An independent security review before any wider use.</li>
 </ul>
 
@@ -372,6 +374,11 @@
     <tr><td><code>docs/operations/researcher-access.md</code></td><td>Admin runbook</td></tr>
     <tr><td><code>docs/troubleshooting.md</code></td><td>When something doesn't work</td></tr>
     <tr><td><code>docs/testing/</code></td><td>Test strategy, hardware matrix, real-device and dry-run reports</td></tr>
+    <tr><td><code>docs/README.md</code>, <code>docs/HANDOVER-MANIFEST.md</code></td><td>Documentation index; exactly what is handed over</td></tr>
+    <tr><td><code>docs/OWNER-HANDOVER-CHECKLIST.md</code></td><td>Owner actions outside Git</td></tr>
+    <tr><td><code>docs/requirements-traceability.md</code>, <code>docs/known-limitations.md</code></td><td>Scope (original, agreed, implemented, deferred); limitations</td></tr>
+    <tr><td><code>docs/dependencies.md</code></td><td>Dependencies, licences, advisories</td></tr>
+    <tr><td><code>SECURITY.md</code>, <code>CONTRIBUTING.md</code>, <code>CHANGELOG.md</code></td><td>Vulnerability reporting; contribution rules; changes</td></tr>
     <tr><td><code>TEAM.md</code>, <code>LICENSE</code>, <code>NOTICE</code></td><td>Team, licence, third-party components</td></tr>
   </tbody>
 </table>
@@ -385,7 +392,8 @@ supabase/              Backend: config.toml, migrations/, seed, tests, sql-tests
 scripts/               use-backend.mjs (switch the apps between local and cloud)
 docs/                  Documentation, guides (PDF + sources), security, testing
 design-system/tokens/  Brand design tokens (CSS)
-tools/audit-apk.ps1    Checks a release APK for leaked secrets or developer paths</pre></div>
+tools/audit-apk.ps1    Checks a release APK for leaked secrets or developer paths
+.github/               CI workflow (tests, builds, secret scan) and Dependabot</pre></div>
 
 <div class="credits">
   <div class="t">Made by the WearWise Project Team</div>

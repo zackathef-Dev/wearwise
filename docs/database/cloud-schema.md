@@ -1,5 +1,9 @@
 # Cloud schema (Supabase)
 
+> **History and design notes.** The current schema, access rules and tests are documented in
+> [`docs/database.md`](../database.md) (11 migrations; 277 SQL checks + 8 pgTAP). Where they
+> differ, `database.md` is right.
+
 _Milestone 6 state: auth slice (M2) + the recorded-session mirror (M6). The local
 encrypted SQLite store is always the source of truth; the cloud is an
 upload-only mirror._
@@ -302,7 +306,7 @@ Neither column is client-writable; the only client-writable column on `profiles`
 
 `20261016000009_security_review.sql`, from the 2026-10-13 review. Tests:
 `supabase/sql-tests/security_review.local.sql` (101 checks, including a real two-connection
-race through `dblink`); `run.sh` runs 261 checks in all.
+race through `dblink`); `run.sh` ran 261 checks in all at the time (277 after migrations 10 and 11).
 
 | # | Finding | Fix |
 |---|---|---|
