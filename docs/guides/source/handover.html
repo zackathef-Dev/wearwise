@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WearWise Handover Documentation</title>
+<link rel="stylesheet" href="guide.css">
+<style>
+  /* A reference document: parts flow on instead of each starting a page. */
+  .part { break-before: auto; break-after: avoid; break-inside: avoid; margin-top: 8mm; padding-top: 0; }
+</style>
+</head>
+<body data-doc="WearWise Handover Documentation">
+
+<!-- ======================= COVER ======================= -->
+<section class="cover">
+  <div class="band"></div>
+  <div class="inner">
+    <img class="logo" src="../../../apps/dashboard/src/assets/brand/logo.svg" alt="WearWise">
+    <div class="kicker">Handover documentation</div>
+    <h1>Handing over<br>WearWise</h1>
+    <div class="sub">What is being handed over, how WearWise works, how to run, release and change it, and what the new owner needs to do and decide.</div>
+  </div>
+  <div class="shots">
+    <img class="wide" src="../../images/architecture.png" alt="" style="width:150mm">
+  </div>
+  <div class="meta">
+    <div><b>Handover release v1.0.0</b> · app 0.1.0 · firmware 0.9.6<br>October 2026 · WearWise Project Team<br><span class="team">Zakiul Atheef · Hari Bethelli · Siri Bethelli · Thevindu Kodagoda Munasinghage</span></div>
+    <div style="text-align:right">Research prototype.<br>Not a medical device.</div>
+  </div>
+</section>
+
+<!-- ======================= CONTENTS ======================= -->
+<section class="toc">
+  <h2>Contents</h2>
+  <!--TOC-->
+</section>
+
+<!-- ======================= PART 1 ======================= -->
+<div class="part" data-part="Part 1">
+  <div class="label">Part 1</div>
+  <h2>The handover at a glance</h2>
+  <p>What is being handed over, its state, who built it, and the new owner's first steps.</p>
+</div>
+
+<h3 id="s-summary"><span class="num">1</span>Summary</h3>
+<p>WearWise is a <b>capstone research prototype</b> for collecting wearable sensor data with the participant in control. It has four parts:</p>
+<ul>
+  <li>an <b>ESP32 sensor patch</b> that measures heart rate, SpO₂, pulse wave, skin temperature, movement and ECG;</li>
+  <li>a <b>phone app</b> (Android and iOS) that pairs with the patch, records sessions into an encrypted database on the phone and backs them up;</li>
+  <li>a <b>Supabase backend</b>: accounts, the cloud copy of recordings, sharing, alerts and live view;</li>
+  <li>a <b>web dashboard</b> where researchers and clinicians see what participants chose to share, and which installs firmware on patches.</li>
+</ul>
+<div class="callout safety"><span class="h">Status</span><p>WearWise works end to end and has been tested on real hardware, but it is a <b>research prototype</b>. It is not a medical device, its measurements are not clinically validated, and fall detection reports a <i>possible fall</i> only. Its security practices are informed by relevant guidance; nothing about it is certified or independently tested.</p></div>
+<div class="cards">
+  <div class="card"><div class="t">Ready</div><p>Code, firmware, database, tests and documentation, published as one tagged release with a clean history.</p></div>
+  <div class="card"><div class="t">Verified</div><p>Two clean dry runs of the documented setup, all test suites, 13 hardware tests, and a hosted-schema comparison.</p></div>
+  <div class="card"><div class="t">Owner's turn</div><p>Accounts and secrets of your own, governance, and a few decisions before real participants (section 5).</p></div>
+</div>
+
+<h3 id="s-what"><span class="num">2</span>What is handed over</h3>
+<table class="kv">
+  <tbody>
+    <tr><td>Source code</td><td>One Git repository (currently the private GitHub repository <code>zackathef-Dev/wearwise</code>), branch <code>main</code>. The release is tagged <b><code>v1.0.0-handover</code></b>. It was published as a fresh history with no personal data, and contains no secrets.</td></tr>
+    <tr><td>Versions</td><td>Phone app 0.1.0 (Expo SDK 57, React Native 0.86) · web dashboard 0.1.0 (React 19, Vite) · patch firmware 0.9.6 (ESP-IDF 5.4) · database: 11 migrations (Postgres 17)</td></tr>
+    <tr><td>Firmware images</td><td>Bundled in the dashboard for Patch setup (<code>apps/dashboard/public/firmware/</code>), built from a clean checkout; <code>manifest.json</code> records the commit.</td></tr>
+    <tr><td>Hardware</td><td><b>Not handed over</b>: the prototype patches stay with the team. Everything needed to build patches is included: the bill of materials and wiring (<code>docs/hardware.md</code>, Setup Guide Part 5) and the firmware, which installs from the dashboard's Patch setup page. Testing used three prototypes on firmware 0.9.6: WearWise-6280 (all four sensor modules), -6F84 (MAX30102 only) and -6990 (no sensors).</td></tr>
+    <tr><td>Hosted backend</td><td>The original capstone Supabase project. It matches the migrations (section 3). Hand it over deliberately or retire it; the owner normally starts their own project (section 15).</td></tr>
+    <tr><td>Documentation</td><td>The README and the <code>docs/</code> folder, plus five PDFs: this document, the User Guide, the Setup Guide, Adding a Researcher or Clinician, and the Security Documentation (Appendix A).</td></tr>
+    <tr><td>Licence</td><td>PolyForm Noncommercial License 1.0.0, © 2026 WearWise Project Team (<code>LICENSE</code>, <code>NOTICE</code>): free to use, copy and change for noncommercial purposes; selling it or other commercial use needs the team's written permission.</td></tr>
+  </tbody>
+</table>
+<p class="small">Not included: the prototype patch hardware and the design and presentation material (mock-ups, Figma, slides, trade-show and video material), which stay with the team; and any secrets, which the owner creates (section 18).</p>
+
+<h3 id="s-verified"><span class="num">3</span>State and verification</h3>
+<table class="compact">
+  <thead><tr><th style="width:44%">Check (14 October 2026)</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>New-developer dry run: setup from the README alone, twice, on a clean machine state</td><td><span class="sev ok">Pass</span> every failure found in pass 1 was fixed in the docs or code; pass 2 ran clean</td></tr>
+    <tr><td>Database security suites on a real local Supabase stack</td><td><span class="sev ok">Pass</span> 277 plain-SQL checks + 8 pgTAP</td></tr>
+    <tr><td>Unit tests and type checks</td><td><span class="sev ok">Pass</span> app 283 tests · dashboard 110 · shared legal package 51</td></tr>
+    <tr><td>Two-account isolation through the public API</td><td><span class="sev ok">Pass</span> 7/7 locally; 19/19 on the hosted project (13 October)</td></tr>
+    <tr><td>Hardware tests H1–H13 (Samsung phone, three patches): pairing, encryption, reconnect, recording and sync, pinned-TLS Wi-Fi, sharing, live view, remote recording, fresh PIN pairing</td><td><span class="sev ok">Pass</span> 13/13</td></tr>
+    <tr><td>Hosted database compared with the migrations (read-only schema fingerprint)</td><td><span class="sev ok">Match</span> in everything that affects behaviour</td></tr>
+    <tr><td>Published git history audit (keys, tokens, personal data, paths)</td><td><span class="sev ok">Pass</span> none found</td></tr>
+    <tr><td>Dependency alerts (GitHub Dependabot)</td><td>8 of 13 fixed; the other 5 assessed: build tooling, not affected, or mitigated (<code>docs/security/dependency-advisories.md</code>)</td></tr>
+  </tbody>
+</table>
+<p class="small">Details: <code>docs/testing/handover-dry-run-2026-10-14.md</code>, <code>docs/testing/hardware-test-matrix.md</code>, <code>docs/testing/real-device-2026-10-13.md</code>, and the Security Documentation.</p>
+
+<h3 id="s-team"><span class="num">4</span>The team</h3>
+<table class="kv">
+  <tbody>
+    <tr><td>Zakiul Atheef</td><td>Project Lead, Scrum Master, Technical Lead, Security Engineering Lead and Integration Lead</td></tr>
+    <tr><td>Hari Bethelli</td><td>Cloud &amp; Data Engineer</td></tr>
+    <tr><td>Siri Bethelli</td><td>UI/UX &amp; Data Visualisation Engineer</td></tr>
+    <tr><td>Thevindu Kodagoda Munasinghage</td><td>Security Engineer, Documentation Lead and QA &amp; Testing Lead</td></tr>
+  </tbody>
+</table>
+<p>WearWise was built in 2026 as a capstone project at La Trobe University (CSE3CAP). The same credits appear in the app (Profile → Legal &amp; privacy), the dashboard (Legal page and footer) and <code>TEAM.md</code>.</p>
+
+<h3 id="s-first"><span class="num">5</span>The new owner's first steps</h3>
+<ol class="steps">
+  <li><b>Take over the code.</b> Have the GitHub repository transferred to your organisation (or be added as an owner), clone it, and check out <code>v1.0.0-handover</code>.</li>
+  <li><b>Run it locally.</b> Follow the <b>Setup Guide</b> PDF or <code>README.md</code>: local Supabase, dashboard, app on an emulator. About two hours the first time.</li>
+  <li><b>Set up your own backend.</b> A Supabase project under your organisation's account, the migrations applied (never the demo seed), the project settings, and the first researcher account (section 15). Confirm it with the schema fingerprint.</li>
+  <li><b>Decide on the original project.</b> Have the team add you as Owner of the Supabase organisation that holds it, or retire it. Former members revoke their access and personal tokens.</li>
+  <li><b>Create your secrets.</b> Android release keystore, Apple signing, database password, SMTP credentials and access tokens, kept in your organisation's secret store. None are handed over (section 18).</li>
+  <li><b>Build or source patches.</b> An ESP32 board and the sensor modules in <code>docs/hardware.md</code>; install the firmware with Patch setup, which writes the PIN to print on each patch's label. Use <b>New PIN</b> whenever a patch changes hands.</li>
+  <li><b>Governance before participants.</b> Ethics approval, data region and retention, the organisation's details in <code>packages/legal/src/org.ts</code> (the legal documents show "draft" until then), and an independent security review.</li>
+  <li><b>Make the open decisions</b> below.</li>
+</ol>
+<h4>Decisions for the owner</h4>
+<table class="compact">
+  <thead><tr><th style="width:30%">Decision</th><th>Why it matters</th></tr></thead>
+  <tbody>
+    <tr><td>Lock patch hardware (Secure Boot, flash encryption)</td><td><span class="sev high">High</span> A patch's flash is unencrypted: brief USB access can copy its pairing keys and PIN. The fix is permanent per chip and needs a signed-update process. Decide before patches go to participants.</td></tr>
+    <tr><td>Two-factor sign-in for staff</td><td><span class="sev med">Medium</span> One leaked researcher password exposes every participant sharing with that person.</td></tr>
+    <tr><td>CAPTCHA or enrolment code at sign-up</td><td><span class="sev med">Medium</span> Open sign-up lets scripted accounts fill storage.</td></tr>
+    <tr><td>Hosted project settings</td><td><span class="sev med">Medium</span> Email confirmation, SMTP, Site URL and redirects, Realtime public access off.</td></tr>
+    <tr><td>Retention policy</td><td><span class="sev med">Medium</span> No automatic retention or purge exists; it must match the ethics approval.</td></tr>
+  </tbody>
+</table>
+<p class="small">The full risk register is in the Security Documentation, section 24.</p>
+
+<!-- ======================= PART 2 ======================= -->
+<div class="part" data-part="Part 2">
+  <div class="label">Part 2</div>
+  <h2>How WearWise works</h2>
+  <p>The system, the decisions behind it, and each component.</p>
+</div>
+
+<h3 id="s-overview"><span class="num">6</span>System overview</h3>
+<figure>
+  <img class="shot-web" style="width:72%; margin:0 auto" src="../../images/architecture.png" alt="WearWise system architecture">
+  <figcaption><b>WearWise architecture.</b> The patch talks only to the phone; the phone records offline and backs up to Supabase; the dashboard reads only what participants share.</figcaption>
+</figure>
+<p>A participant wears the patch. The phone app pairs with it over Bluetooth using the PIN on its label, shows live readings, and records sessions into an encrypted database on the phone. When online, it uploads finished sessions to Supabase. A participant can create a one-time <b>share code</b>; a researcher redeems it in the dashboard and can then read the shared signals, see alerts and falls, and, while the participant allows it, watch <b>live view</b>. Either side can end the sharing.</p>
+<table class="compact">
+  <thead><tr><th style="width:20%">Component</th><th style="width:30%">Path</th><th>Technology</th></tr></thead>
+  <tbody>
+    <tr><td>Patch firmware</td><td><code>firmware/wearwise-esp32/</code></td><td>ESP32, ESP-IDF 5.4, C</td></tr>
+    <tr><td>Phone app</td><td><code>apps/mobile/</code></td><td>React Native 0.86, Expo SDK 57, TypeScript, SQLCipher</td></tr>
+    <tr><td>Web dashboard</td><td><code>apps/dashboard/</code></td><td>React 19, Vite, TypeScript</td></tr>
+    <tr><td>Backend</td><td><code>supabase/</code></td><td>Supabase: Postgres 17, Auth, Storage, Realtime</td></tr>
+    <tr><td>Shared packages</td><td><code>packages/</code></td><td>sensor-protocol (the firmware contract), legal, password, design-tokens</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-decisions"><span class="num">7</span>Key design decisions</h3>
+<ol class="steps">
+  <li><b>Offline-first, the phone is the source of truth.</b> Recording never depends on the network. The cloud is an upload-only mirror plus a restore path for a new phone.</li>
+  <li><b>The patch has no backend knowledge.</b> It speaks only to the phone, so the backend can move without touching firmware.</li>
+  <li><b>One binary protocol with a shared fixture.</b> Firmware and app test against the same <code>packages/sensor-protocol/fixtures/v1.json</code>.</li>
+  <li><b>Capability discovery.</b> The firmware reports the sensors it found; nothing assumes a sensor is there.</li>
+  <li><b>Security in Postgres (Row Level Security), not in the apps.</b> The publishable key is public by design.</li>
+  <li><b>No custom server code.</b> RPCs, triggers and policies replace an API server; no Edge Functions and no server secrets of our own.</li>
+  <li><b>Configuration selects the environment</b> (local, the owner's cloud, self-hosted). Release builds are HTTPS-only.</li>
+</ol>
+
+<h3 id="s-app"><span class="num">8</span>Phone app</h3>
+<p>React Native 0.86 + Expo SDK 57, TypeScript, expo-router, zustand. Layers: <code>app/</code> (screens), <code>features/</code> (state per feature), <code>domain/</code> (pure logic: recording engine, sync engine, fall detector, vitals), <code>data/</code> (Bluetooth, Wi-Fi, SQLCipher store, Supabase) and <code>platform/</code> (secure storage, notifications). It runs as a development build (<code>npx expo run:android|ios</code>), never Expo Go. A simulated patch exercises everything without hardware.</p>
+<p><b>Local database:</b> op-sqlite with SQLCipher, key in the OS secure store; inline migrations v1–v9 in <code>src/data/local/sqlite-session-store.ts</code>. Sample chunks are stored exactly as received, with CRC. Changing the schema means adding a migration step (never editing an old one) and a test.</p>
+<p class="small">Read: <code>docs/mobile-app.md</code>, <code>docs/architecture/offline-first.md</code>.</p>
+
+<h3 id="s-fw"><span class="num">9</span>Firmware and sensors</h3>
+<p>ESP-IDF 5.4 C project in <code>firmware/wearwise-esp32/</code>. <code>SensorManager</code> scans I²C and verifies chip IDs; drivers implement one interface (<code>WearWiseSensor.h</code>). <code>gatt.c</code> is the Bluetooth service, <code>ble_pairing.c</code> the PIN and pairing rules, <code>ws_server.c</code> the optional Wi-Fi stream. The version is in <code>FirmwareConfig.h</code>. Patches are flashed without a toolchain from the dashboard's <b>Patch setup</b> page, which also writes the label PIN.</p>
+<table class="compact">
+  <thead><tr><th style="width:18%">Sensor</th><th style="width:40%">Signals</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>MAX30102</td><td>Heart rate (1 Hz), SpO₂ (1 Hz), pulse wave (100 Hz)</td><td>On-device heart-rate pipeline; SpO₂ uncalibrated</td></tr>
+    <tr><td>MAX30205</td><td>Skin temperature (2 Hz)</td><td></td></tr>
+    <tr><td>MMA8452Q</td><td>Movement magnitude (50 Hz)</td><td>The phone detects possible falls from it</td></tr>
+    <tr><td>AD8232</td><td>ECG (250 Hz)</td><td>Education only; battery power only with electrodes on a person</td></tr>
+  </tbody>
+</table>
+<figure>
+  <img class="shot-web narrow" src="../../images/pin-diagram.png" alt="WearWise pin diagram">
+  <figcaption><b>Wiring.</b> I²C SDA GPIO21 / SCL GPIO22; AD8232 GPIO34 / 32 / 33; MMA8452Q INT1 GPIO27 (reserved); SPI 18/19/23 reserved. All modules on 3.3 V.</figcaption>
+</figure>
+<p class="small">Read: <code>docs/firmware.md</code>, <code>docs/hardware.md</code>.</p>
+
+<h3 id="s-ble"><span class="num">10</span>Bluetooth protocol</h3>
+<p>One GATT service (<code>57570000-5757-4b57-8000-574541525753</code>) with INFO, CAPS, CONTROL, DATA, WIFI and TLS characteristics, all requiring an encrypted, PIN-authenticated link (LE Secure Connections). Data packets are a 58-byte header plus int16 samples plus a CRC-32, at most 462 bytes. Wire codes 1–6 never change meaning. Optional Wi-Fi streaming uses TLS with the patch's certificate pinned over the authenticated Bluetooth link.</p>
+<p class="small">Read: <code>docs/ble-protocol.md</code>.</p>
+
+<h3 id="s-backend"><span class="num">11</span>Backend, accounts and security</h3>
+<ul>
+  <li><b>Supabase:</b> Postgres 17 with Row Level Security, Auth (email and password), a private Storage bucket <code>recordings</code>, and Realtime (postgres changes for alerts and falls; private broadcast for live view). Nine tables, about 15 RPCs and a sign-up trigger, all created by <code>supabase/migrations/</code>. <code>supabase/seed.sql</code> adds synthetic demo data <b>locally only</b>.</li>
+  <li><b>Accounts:</b> 10-character minimum password on the server. Sign-up must declare consent, 18+ and a known terms version, or the server refuses it. Email links return through <code>wearwise://auth/*</code> (PKCE). Researchers and clinicians are created by an administrator; nobody changes their own role.</li>
+  <li><b>Access rules:</b> every table has RLS and least-privilege grants; anonymous users can do nothing; participants own their rows; viewers read only what a live grant covers; writes need an active, 18+-confirmed account. Verified by 277 SQL checks plus pgTAP and an API-level two-user test.</li>
+</ul>
+<p class="small">Read: <code>docs/database.md</code>, <code>docs/security.md</code>, and the Security Documentation PDF.</p>
+
+<!-- ======================= PART 3 ======================= -->
+<div class="part" data-part="Part 3">
+  <div class="label">Part 3</div>
+  <h2>Running and releasing</h2>
+  <p>Local development, cloud deployment, administration, and release builds.</p>
+</div>
+
+<h3 id="s-local"><span class="num">12</span>Local development</h3>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal (repository root)</span></div><pre><span class="c">$ npm install</span>
+<span class="c">$ supabase start</span>                 <span class="d"># Docker running; applies migrations and demo data</span>
+<span class="c">$ npm run backend:local</span>          <span class="d"># point both apps at the local backend</span>
+<span class="c">$ npm run dev -w dashboard</span>       <span class="d"># http://localhost:5192</span>
+<span class="c">$ cd apps/mobile &amp;&amp; npx expo run:android</span></pre></div>
+<p>Day to day: <code>supabase db reset</code> rebuilds the database; <code>npm run backend:status</code> shows which backend each app uses; <code>npx expo start -c</code> restarts the bundler after a configuration change. Demo accounts (local only, password <code>wearwise-demo-only</code>): <code>demo.participant@example.invalid</code>, <code>demo.other@example.invalid</code>, <code>demo.researcher@example.invalid</code>.</p>
+<p class="small">Step by step for people new to development: the <b>Setup Guide</b> PDF.</p>
+
+<h3 id="s-tests"><span class="num">13</span>Tests</h3>
+<table class="compact">
+  <thead><tr><th style="width:42%">What</th><th>Command (repository root)</th></tr></thead>
+  <tbody>
+    <tr><td>Phone app: types and unit tests</td><td><code>npm run typecheck -w mobile</code> · <code>npm test -w mobile</code></td></tr>
+    <tr><td>Dashboard and legal package</td><td><code>npm run typecheck -w dashboard</code> · <code>npm test -w dashboard</code></td></tr>
+    <tr><td>Database security (resets the local database)</td><td><code>bash supabase/sql-tests/run-on-local-stack.sh</code></td></tr>
+    <tr><td>Database: pgTAP only</td><td><code>supabase test db</code></td></tr>
+    <tr><td>Hosted database matches the migrations</td><td><code>supabase/admin/schema-fingerprint.sql</code> (read-only)</td></tr>
+    <tr><td>Hardware</td><td><code>docs/testing/hardware-test-matrix.md</code></td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-admin"><span class="num">14</span>Administration</h3>
+<p>Day-to-day account tasks need no coding: they are SQL scripts in <code>supabase/admin/</code>, run in the Supabase SQL Editor.</p>
+<table class="compact">
+  <thead><tr><th style="width:30%">Task</th><th>Script</th></tr></thead>
+  <tbody>
+    <tr><td>Add a researcher or clinician</td><td><code>create-viewer.sql</code> (one-time password, sent privately). Illustrated in the <b>Adding a Researcher or Clinician</b> PDF</td></tr>
+    <tr><td>Promote an existing account</td><td><code>set-role.sql</code></td></tr>
+    <tr><td>Locked out</td><td><code>reset-password.sql</code></td></tr>
+    <tr><td>Suspend or reactivate</td><td><code>set-status.sql</code></td></tr>
+    <tr><td>Who has access</td><td><code>overview.sql</code> (read-only)</td></tr>
+    <tr><td>Delete an account and its data</td><td><code>node supabase/scripts/admin.mjs delete-account</code></td></tr>
+  </tbody>
+</table>
+<p class="small">Runbook: <code>docs/operations/researcher-access.md</code>.</p>
+
+<h3 id="s-cloud"><span class="num">15</span>Cloud deployment</h3>
+<ol class="steps">
+  <li>Create a project under the organisation's Supabase account (or use a self-hosted Supabase over HTTPS).</li>
+  <li><code>supabase login</code>, <code>supabase link --project-ref &lt;ref&gt;</code>, <code>supabase db push</code>. Never push the demo seed; never run <code>supabase config push</code> with the local configuration.</li>
+  <li>Settings: email confirmation on, own SMTP, Site URL and redirect URLs for the hosted dashboard, Realtime "Allow public access" off.</li>
+  <li>Create the first researcher with <code>create-viewer.sql</code>.</li>
+  <li>Put the project URL and publishable key in <code>apps/mobile/.env</code>, <code>.env.production</code> and <code>apps/dashboard/.env</code>; <code>npm run backend:cloud</code>.</li>
+  <li>Host the dashboard: <code>npm run deploy-config -w dashboard</code> (security headers for your backend), <code>npm run build -w dashboard</code>, and serve <code>apps/dashboard/dist/</code> on HTTPS with single-page fallback.</li>
+</ol>
+<p class="small">Read: <code>docs/deployment.md</code>. The original capstone project's database differs from the migrations only by one comment; to keep it instead, see "Taking over the original capstone project" there.</p>
+
+<h3 id="s-release"><span class="num">16</span>Release builds</h3>
+<table class="kv compact">
+  <tbody>
+    <tr><td>Android</td><td>JDK 17, Android SDK 36. <code>.env.production</code> with an https backend, your own keystore (<code>node scripts/create-release-signing.cjs</code> in <code>apps/mobile</code>, then back it up), <code>npx expo prebuild --platform android</code>, then <code>NODE_ENV=production ./gradlew assembleRelease</code> (or <code>bundleRelease</code>). The build refuses a non-HTTPS backend or a missing key. Check the APK with <code>tools/audit-apk.ps1</code>.</td></tr>
+    <tr><td>iOS</td><td>macOS, Xcode, CocoaPods. <code>node scripts/check-release-config.cjs</code>, <code>npx expo prebuild --platform ios</code>, open <code>ios/WearWise.xcworkspace</code>, choose your team (change the bundle identifier if taken), Archive.</td></tr>
+    <tr><td>Firmware</td><td>Bump <code>WW_FW_VERSION</code>, build from a clean checkout (<code>idf.py build</code>), then <code>npm run firmware:export -w dashboard</code>; the manifest records the commit.</td></tr>
+    <tr><td>Versions</td><td>App <code>version</code>/<code>versionCode</code> in <code>app.config.ts</code>; dashboard in its <code>package.json</code>.</td></tr>
+  </tbody>
+</table>
+
+<!-- ======================= PART 4 ======================= -->
+<div class="part" data-part="Part 4">
+  <div class="label">Part 4</div>
+  <h2>Changing WearWise</h2>
+  <p>Common changes, step by step, and how to keep the system healthy.</p>
+</div>
+
+<h3 id="s-sensor"><span class="num">17</span>Adding a sensor or a database field</h3>
+<h4>A new sensor</h4>
+<ol class="steps">
+  <li><b>Firmware:</b> a driver implementing <code>WearWiseSensor.h</code>, registered in <code>SensorManager.c</code> behind a <code>WW_ENABLE_*</code> flag.</li>
+  <li><b>New kind of measurement only:</b> the next free wire code (7 or 8) with scale and unit in both <code>communication/protocol.{c,h}</code> and <code>packages/sensor-protocol/src/types.ts</code>; regenerate fixtures (<code>npm run fixtures -w @wearwise/sensor-protocol</code>).</li>
+  <li><b>App and dashboard:</b> labels, units, ranges (<code>apps/mobile/src/domain/vitals/</code>), charts.</li>
+  <li><b>Backend:</b> widen the sensor-code checks in a <b>new migration</b>.</li>
+  <li><b>Tests:</b> firmware boot self-test, app tests, SQL suites, and a hardware-matrix row.</li>
+</ol>
+<h4>A new database field or table</h4>
+<ol class="steps">
+  <li><code>supabase migration new &lt;name&gt;</code>. A new table needs RLS, explicit grants to <code>authenticated</code>, policies for each operation, and indexes on foreign keys.</li>
+  <li><code>supabase db reset</code>; add checks to a <code>supabase/sql-tests/*.local.sql</code> suite; run the suites.</li>
+  <li>Update the app's sync gateway and types, and the dashboard's queries (<code>apps/dashboard/src/data/</code>).</li>
+  <li>Document it in <code>docs/database.md</code>; on the hosted project, <code>supabase db push</code>. Never edit an applied migration: add a new one.</li>
+</ol>
+
+<h3 id="s-maint"><span class="num">18</span>Maintenance and responsibilities</h3>
+<table class="compact">
+  <thead><tr><th style="width:22%">How often</th><th>Do</th></tr></thead>
+  <tbody>
+    <tr><td>Every change</td><td>Unit tests (app, dashboard); database suites if SQL changed</td></tr>
+    <tr><td>Every release</td><td>Bump versions; run the hardware-matrix rows touched; export the firmware if it changed</td></tr>
+    <tr><td>Every few months</td><td>Update the Expo SDK (this also clears the remaining dependency alerts), React Native, Supabase CLI and images, ESP-IDF; rerun everything, including the handover dry run</td></tr>
+    <tr><td>When the terms change</td><td>New <code>ACCEPTANCE_VERSION</code> in <code>packages/legal</code> plus a migration adding it to <code>private.terms_versions</code>, applied before the apps ship</td></tr>
+    <tr><td>When people leave</td><td>Suspend or delete their accounts; rotate any credential they held</td></tr>
+  </tbody>
+</table>
+<h4>Secrets the owner creates and keeps</h4>
+<p>The Supabase project and database password, service keys, personal access tokens, SMTP credentials, the Android release keystore and Apple signing. <b>None are in the repository</b>, and none should ever be. The project URL and publishable key ship inside the apps and are public by design; Row Level Security protects the data.</p>
+<p class="small">Troubleshooting for every part: <code>docs/troubleshooting.md</code> and the Setup Guide, section 27.</p>
+
+<!-- ======================= PART 5 ======================= -->
+<div class="part" data-part="Part 5">
+  <div class="label">Part 5</div>
+  <h2>Limitations and next steps</h2>
+  <p>What WearWise can't do yet, and where to take it.</p>
+</div>
+
+<h3 id="s-limits"><span class="num">19</span>Known limitations</h3>
+<ul>
+  <li><b>Measurements:</b> research prototype, not clinically validated. SpO₂ is uncalibrated (a board read about 80 % at rest). Heart rate can read about double before settling, or on a weak module.</li>
+  <li><b>Falls:</b> possible-fall detection is a threshold heuristic; nothing outside WearWise is alerted.</li>
+  <li><b>Testing coverage:</b> emulators have no Bluetooth; iOS has had less real-device testing than Android, including the pinned Wi-Fi stream.</li>
+  <li><b>Patches:</b> one phone connected at a time; a patch remembers two devices; the label PIN is fixed until changed with <i>New PIN</i>; firmware updates are USB-only; flash is unencrypted.</li>
+  <li><b>Accounts and data:</b> no two-factor sign-in for staff; no in-app retention or purge; no audit log of researcher reads.</li>
+  <li><b>Paperwork:</b> the legal documents are drafts until the organisation's details are filled in.</li>
+  <li><b>Dependencies:</b> five advisories remain, all in build or test tooling or mitigated; they clear with an Expo SDK upgrade.</li>
+  <li><b>Cosmetic:</b> Home's "Backed up x/y" counts a recording in progress as backed up until it stops.</li>
+</ul>
+
+<h3 id="s-future"><span class="num">20</span>Future improvements</h3>
+<ul class="checklist">
+  <li>Calibrate SpO₂ against a reference pulse oximeter; validate heart rate against a reference (the AD8232 on the same board is a good start: <code>docs/HRValidation.md</code>).</li>
+  <li>Hold back heart rate until the estimate has settled.</li>
+  <li>Emergency-contact notification for falls, and interrupt-driven motion (MMA8452Q INT1 on GPIO27).</li>
+  <li>More sensors through the driver interface; an SPI sensor on the reserved pins.</li>
+  <li>Two-factor sign-in for staff; a column-limited view for viewers; read audit logging.</li>
+  <li>Retention controls and data export for participants.</li>
+  <li>Patch hardening (Secure Boot, flash encryption) with signed over-the-air firmware updates.</li>
+  <li>Continuous integration running the app, dashboard and database suites on every change, with secret scanning.</li>
+  <li>An independent security review before any wider use.</li>
+</ul>
+
+<!-- ======================= APPENDICES ======================= -->
+<h3 id="s-docs"><span class="num">A</span>Documentation map</h3>
+<table class="compact">
+  <thead><tr><th style="width:44%">Document</th><th>For</th></tr></thead>
+  <tbody>
+    <tr><td><b>PDF</b> WearWise Handover Documentation (this document)</td><td>The handover at a glance</td></tr>
+    <tr><td><b>PDF</b> <code>docs/guides/WearWise-User-Guide.pdf</code></td><td>Every screen of the app and the dashboard</td></tr>
+    <tr><td><b>PDF</b> <code>docs/guides/WearWise-Setup-Guide.pdf</code></td><td>Setting WearWise up, for people new to development</td></tr>
+    <tr><td><b>PDF</b> <code>docs/guides/WearWise-Adding-a-Researcher.pdf</code></td><td>Administrators: researcher and clinician accounts</td></tr>
+    <tr><td><b>PDF</b> <code>docs/security/WearWise-Security-Documentation.pdf</code></td><td>Controls, threat model, risks, owner responsibilities</td></tr>
+    <tr><td><code>README.md</code></td><td>Technical quick start and runbook</td></tr>
+    <tr><td><code>docs/knowledge-transfer.md</code></td><td>The handover guide in text form</td></tr>
+    <tr><td><code>docs/architecture.md</code>, <code>docs/mobile-app.md</code></td><td>System design; app internals</td></tr>
+    <tr><td><code>docs/firmware.md</code>, <code>docs/hardware.md</code>, <code>docs/ble-protocol.md</code></td><td>The patch</td></tr>
+    <tr><td><code>docs/database.md</code>, <code>docs/deployment.md</code></td><td>Schema, RLS and tests; cloud, self-hosted and release builds</td></tr>
+    <tr><td><code>docs/security.md</code>, <code>docs/security/</code></td><td>Security notes, audits, dependency assessment</td></tr>
+    <tr><td><code>docs/operations/researcher-access.md</code></td><td>Admin runbook</td></tr>
+    <tr><td><code>docs/troubleshooting.md</code></td><td>When something doesn't work</td></tr>
+    <tr><td><code>docs/testing/</code></td><td>Test strategy, hardware matrix, real-device and dry-run reports</td></tr>
+    <tr><td><code>TEAM.md</code>, <code>LICENSE</code>, <code>NOTICE</code></td><td>Team, licence, third-party components</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-repo"><span class="num">B</span>Repository layout</h3>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Repository</span></div><pre>apps/mobile/           Phone app: React Native + Expo SDK 57 (Android, iOS)
+apps/dashboard/        Web dashboard: React + Vite (also Patch setup over USB)
+packages/              Shared TypeScript: sensor-protocol, legal, password, design-tokens
+firmware/              ESP32 firmware (ESP-IDF 5.4): wearwise-esp32/
+supabase/              Backend: config.toml, migrations/, seed, tests, sql-tests, admin, scripts
+scripts/               use-backend.mjs (switch the apps between local and cloud)
+docs/                  Documentation, guides (PDF + sources), security, testing
+design-system/tokens/  Brand design tokens (CSS)
+tools/audit-apk.ps1    Checks a release APK for leaked secrets or developer paths</pre></div>
+
+<div class="credits">
+  <div class="t">Made by the WearWise Project Team</div>
+  <table class="kv compact"><tbody>
+    <tr><td>Zakiul Atheef</td><td>Project Lead, Scrum Master, Technical Lead, Security Engineering Lead and Integration Lead</td></tr>
+    <tr><td>Hari Bethelli</td><td>Cloud &amp; Data Engineer</td></tr>
+    <tr><td>Siri Bethelli</td><td>UI/UX &amp; Data Visualisation Engineer</td></tr>
+    <tr><td>Thevindu Kodagoda Munasinghage</td><td>Security Engineer, Documentation Lead and QA &amp; Testing Lead</td></tr>
+  </tbody></table>
+  <p class="small">© 2026 WearWise Project Team · Capstone project, La Trobe University (CSE3CAP). Licensed under the PolyForm Noncommercial License 1.0.0: free to use, copy and change for noncommercial purposes, not for sale. See <code>LICENSE</code>, <code>NOTICE</code> and <code>TEAM.md</code> in the repository.</p>
+  <p class="small credits-end">WearWise Handover Documentation · handover release v1.0.0, October 2026. WearWise is a research prototype and not a medical device. Its security practices are informed by relevant guidance; nothing about WearWise is certified or independently tested.</p>
+</div>
+
+</body>
+</html>

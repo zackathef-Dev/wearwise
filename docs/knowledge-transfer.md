@@ -3,6 +3,8 @@
 The practical handover guide for the project owner and future developers. It explains how
 WearWise works and why, how to run and change it, and what to watch out for. Each section
 points to the detailed document. The root [README](../README.md) has the step-by-step setup.
+The same handover, with what is handed over, its verification and the owner's first steps, is
+also a PDF: [`guides/WearWise-Handover-Documentation.pdf`](guides/WearWise-Handover-Documentation.pdf).
 
 **Status at handover (October 2026):** firmware 0.9.6, mobile app 0.1.0 (Expo SDK 57), web
 dashboard 0.1.0, 11 database migrations. WearWise is a **capstone research prototype**: not
@@ -224,8 +226,7 @@ Read: [security.md](security.md).
   Android, including the pinned Wi-Fi stream.
 - One phone connected to a patch at a time; a patch remembers two devices. The label PIN is
   fixed until changed with *New PIN*.
-- Firmware updates are USB-only (Patch setup or `idf.py`). The bundled 0.9.6 build has no
-  recorded commit.
+- Firmware updates are USB-only (Patch setup or `idf.py`).
 - No MFA for dashboard accounts; no in-app retention or purge; no audit log of researcher reads.
 - Local development: email confirmation off; the local stack is reachable from your network.
 - The legal documents are drafts until the organisation's details are filled in.

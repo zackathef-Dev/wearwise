@@ -1,6 +1,6 @@
 # Sources of the PDF guides
 
-The four PDFs are built from the HTML in this folder:
+The five PDFs are built from the HTML in this folder:
 
 | Source | PDF |
 |---|---|
@@ -8,6 +8,7 @@ The four PDFs are built from the HTML in this folder:
 | `setup-guide.html` | `docs/guides/WearWise-Setup-Guide.pdf` |
 | `admin-guide.html` | `docs/guides/WearWise-Adding-a-Researcher.pdf` |
 | `security-doc.html` | `docs/security/WearWise-Security-Documentation.pdf` (author: Zakiul Atheef) |
+| `handover.html` | `docs/guides/WearWise-Handover-Documentation.pdf` |
 
 `guide.css` is the shared style (white A4 pages, Poppins from
 `apps/dashboard/src/assets/fonts/`). Screenshots are in `img/`; the logo and the
@@ -25,6 +26,7 @@ python3 build.py user-guide.html ../WearWise-User-Guide.pdf
 python3 build.py setup-guide.html ../WearWise-Setup-Guide.pdf
 python3 build.py admin-guide.html ../WearWise-Adding-a-Researcher.pdf
 python3 build.py security-doc.html ../../security/WearWise-Security-Documentation.pdf
+python3 build.py handover.html ../WearWise-Handover-Documentation.pdf
 ```
 
 `build.py` prints Chrome to PDF twice: the first pass finds the page of every
