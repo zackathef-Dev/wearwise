@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ACCEPTANCE_VERSION, DOCS, acceptedDocs, docBySlug } from '../index';
+import { ACCEPTANCE_VERSION, DOCS, TEAM, acceptedDocs, copyrightLine, docBySlug } from '../index';
 import { ORG, fill, orgMissing, type OrgDetails } from '../org';
 import type { Block, LegalDoc, LegalSlug } from '../types';
 
@@ -143,5 +143,20 @@ describe('fill / orgMissing', () => {
 
   it('fill() leaves unknown tokens untouched', () => {
     expect(fill('{{notAField}}', fullOrg())).toBe('{{notAField}}');
+  });
+});
+
+describe('team credits', () => {
+  it('names the four members of the WearWise Project Team, each with a role', () => {
+    expect(TEAM.name).toBe('WearWise Project Team');
+    expect(TEAM.members.map((m) => m.name)).toEqual([
+      'Zakiul Atheef', 'Hari Bethelli', 'Siri Bethelli', 'Thevindu Kodagoda Munasinghage',
+    ]);
+    for (const m of TEAM.members) expect(m.role.trim().length).toBeGreaterThan(0);
+  });
+
+  it('matches the licence in LICENSE and gives a copyright line', () => {
+    expect(TEAM.licence).toBe('PolyForm Noncommercial 1.0.0');
+    expect(copyrightLine()).toBe(`© ${TEAM.year} WearWise Project Team`);
   });
 });

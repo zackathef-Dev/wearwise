@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
-import { Link, useParams } from 'react-router';
-import { DOCS, docBySlug, fill, orgMissing, type LegalDoc } from '@wearwise/legal';
+import { useEffect, type ReactNode } from 'react';
+import { Link, useLocation, useParams } from 'react-router';
+import { DOCS, TEAM, copyrightLine, docBySlug, fill, orgMissing, type LegalDoc } from '@wearwise/legal';
 import { Logo } from '../components/AppShell';
 import { Alert } from '../components/ui';
 
@@ -34,6 +34,9 @@ function Draft() {
 }
 
 export function LegalIndexPage() {
+  const { hash } = useLocation();
+  /* The footer credit links to /legal#team; the router doesn't scroll to hashes itself. */
+  useEffect(() => { if (hash) document.getElementById(hash.slice(1))?.scrollIntoView(); }, [hash]);
   return (
     <LegalFrame>
       <h1>Legal &amp; privacy</h1>
@@ -46,6 +49,20 @@ export function LegalIndexPage() {
           </li>
         ))}
       </ul>
+      <section id="team" className="legal-team" aria-labelledby="team-title">
+        <h2 id="team-title">Made by the {TEAM.name}</h2>
+        <ul className="legal-index">
+          {TEAM.members.map((m) => (
+            <li key={m.name}>
+              <strong>{m.name}</strong>
+              <span className="small muted">{m.role}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="small muted">
+          {copyrightLine()} · {TEAM.project}. {TEAM.licenceSummary} Licence: {TEAM.licence}.
+        </p>
+      </section>
     </LegalFrame>
   );
 }
@@ -96,6 +113,7 @@ export function LegalFooter() {
       <Link to="/legal/health-safety">Health &amp; safety</Link>
       <Link to="/legal/accessibility">Accessibility</Link>
       <Link to="/legal">All documents</Link>
+      <Link to="/legal#team" className="muted">{copyrightLine()}</Link>
     </nav>
   );
 }

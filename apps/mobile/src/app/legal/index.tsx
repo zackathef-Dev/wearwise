@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { DOCS, fill } from '@wearwise/legal';
+import { DOCS, TEAM, copyrightLine, fill } from '@wearwise/legal';
 import { useTheme } from '@/shared/theme/ThemeProvider';
 import { Typo } from '@/shared/components/Typography';
 import { Card } from '@/shared/components/Card';
@@ -10,7 +10,8 @@ import { Icon } from '@/shared/icons/Icon';
 import { IconButton } from '@/shared/components/kit';
 
 /* LEGAL & PRIVACY — every document, readable signed in or not (sign-up links here).
-   The researcher terms are listed too: participants can see what researchers agree to. */
+   The researcher terms are listed too: participants can see what researchers agree to.
+   Below them, who made WearWise and its licence (TEAM in @wearwise/legal). */
 const ICONS: Record<string, string> = {
   terms: 'book-open', privacy: 'shield-check', 'collection-notice': 'info', 'health-safety': 'heart',
   research: 'microscope', 'researcher-terms': 'user', accessibility: 'contrast',
@@ -38,6 +39,19 @@ export default function Legal() {
             </Card>
           </Pressable>
         ))}
+
+        <Card style={{ gap: 12, marginTop: 8 }}>
+          <Typo variant="label" accessibilityRole="header">Made by the {TEAM.name}</Typo>
+          {TEAM.members.map((m) => (
+            <View key={m.name} style={{ gap: 2 }}>
+              <Typo variant="bodySm">{m.name}</Typo>
+              <Typo variant="caption" color={colors.textMuted}>{m.role}</Typo>
+            </View>
+          ))}
+          <Typo variant="caption" color={colors.textMuted}>
+            {copyrightLine()} · {TEAM.project}. {TEAM.licenceSummary} Licence: {TEAM.licence}.
+          </Typo>
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );

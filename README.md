@@ -330,10 +330,16 @@ interrupt-driven motion (GPIO27), more sensors through the driver interface
 retention controls, over-the-air firmware updates, and an independent security review. See
 [docs/knowledge-transfer.md](docs/knowledge-transfer.md#t-future-improvements).
 
-## Licence and team
+## Team and licence
 
-WearWise is made by the **WearWise Project Team**: Zakiul Atheef, Hari Bethelli, Siri Bethelli
-and Thevindu Kodagoda Munasinghage.
+WearWise is made by the **WearWise Project Team** ([TEAM.md](TEAM.md)):
+
+| Member | Role |
+|---|---|
+| Zakiul Atheef | Project Lead, Scrum Master, Technical Lead, Security Engineering Lead and Integration Lead |
+| Hari Bethelli | Cloud & Data Engineer |
+| Siri Bethelli | UI/UX & Data Visualisation Engineer |
+| Thevindu Kodagoda Munasinghage | Security Engineer, Documentation Lead and QA & Testing Lead |
 
 It is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE): anyone may use, copy,
 change and share it for any **noncommercial** purpose, including study, research, teaching and

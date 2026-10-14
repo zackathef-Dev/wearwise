@@ -9,6 +9,7 @@ import type { LegalDoc, LegalSlug } from './types';
 
 export type { Block, LegalDoc, LegalSection, LegalSlug } from './types';
 export { ORG, fill, orgMissing, type OrgDetails } from './org';
+export { TEAM, copyrightLine, type Team, type TeamMember } from './team';
 
 /* What someone agrees to when they create an account (or, after a change, the next
    time they sign in): the terms, the privacy policy, the collection notice and the
