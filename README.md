@@ -2,8 +2,8 @@
 
 Wearable data, shown plainly. **Your Data, Your Decisions.**
 
-WearWise is a **capstone research prototype** (La Trobe University, CSE3CAP). It has three
-parts:
+WearWise is a **capstone research prototype** from the La Trobe University CSE3CAP Capstone
+Project. It has three parts:
 
 - an ESP32 **sensor patch** that measures heart rate, SpO₂, pulse wave, skin temperature,
   movement and ECG;
@@ -23,6 +23,24 @@ streaming live data. Nothing in it depends on the original developer's accounts 
 New to development? The illustrated PDF guides in [`docs/guides/`](docs/guides/) cover the same
 setup step by step ([Setup Guide](docs/guides/WearWise-Setup-Guide.pdf)) and every screen of the
 app and dashboard ([User Guide](docs/guides/WearWise-User-Guide.pdf)).
+
+---
+
+## Project Context
+
+WearWise was developed as part of the La Trobe University CSE3CAP Capstone Project.
+
+**Project Owner:** Shanmuga Sundar Dhanabalan  
+**Position:** Deputy Director, CTI  
+**Institution:** La Trobe University
+
+The project focuses on the design and development of a user-friendly mobile platform for
+wearable devices, including secure wearable connectivity, real-time sensor visualisation,
+historical data management, and scalable support for future wearable technologies.
+
+The project owner provided the project brief and stakeholder direction. WearWise was designed
+and implemented by the WearWise Project Team, the student development team (see
+[Team and licence](#team-and-licence)).
 
 ---
 
@@ -332,7 +350,8 @@ retention controls, over-the-air firmware updates, and an independent security r
 
 ## Team and licence
 
-WearWise is made by the **WearWise Project Team** ([TEAM.md](TEAM.md)):
+WearWise was designed and implemented by the **WearWise Project Team**, the student development
+team ([TEAM.md](TEAM.md)):
 
 | Member | Role |
 |---|---|
@@ -347,6 +366,12 @@ use by educational, research, health, charitable and government organisations. S
 any other commercial use, needs written permission from the team. Copies must include
 [LICENSE](LICENSE) with its "Required Notice" line. Third-party components keep their own
 licences: see [NOTICE](NOTICE).
+
+## Acknowledgements
+
+We acknowledge the project owner, Shanmuga Sundar Dhanabalan (Deputy Director, CTI), and
+La Trobe University for providing the project brief, stakeholder direction, and feedback
+throughout the capstone project.
 
 ## Documentation map
 

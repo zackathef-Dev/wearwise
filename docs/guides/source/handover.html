@@ -87,7 +87,14 @@
 </table>
 <p class="small">Details: <code>docs/testing/handover-dry-run-2026-10-14.md</code>, <code>docs/testing/hardware-test-matrix.md</code>, <code>docs/testing/real-device-2026-10-13.md</code>, and the Security Documentation.</p>
 
-<h3 id="s-team"><span class="num">4</span>The team</h3>
+<h3 id="s-team"><span class="num">4</span>Project owner and team</h3>
+<p>WearWise was developed as part of the La Trobe University CSE3CAP Capstone Project.</p>
+<table class="kv">
+  <tbody>
+    <tr><td>Project Owner</td><td><b>Shanmuga Sundar Dhanabalan</b>, Deputy Director, CTI, La Trobe University: provided the project brief and stakeholder direction</td></tr>
+  </tbody>
+</table>
+<p>WearWise was designed and implemented by the <b>WearWise Project Team</b>, the student development team:</p>
 <table class="kv">
   <tbody>
     <tr><td>Zakiul Atheef</td><td>Project Lead, Scrum Master, Technical Lead, Security Engineering Lead and Integration Lead</td></tr>
@@ -96,7 +103,7 @@
     <tr><td>Thevindu Kodagoda Munasinghage</td><td>Security Engineer, Documentation Lead and QA &amp; Testing Lead</td></tr>
   </tbody>
 </table>
-<p>WearWise was built in 2026 as a capstone project at La Trobe University (CSE3CAP). The same credits appear in the app (Profile → Legal &amp; privacy), the dashboard (Legal page and footer) and <code>TEAM.md</code>.</p>
+<p>The team credits also appear in the app (Profile → Legal &amp; privacy), the dashboard (Legal page and footer) and <code>TEAM.md</code>. We acknowledge the project owner and La Trobe University for providing the project brief, stakeholder direction, and feedback throughout the capstone project.</p>
 
 <h3 id="s-first"><span class="num">5</span>The new owner's first steps</h3>
 <ol class="steps">
@@ -131,7 +138,7 @@
 
 <h3 id="s-overview"><span class="num">6</span>System overview</h3>
 <figure>
-  <img class="shot-web" style="width:72%; margin:0 auto" src="../../images/architecture.png" alt="WearWise system architecture">
+  <img class="shot-web" style="width:62%; margin:0 auto" src="../../images/architecture.png" alt="WearWise system architecture">
   <figcaption><b>WearWise architecture.</b> The patch talks only to the phone; the phone records offline and backs up to Supabase; the dashboard reads only what participants share.</figcaption>
 </figure>
 <p>A participant wears the patch. The phone app pairs with it over Bluetooth using the PIN on its label, shows live readings, and records sessions into an encrypted database on the phone. When online, it uploads finished sessions to Supabase. A participant can create a one-time <b>share code</b>; a researcher redeems it in the dashboard and can then read the shared signals, see alerts and falls, and, while the participant allows it, watch <b>live view</b>. Either side can end the sharing.</p>
@@ -369,7 +376,7 @@ tools/audit-apk.ps1    Checks a release APK for leaked secrets or developer path
     <tr><td>Siri Bethelli</td><td>UI/UX &amp; Data Visualisation Engineer</td></tr>
     <tr><td>Thevindu Kodagoda Munasinghage</td><td>Security Engineer, Documentation Lead and QA &amp; Testing Lead</td></tr>
   </tbody></table>
-  <p class="small">© 2026 WearWise Project Team · Capstone project, La Trobe University (CSE3CAP). Licensed under the PolyForm Noncommercial License 1.0.0: free to use, copy and change for noncommercial purposes, not for sale. See <code>LICENSE</code>, <code>NOTICE</code> and <code>TEAM.md</code> in the repository.</p>
+  <p class="small"><b>Project Owner:</b> Shanmuga Sundar Dhanabalan, Deputy Director, CTI, La Trobe University (project brief and stakeholder direction). <b>Development:</b> the WearWise Project Team, the student development team. © 2026 WearWise Project Team · La Trobe University CSE3CAP Capstone Project. Licensed under the PolyForm Noncommercial License 1.0.0: free to use, copy and change for noncommercial purposes, not for sale. See <code>LICENSE</code>, <code>NOTICE</code> and <code>TEAM.md</code> in the repository.</p>
   <p class="small credits-end">WearWise Handover Documentation · handover release v1.0.0, October 2026. WearWise is a research prototype and not a medical device. Its security practices are informed by relevant guidance; nothing about WearWise is certified or independently tested.</p>
 </div>
 

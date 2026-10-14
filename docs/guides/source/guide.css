@@ -214,8 +214,9 @@ table.compact td, table.compact th { padding: 1.5mm 2mm; }
 .doc-control td:first-child { width: 30%; color: var(--navy); }
 
 /* team credits (closing block of every document) */
-.credits { margin: 8mm 0 0; padding: 4mm 5mm 3mm; border: 1px solid var(--line); border-top: 1.2mm solid var(--teal); border-radius: 2.5mm; break-inside: avoid; }
-.credits .t { font-weight: 700; color: var(--navy); font-size: 11pt; margin-bottom: 1.5mm; }
+.credits { margin: 6mm 0 0; padding: 3.5mm 5mm 3mm; border: 1px solid var(--line); border-top: 1.2mm solid var(--teal); border-radius: 2.5mm; break-inside: avoid; }
+.credits .t { font-weight: 700; color: var(--navy); font-size: 11pt; margin-bottom: 1mm; }
+.credits table td { padding-top: 1.1mm; padding-bottom: 1.1mm; }
 .credits table { margin: 0 0 2.5mm; }
 .credits p { margin: 0; }
 .cover .meta .team { color: var(--ink-soft); }

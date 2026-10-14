@@ -22,7 +22,7 @@ export interface Team {
 export const TEAM: Team = {
   name: 'WearWise Project Team',
   year: 2026,
-  project: 'Capstone project, La Trobe University (CSE3CAP)',
+  project: 'La Trobe University CSE3CAP Capstone Project',
   licence: 'PolyForm Noncommercial 1.0.0',
   licenceSummary: 'Free to use, copy and change for noncommercial purposes. Not for sale.',
   members: [

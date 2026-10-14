@@ -11,7 +11,11 @@ dashboard 0.1.0, 11 database migrations. WearWise is a **capstone research proto
 a medical device, measurements not clinically validated, and fall detection reports a
 *possible fall* only.
 
-**Built by the WearWise Project Team** ([TEAM.md](../TEAM.md)): Zakiul Atheef (Project Lead,
+**Project context:** La Trobe University CSE3CAP Capstone Project. **Project Owner:** Shanmuga
+Sundar Dhanabalan, Deputy Director, CTI, La Trobe University, who provided the project brief and
+stakeholder direction.
+
+**Designed and implemented by the WearWise Project Team**, the student development team ([TEAM.md](../TEAM.md)): Zakiul Atheef (Project Lead,
 Scrum Master, Technical, Security Engineering and Integration Lead), Hari Bethelli (Cloud &
 Data Engineer), Siri Bethelli (UI/UX & Data Visualisation Engineer) and Thevindu Kodagoda
 Munasinghage (Security Engineer, Documentation Lead, QA & Testing Lead). Licensed under the
