@@ -1,5 +1,5 @@
 # ESP32 WearWise-6990 serial, 26 Aug 2026 — Wi-Fi join from NVS after BLE provisioning
-I (583) ww-main: WearWise fw 0.5.0  device 4c7562b6-f7f1-494a-96bc-c90da076f7f2  boot 0xf7a9b5ab  adv WearWise-6990
+I (583) ww-main: WearWise fw 0.5.0  device <redacted>  boot 0xf7a9b5ab  adv WearWise-6990
 I (663) ww-wifi: restoring saved network (7 chars ssid)      # SSID redacted for the handover; password never logged
 I (673) ww-wifi: provisioning network (ssid 7 chars)
 I (5883) ww-wifi: connected, ip=<redacted>

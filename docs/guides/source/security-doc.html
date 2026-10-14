@@ -365,6 +365,9 @@
     <tr><td>Hardware: pairing, encryption, reconnect, pinned-TLS Wi-Fi, sharing, live view (H1–H13, firmware 0.9.6, Samsung phone)</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> 13/13, including an authenticated, bonded 128-bit link and a fresh PIN pairing</td></tr>
     <tr><td>Malformed <code>wearwise://</code> links</td><td>13 Oct 2026</td><td><span class="sev ok">Pass</span> app stays up (Android emulator, iOS simulator)</td></tr>
     <tr><td>Handover scan of tracked files and history for credentials and personal data</td><td>13 Oct 2026</td><td><span class="sev ok">Pass</span> no credentials. Personal data redacted or excluded (fresh history)</td></tr>
+    <tr><td>Git history of the published repository (7 commits, 661 file versions): keys, tokens, private keys, personal data, local paths, sensitive files, Claude traces</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> none found. Patch MAC addresses (now redacted) remain in older commits</td></tr>
+    <tr><td>Dependency alerts (Dependabot, 13)</td><td>14 Oct 2026</td><td><span class="sev ok">8 fixed</span> 5 assessed, none reachable in the app unmitigated (section 26)</td></tr>
+    <tr><td>Bundled firmware rebuilt from the committed tree</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> manifest records commit <code>52e94d8</code>; code byte-identical to the previous bundle (only build timestamps and hashes differ)</td></tr>
     <tr><td>Release APK inspection (signing, permissions, FLAG_SECURE, bundle scan)</td><td>20 Sep 2026</td><td><span class="sev ok">Pass</span> for build 0.1.0. Repeat for every release with <code>tools/audit-apk.ps1</code></td></tr>
   </tbody>
 </table>
@@ -402,6 +405,7 @@
   <li><b>Repository:</b> published to a private remote as a fresh history. The development tool configuration that gave write access to production (<code>.mcp.json</code>, audit R1) is not part of the repository. The original project reference was replaced with configuration. Studio's saved queries are now gitignored.</li>
   <li><b>Test infrastructure:</b> plain-SQL suites moved to <code>supabase/sql-tests/</code>. A bare <code>supabase test db</code> could otherwise have run a stub granting full default privileges on a real stack (fixed during the dry run). Database checks went from 261 to 277, plus 8 pgTAP.</li>
   <li><b>Documentation:</b> the admin runbook now covers the SQL Editor's warnings and saved queries, and the guide <i>Adding a Researcher or Clinician</i> was added.</li>
+  <li><b>Public-release review (14 October):</b> patch MAC addresses and the device IDs derived from them were redacted from test evidence, screenshots and test fixtures; the stale September change list was removed; 8 of 13 dependency alerts were fixed; the bundled firmware was rebuilt from the committed tree so its manifest records the commit; and the published git history was audited (section 21).</li>
 </ul>
 
 <!-- ======================= PART 6 ======================= -->
@@ -425,7 +429,7 @@
     <tr><td>R-08</td><td>No audit log of researcher reads beyond Supabase's own logs</td><td><span class="sev low">Low</span></td><td>Retain Supabase logs per the protocol, or add read auditing for viewer RPCs.</td></tr>
     <tr><td>R-09</td><td>No CI, automated tests on change, or secret scanning</td><td><span class="sev low">Low</span></td><td>A gitleaks pre-commit hook and a CI job running the unit tests and database suites.</td></tr>
     <tr><td>R-10</td><td>Wi-Fi proof-of-possession is 4 bytes, per boot, shared by bonded phones</td><td><span class="sev low">Low</span></td><td>A longer, per-phone value in a future protocol version.</td></tr>
-    <tr><td>R-11</td><td>Dependency advisories (section 26)</td><td><span class="sev low">Low</span></td><td>Track. Upgrade the Expo SDK and retest on devices.</td></tr>
+    <tr><td>R-11</td><td>Five dependency advisories with no non-breaking fix (section 26)</td><td><span class="sev low">Low</span></td><td>Upgrade the Expo SDK and retest on devices; then dismiss or close the remaining alerts.</td></tr>
     <tr><td>R-12</td><td>No retention or purge policy in the app or backend</td><td><span class="sev med">Medium</span> (privacy)</td><td>Define retention with the ethics approval, and implement purge and consent-withdrawal handling.</td></tr>
     <tr><td>R-13</td><td>The original capstone Supabase project still exists with its own data and keys</td><td><span class="sev med">Medium</span></td><td>Retire it, or hand it over deliberately to the owner's organisation (<code>docs/deployment.md</code>).</td></tr>
     <tr><td>R-14</td><td>The iOS release build and pinned-WebSocket module have had less device testing</td><td><span class="sev low">Low</span></td><td>Test an iOS release build on devices before use.</td></tr>
@@ -447,20 +451,21 @@
 </ul>
 
 <h3 id="s-deps"><span class="num">26</span>Dependency advisories</h3>
-<p><code>npm audit</code> on 14 October 2026 lists <b>69 advisory entries</b> across the workspace (1 critical, 52 high, 16 moderate), or 47 when development-only packages are left out. The entries trace back to <b>eight underlying packages</b>, reached through the dependency paths below:</p>
+<p>GitHub Dependabot raised <b>13 alerts</b> on the repository (from <code>package-lock.json</code>). On 14 October 2026 <b>8 were fixed</b> by lockfile updates within the version ranges the dependents already allow (no forced upgrades), including the only critical one. After the fix <code>npm audit</code> reports 65 entries across the workspace (0 critical, 49 high, 16 moderate), or 44 without development-only packages. These are counted once per dependent path; they come from <b>five underlying packages</b>:</p>
 <table class="compact">
-  <thead><tr><th style="width:22%">Package</th><th style="width:12%">Severity</th><th>Reached through</th></tr></thead>
+  <thead><tr><th style="width:21%">Package</th><th style="width:11%">Severity</th><th style="width:15%">Status</th><th>Path and assessment</th></tr></thead>
   <tbody>
-    <tr><td><code>shell-quote</code></td><td><span class="sev high">Critical</span></td><td>React Native's developer tools (<code>react-devtools-core</code>), used while debugging</td></tr>
-    <tr><td><code>node-forge</code></td><td><span class="sev high">High</span></td><td>Expo CLI development tooling</td></tr>
-    <tr><td><code>compression</code></td><td><span class="sev high">High</span></td><td>The Metro / Expo development server</td></tr>
-    <tr><td><code>braces</code>, <code>brace-expansion</code></td><td><span class="sev high">High</span></td><td>File-matching in build and test tooling</td></tr>
-    <tr><td><code>sprintf-js</code></td><td><span class="sev med">Moderate</span></td><td>Build tooling</td></tr>
-    <tr><td><code>uuid</code></td><td><span class="sev med">Moderate</span></td><td>iOS project build tooling (<code>xcode</code>)</td></tr>
-    <tr><td><code>decode-uri-component</code></td><td><span class="sev med">Moderate</span></td><td>URL parsing in Expo Router: the only one in the app's run-time path. Mitigated by the incoming-link filter (audit M5)</td></tr>
+    <tr><td><code>shell-quote</code></td><td><span class="sev high">Critical</span></td><td><span class="sev ok">Fixed</span> 1.12.0</td><td>React Native developer tools</td></tr>
+    <tr><td><code>compression</code></td><td><span class="sev high">High</span></td><td><span class="sev ok">Fixed</span> 1.8.2</td><td>Expo CLI development server</td></tr>
+    <tr><td><code>brace-expansion</code> (6 alerts)</td><td><span class="sev high">High</span></td><td><span class="sev ok">Fixed</span> 1.1.21 / 5.0.12</td><td>File matching in build and lint tooling</td></tr>
+    <tr><td><code>braces</code></td><td><span class="sev high">High</span></td><td>No fix exists</td><td>File matching in Metro and Jest. Patterns come from the project, not users; not in the app or dashboard bundle</td></tr>
+    <tr><td><code>node-forge</code></td><td><span class="sev high">High</span></td><td>No fix exists</td><td>Expo CLI tooling (certificates, update signing). Expo Updates signing isn't used; not in the app bundle</td></tr>
+    <tr><td><code>sprintf-js</code></td><td><span class="sev med">Moderate</span></td><td>No fix exists</td><td>Test-coverage tooling, development only</td></tr>
+    <tr><td><code>uuid</code></td><td><span class="sev med">Moderate</span></td><td>Not affected</td><td>iOS prebuild tooling (<code>xcode</code>), which only calls <code>v4()</code>; the bug is in v3/v5/v6 with a buffer</td></tr>
+    <tr><td><code>decode-uri-component</code></td><td><span class="sev med">Moderate</span></td><td>Mitigated</td><td>Expo Router URL parsing, <b>in the app at run time</b>. Incoming links over 2,048 characters or with malformed percent-encoding are refused before Expo Router reads them; Android refuses any <code>%</code>. Fixed in Expo Router 58</td></tr>
   </tbody>
 </table>
-<p class="small">This classification follows the dependency paths and the earlier audit (R3). It was not re-assessed in depth for this document. Clearing the advisories needs an Expo SDK upgrade (<code>npx expo install --fix</code>) with a device retest. <code>npm audit fix --force</code> would downgrade Expo and break the app.</p>
+<p class="small">The full per-alert assessment is in <code>docs/security/dependency-advisories.md</code>. The remaining five clear with an Expo SDK upgrade and a device retest. <code>npm audit fix --force</code> would install much older Expo versions and break the app.</p>
 
 <!-- ======================= APPENDICES ======================= -->
 <h3 id="s-files" style="break-before: page; margin-top:0"><span class="num">A</span>Where the security controls live</h3>

@@ -30,7 +30,7 @@ layer, secrets, incident response, test evidence, risk register and owner respon
 | Sharing | One-time hashed share codes (24 h, ~49.5 bits, 10 failed tries per hour per viewer), revocable scoped grants, participant email never shown to viewers | migrations 5, 9 |
 | Live view | Private Realtime channels per grant, policy-checked; nothing stored | migrations 6, 10 |
 | Web dashboard | Strict Content-Security-Policy (one backend host), no framing, HSTS, `Permissions-Policy` | `apps/dashboard/scripts/deploy-headers.mjs` |
-| Supply chain | `ignore-scripts=true` (dependencies can't run install scripts); pinned esptool-js | `.npmrc` |
+| Supply chain | `ignore-scripts=true` (dependencies can't run install scripts); pinned esptool-js; dependency alerts assessed in [security/dependency-advisories.md](security/dependency-advisories.md) | `.npmrc` |
 
 RLS is verified by 277 plain-SQL checks plus pgTAP on a real local Supabase stack
 (`bash supabase/sql-tests/run-on-local-stack.sh`), and through the public API by
@@ -71,8 +71,16 @@ credentials and personal data.
 | Personal email address in a test screenshot | `docs/testing/evidence/m3/3.1-…/09-after-create.png` | **redacted** in the current tree; still present in **git history** | No (not a credential) |
 | Developer's email (commit author), personal paths and the address above | git history | see "Git history" below | No |
 | Home network name, LAN addresses, phone serial, developer names in docs | tracked docs | **redacted** | No |
-| Board Bluetooth MAC addresses | test evidence, a test fixture | kept: they identify the prototype patches handed over with the project | No |
+| Board Bluetooth MAC addresses and the device IDs derived from them | test evidence, screenshots, test fixtures | **redacted** (14 October 2026): evidence and screenshots show `[MAC redacted]`; tests use synthetic values. The short names (`WearWise-6280`, `-6990`) remain | No |
 | Team names on presentation material (slides, trade-show, video) | presentation folders | **not included**: presentation material stays with the team | No |
+
+**Published history audit (14 October 2026).** Every commit and file version reachable from
+the published `main` (7 commits, 661 file versions, all authored as agreed) was scanned for keys,
+tokens, private keys, personal email addresses, local paths, sensitive file types (`.env`,
+keystores, `.mcp.json`) and Claude/Anthropic traces: **none found**. The only identifiers in
+older commits are the two prototype patches' MAC addresses and derived device IDs, redacted
+from the current tree the same day. If the repository is ever made public and those must not
+appear either, publish it once more as a fresh history.
 
 **Git history.** The original development history contains the developer's commit email, an
 older copy of that screenshot, and absolute paths that were later removed. The handover

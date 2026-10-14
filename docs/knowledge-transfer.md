@@ -224,8 +224,9 @@ Read: [security.md](security.md).
 - The legal documents are drafts until the organisation's details are filled in.
 - Home's "Backed up x/y" counts a recording still in progress as backed up until it stops
   (cosmetic; `apps/mobile/src/app/(tabs)/home.tsx`).
-- `npm audit` reports advisories in transitive build tooling (Expo CLI, Metro, Jest); clearing
-  them needs an Expo SDK upgrade.
+- Five dependency advisories remain (Dependabot), all in build or test tooling or mitigated in
+  the app; none has a fix short of an Expo SDK upgrade. Assessment:
+  `docs/security/dependency-advisories.md`.
 
 ## T. Future improvements
 

@@ -23,7 +23,7 @@ describe('base64 <-> bytes', () => {
 
   test('a real protocol packet survives encode → base64 → decode', () => {
     const bytes = encodePacket({
-      deviceId: '69f69fe5-9cbb-4b3a-b002-db827b7e129d',
+      deviceId: '0d3e0000-0000-4000-8000-0000000d0001',
       bootId: 0x79652df1,
       sessionId: 'a1b2c3d4-e5f6-4a7b-8c9d-1e2f3a4b5c6d',
       sensorType: SensorType.Ecg,
@@ -34,7 +34,7 @@ describe('base64 <-> bytes', () => {
       flags: FLAG_SIMULATED,
     });
     const decoded = decodePacket(base64ToBytes(bytesToBase64(bytes)));
-    expect(decoded.deviceId).toBe('69f69fe5-9cbb-4b3a-b002-db827b7e129d');
+    expect(decoded.deviceId).toBe('0d3e0000-0000-4000-8000-0000000d0001');
     expect(decoded.sequenceNumber).toBe(5);
     expect(decoded.samples).toHaveLength(5);
     expect(decoded.flags & FLAG_SIMULATED).toBe(FLAG_SIMULATED);

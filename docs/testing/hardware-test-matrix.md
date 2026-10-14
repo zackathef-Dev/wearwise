@@ -28,7 +28,7 @@ to this milestone
 
 Hardware in hand: ESP-WROOM-32 (ESP32-D0WD-V3), flashed with
 `firmware/wearwise-esp32` fw 0.4.0 on 26 Aug 2026. Boot self-test PASS; advertises
-as `WearWise-6280`, deviceId `69f69fe5-9cbb-4b3a-b002-db827b7e129d` (serial log:
+as `WearWise-6280` (deviceId redacted; serial log:
 `evidence/m4/firmware-boot-2026-08-26/`). The Android app was rebuilt with the
 `react-native-ble-plx` native module (permissions verified in the generated
 manifest) and installed on the Samsung SM-G977N. Evidence for the rows below is in
@@ -37,7 +37,7 @@ manifest) and installed on the Samsung SM-G977N. Evidence for the rows below is 
 | # | Check | Android (physical) | iPhone | Evidence |
 |---|---|---|---|---|
 | 4.1 | BLE permission prompt copy, deny path shows why + settings link | ✅ 26 Aug 2026 (Allow path) — deny/blocked copy coded, not yet exercised | ⏳ | 32-ble-permission.png |
-| 4.2 | Scan finds the ESP32 by service UUID; other BLE devices filtered | ✅ 26 Aug 2026 — only `WearWise-6280` (8C:94:DF:6E:62:82) listed | ⏳ | 33-ble-scan.png |
+| 4.2 | Scan finds the ESP32 by service UUID; other BLE devices filtered | ✅ 26 Aug 2026 — only `WearWise-6280` listed | ⏳ | 33-ble-scan.png |
 | 4.3 | Connect; capabilities discovered from GATT | ✅ 26 Aug 2026 — ECG 70 / SpO₂ 25 / Temp 1 Hz read from the device | ⏳ | 34-ble-connected.png |
 | 4.4 | Stream ECG+SpO₂+Temp, zero decode errors | ✅ 26 Aug 2026 — two runs, 1m19s (5474 samp / 391 pkt) + ~2 min, **0 gaps, 0 dup, 0 decode errors**. Full 10-min soak not yet run. | ⏳ | 35, 36, 39, 44 |
 | 4.5 | Walk out of range → `reconnecting` → walk back → resumes, gap counted | ⏳ physical range-walk not done; auto-reconnect proven by 4.6 | ⏳ | (see 4.6) |

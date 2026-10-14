@@ -3,7 +3,7 @@ import { deviceName, type DeviceRecord } from '@/domain/entities/session';
 
 const patch = (over: Partial<DeviceRecord> = {}): DeviceRecord => ({
   id: 'dev-1', userId: 'u1', displayName: 'WearWise-6280', model: 'Wearable sensor · Bluetooth', firmwareVersion: null,
-  preferredTransport: 'bluetooth', address: '8C:94:DF:6E:62:82', pairedAt: '2026-10-12T00:00:00Z', lastSeenAt: '2026-10-12T00:00:00Z',
+  preferredTransport: 'bluetooth', address: '02:00:00:00:62:82', pairedAt: '2026-10-12T00:00:00Z', lastSeenAt: '2026-10-12T00:00:00Z',
   ...over,
 });
 

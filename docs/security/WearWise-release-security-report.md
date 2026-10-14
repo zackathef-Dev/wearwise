@@ -107,7 +107,7 @@ Simulation is retained intentionally and explicitly labelled **SIMULATED DATA**.
 
 ## G. Changed files
 
-See `release-files-changed.txt` beside this report for the complete audit change inventory. Existing changes to `live.tsx` were preserved while adding safety copy. Existing firmware edits, untracked firmware projects, editor workspace state and the prior temporary slide-file deletion were not part of this audit and were not reverted.
+The audit's change inventory (`release-files-changed.txt`) is no longer included: it listed files of the September development tree, many of which are not part of the handover repository. Existing changes to `live.tsx` were preserved while adding safety copy. Existing firmware edits, untracked firmware projects, editor workspace state and the prior temporary slide-file deletion were not part of this audit and were not reverted.
 
 Native `android/` is generated/ignored. Durable native changes live in the Expo plugin, `release-signing.gradle`, and `release/` manifest/resources/CMake settings. Regeneration must keep those inputs.
 

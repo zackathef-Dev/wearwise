@@ -16,7 +16,7 @@ class SilentSocket {
   close() { this.closed = true; }        // a half-open socket: close() never fires onclose
   push() {
     const bytes = encodePacket({
-      deviceId: '69f69fe5-9cbb-4b3a-b002-db827b7e129d', bootId: 1, sessionId: '00000000-0000-4000-8000-000000000001',
+      deviceId: '0d3e0000-0000-4000-8000-0000000d0001', bootId: 1, sessionId: '00000000-0000-4000-8000-000000000001',
       sensorType: SensorType.Temperature, sequenceNumber: 0, deviceTimestampUs: 0n, sampleRateHz: 2, samples: [30], flags: 0,
     });
     this.onmessage?.({ data: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer });

@@ -122,8 +122,8 @@ describe('app image', () => {
 
 describe('device name', () => {
   it('is what the firmware advertises: the last two bytes of the base MAC', () => {
-    expect(deviceNameFromMac('8c:94:df:6e:62:80')).toBe('WearWise-6280');
-    expect(() => deviceNameFromMac('8c:94')).toThrow();
+    expect(deviceNameFromMac('02:00:00:00:62:80')).toBe('WearWise-6280');
+    expect(() => deviceNameFromMac('02:00')).toThrow();
   });
 });
 

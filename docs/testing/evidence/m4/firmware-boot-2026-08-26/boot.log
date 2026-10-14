@@ -6,5 +6,5 @@ I (77) boot: End of partition table
 I (288) boot: Loaded app from partition at offset 0x10000
 I (307) app_init: Project name:     wearwise-esp32
 I (406) ww-proto: protocol self-test PASS
-I (406) ww-main: WearWise fw 0.4.0  device 69f69fe5-9cbb-4b3a-b002-db827b7e129d  boot 0x79652df1  adv WearWise-6280
+I (406) ww-main: WearWise fw 0.4.0  device <redacted>  boot 0x79652df1  adv WearWise-6280
 I (856) ww-gatt: advertising as WearWise-6280

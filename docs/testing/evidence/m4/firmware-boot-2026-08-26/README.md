@@ -1,6 +1,6 @@
 # M4 firmware boot — physical ESP32, 26 Aug 2026
 
-Board: ESP-WROOM-32 (ESP32-D0WD-V3 rev v3.1, 4 MB flash), MAC 8c:94:df:6e:62:80,
+Board: ESP-WROOM-32 (ESP32-D0WD-V3 rev v3.1, 4 MB flash), MAC redacted,
 on the Silicon Labs CP210x bridge. Built and flashed from
 `firmware/wearwise-esp32` with ESP-IDF v5.4.2 (`idf.py -p <PORT> flash`).
 
