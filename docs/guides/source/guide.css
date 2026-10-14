@@ -222,3 +222,8 @@ table.compact td, table.compact th { padding: 1.5mm 2mm; }
 .cover .meta .team { color: var(--ink-soft); }
 .credits .credits-end { margin-top: 2.5mm; padding-top: 2mm; border-top: 1px solid var(--line); color: var(--muted); }
 .cover .meta > div:last-child { flex: none; white-space: nowrap; margin-left: 8mm; }
+
+.cover .prepared { margin-top: 9mm; padding: 4mm 5mm; border-left: 1.2mm solid var(--teal); background: var(--teal-50); border-radius: 0 2.5mm 2.5mm 0; max-width: 150mm; }
+.cover .prepared .lbl { font-size: 7.6pt; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--teal-700); }
+.cover .prepared .who { font-size: 13pt; font-weight: 700; color: var(--navy); margin-top: .5mm; }
+.cover .prepared .role { font-size: 9pt; color: var(--ink-soft); margin-top: .3mm; }
