@@ -1,0 +1,13 @@
+# WearWise ESP32 partition table (ESP-WROOM-32, 4 MB flash).
+#
+# Same layout as ESP-IDF's "single app large" plus `wwcfg`: one sector holding the
+# factory record the patch-setup page writes (the Bluetooth PIN on the patch's label,
+# see main/core/factory_config.h). It lives in the LAST sector of flash, outside NVS,
+# so erasing settings never changes the label PIN and a future app layout (e.g. OTA
+# slots) can grow without moving it.
+#
+# Name,   Type, SubType, Offset,   Size
+nvs,      data, nvs,     0x9000,   0x6000
+phy_init, data, phy,     0xf000,   0x1000
+factory,  app,  factory, 0x10000,  1500K
+wwcfg,    data, 0x40,    0x3ff000, 0x1000

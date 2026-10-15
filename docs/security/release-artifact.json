@@ -1,0 +1,19 @@
+{
+  "packageId": "io.wearwise.participant",
+  "path": "<workspace>\\_review\\releases\\WearWise-0.1.0-release.apk",
+  "bytes": 112065365,
+  "minSdk": 24,
+  "status": "research-demo release candidate; remaining risks in security report",
+  "buildType": "release",
+  "signed": true,
+  "versionCode": 1,
+  "targetSdk": 36,
+  "filename": "WearWise-0.1.0-release.apk",
+  "versionName": "0.1.0",
+  "architectures": [
+    "arm64-v8a",
+    "x86_64"
+  ],
+  "sha256": "A2A7A9BB516E968EF34EF134EA314E9B93D9871E79807BB19D6709767DCB65F4",
+  "signatureScheme": "v2"
+}

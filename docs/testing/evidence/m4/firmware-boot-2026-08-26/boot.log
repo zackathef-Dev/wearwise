@@ -1,0 +1,10 @@
+# ESP-WROOM-32 serial monitor (115200 baud), 26 Aug 2026, fw 0.4.0
+I (29) boot: ESP-IDF v5.4.2 2nd stage bootloader
+I (34) boot.esp32: SPI Speed      : 40MHz
+I (41) boot.esp32: SPI Flash Size : 4MB
+I (77) boot: End of partition table
+I (288) boot: Loaded app from partition at offset 0x10000
+I (307) app_init: Project name:     wearwise-esp32
+I (406) ww-proto: protocol self-test PASS
+I (406) ww-main: WearWise fw 0.4.0  device <redacted>  boot 0x79652df1  adv WearWise-6280
+I (856) ww-gatt: advertising as WearWise-6280

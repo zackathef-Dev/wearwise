@@ -1,0 +1,22 @@
+# Version updates. Security alerts and their fixes are separate (repository settings → Code
+# security). Major versions are never proposed: Expo, React Native and their native modules
+# must be upgraded together as one Expo SDK upgrade (docs/dependencies.md). Before merging an
+# Expo-related update, run `npx expo install --check` and the tests.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

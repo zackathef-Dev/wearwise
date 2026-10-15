@@ -1,0 +1,87 @@
+:root{
+--font-core:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
+--font-data:"Poppins",system-ui,sans-serif;
+
+--fw-regular:400; /* @kind font */
+--fw-medium:500; /* @kind font */
+--fw-semibold:600; /* @kind font */
+--fw-bold:700; /* @kind font */
+
+/* Display / heading scale */
+--type-display-size:48px;
+--type-display-weight:600;
+--type-display-lh:1.12;
+--type-display-ls:-0.02em;
+
+--type-h1-size:34px;
+--type-h1-weight:600;
+--type-h1-lh:1.18;
+--type-h1-ls:-0.015em;
+
+--type-h2-size:26px;
+--type-h2-weight:600;
+--type-h2-lh:1.25;
+--type-h2-ls:-0.01em;
+
+--type-h3-size:20px;
+--type-h3-weight:500;
+--type-h3-lh:1.35;
+--type-h3-ls:-0.005em;
+
+/* Body */
+--type-body-size:16px;
+--type-body-weight:400;
+--type-body-lh:1.6;
+
+--type-body-sm-size:14px;
+--type-body-sm-lh:1.55;
+
+--type-caption-size:12px;
+--type-caption-weight:400;
+--type-caption-lh:1.45;
+
+--type-label-size:13px;
+--type-label-weight:500;
+--type-label-ls:0.01em;
+
+--type-overline-size:11px;
+--type-overline-weight:600;
+--type-overline-ls:0.08em;
+
+--type-button-size:15px;
+--type-button-weight:500;
+
+/* Data readouts — the number is always the loudest element */
+--type-data-xl-size:44px;
+--type-data-xl-weight:600;
+--type-data-xl-ls:-0.02em;
+--type-data-lg-size:32px;
+--type-data-lg-weight:600;
+--type-data-sm-size:22px;
+--type-data-sm-weight:600;
+--type-data-unit-size:14px;
+--type-data-unit-weight:500;
+
+/* --- Night-canvas additions -------------------------------------------------
+   Two new roles the dark mobile direction needs, both absent from the light scale.
+
+   MICRO is the tiny wide-tracked uppercase label that sits under every number on
+   a dark surface. It is deliberately smaller AND wider-tracked than --type-overline:
+   on black, letterforms bloom optically, so tracking has to grow to stay legible
+   where the same label on white would not need it.
+
+   HERO is the ring-centre numeral. It is the only type size in the system large
+   enough to be read across a room, which is the whole point of a glanceable app. */
+--type-micro-size:10px;
+--type-micro-weight:600;
+--type-micro-ls:0.14em;
+--type-micro-lh:1.2;
+
+--type-data-hero-size:62px;
+--type-data-hero-weight:600;
+--type-data-hero-ls:-0.035em;
+
+--type-data-2xl-size:52px;
+--type-data-2xl-weight:600;
+--type-data-2xl-ls:-0.03em;
+}

@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WearWise Setup Guide</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body data-doc="WearWise Setup Guide">
+
+<!-- ======================= COVER ======================= -->
+<section class="cover">
+  <div class="band"></div>
+  <div class="inner">
+    <img class="logo" src="../../../apps/dashboard/src/assets/brand/logo.svg" alt="WearWise">
+    <div class="kicker">Setup guide</div>
+    <h1>Run WearWise on<br>your own computer</h1>
+    <div class="sub">Install the tools, then start the backend, the web dashboard and the phone app, and set up a patch. Written for people with little or no development experience.</div>
+  </div>
+  <div class="shots">
+    <img class="ph" src="img/app/01-sign-in.jpg" alt="">
+    <img class="ph" src="img/app/06-home-live.jpg" alt="">
+    <img class="wide" src="img/setup/studio-profiles-cover.jpg" alt="">
+  </div>
+  <div class="meta">
+    <div><b>Handover release v1.0.0</b> · app 0.1.0 · firmware 0.9.6<br>October 2026 · WearWise Project Team<br><span class="team">Zakiul Atheef · Hari Bethelli · Siri Bethelli · Thevindu Kodagoda Munasinghage</span></div>
+    <div style="text-align:right">Research prototype.<br>Not a medical device.</div>
+  </div>
+</section>
+
+<!-- ======================= CONTENTS ======================= -->
+<section class="toc">
+  <h2>Contents</h2>
+  <!--TOC-->
+</section>
+
+<!-- ======================= PART 1 ======================= -->
+<div class="part" data-part="Part 1">
+  <div class="label">Part 1</div>
+  <h2>Before you start</h2>
+  <p>What you'll build, what you need, and how to type commands.</p>
+</div>
+
+<h3 id="s-goal"><span class="num">1</span>What you'll end up with</h3>
+<p>By the end of this guide, the whole WearWise system will be running on your own computer, with no accounts or services from the original developers:</p>
+<div class="cards">
+  <div class="card"><div class="ico">1</div><div class="t">A local backend</div><p>The database, logins and file storage, running inside Docker on your computer, filled with safe <b>demo data</b>.</p></div>
+  <div class="card"><div class="ico">2</div><div class="t">The web dashboard</div><p>Running in your browser at <code>localhost:5192</code>. You'll sign in as a demo researcher.</p></div>
+  <div class="card"><div class="ico">3</div><div class="t">The phone app</div><p>On an Android emulator (a virtual phone on your computer) or a real phone, talking to your local backend.</p></div>
+</div>
+<figure>
+  <img class="shot-web narrow" src="../../images/architecture.png" alt="WearWise system architecture">
+  <figcaption><b>The WearWise system.</b> In this guide the "Supabase backend" box runs on your computer. A real patch is optional: the app has a built-in simulated patch.</figcaption>
+</figure>
+<table class="kv">
+  <tbody>
+    <tr><td>Time needed</td><td>About <b>2–3 hours</b> the first time, mostly waiting for downloads. Later, starting everything takes about 2 minutes.</td></tr>
+    <tr><td>Disk space</td><td>About <b>25 GB free</b>: Docker images (several GB), Android Studio and an emulator (about 15 GB), and the project (about 2 GB).</td></tr>
+    <tr><td>Computer</td><td>macOS, Windows 10/11 or Linux, with administrator rights, 16 GB of memory recommended, and an internet connection.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-terminal"><span class="num">2</span>How to use this guide (the terminal)</h3>
+<p>Most steps are commands you type into a <b>terminal</b>: a window where you type instructions instead of clicking. That's all a terminal is.</p>
+<table>
+  <thead><tr><th style="width:22%">Your computer</th><th>How to open a terminal</th></tr></thead>
+  <tbody>
+    <tr><td>macOS</td><td>Press <span class="k">⌘ Space</span>, type <b>Terminal</b> and press Enter.</td></tr>
+    <tr><td>Windows</td><td>Click Start, type <b>Terminal</b> (or <b>PowerShell</b>) and press Enter.</td></tr>
+    <tr><td>Linux</td><td>Press <span class="k">Ctrl Alt T</span>.</td></tr>
+  </tbody>
+</table>
+<p>In this guide, commands look like this. Type the text after the <b>$</b> (not the $ itself) and press <b>Enter</b>. Copying and pasting is fine.</p>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal: what you type, and what you should see</span></div><pre><span class="c">$ node --version</span>
+v24.19.0</pre></div>
+<ul>
+  <li>Wait until the command finishes and the cursor comes back before typing the next one.</li>
+  <li>Some commands keep running (the dashboard and the app's bundler). Leave that window open, and open a <b>new terminal window</b> for the next command.</li>
+  <li>To stop a running command, click its window and press <span class="k">Ctrl C</span>.</li>
+  <li>Text in angle brackets is something you replace, for example <code>&lt;repository-url&gt;</code>.</li>
+  <li><code>cd</code> means "change directory" (go into a folder). Most commands must be run from the <b>wearwise</b> folder that you create in section 10.</li>
+</ul>
+<div class="callout note"><span class="h">Screenshots and output</span><p>The terminal output in this guide was captured on a real setup. Keys and private network addresses are hidden or replaced with examples, so your numbers will differ.</p></div>
+
+<h3 id="s-need"><span class="num">3</span>What you need</h3>
+<ul class="checklist">
+  <li>A computer as described in section 1.</li>
+  <li><b>Access to the WearWise code repository</b>, for example an invitation to the project's GitHub repository.</li>
+  <li><b>Google Chrome or Microsoft Edge</b>. Patch setup needs one of them.</li>
+  <li><i>Optional:</i> an <b>Android phone</b> with a USB cable, to use a real patch over Bluetooth.</li>
+  <li><i>Optional:</i> the <b>patch hardware</b>: an ESP32 board and sensors (Part 5). Without a phone or patch, the emulator and the simulated patch drive the whole system.</li>
+</ul>
+
+<!-- ======================= PART 2 ======================= -->
+<div class="part" data-part="Part 2">
+  <div class="label">Part 2</div>
+  <h2>Install the tools</h2>
+  <p>Six free programs, one at a time. After each one, a quick check proves it worked.</p>
+</div>
+
+<h3 id="s-git"><span class="num">4</span>Git (downloads the code)</h3>
+<ul>
+  <li><b>macOS:</b> in a terminal, run <code>xcode-select --install</code> and click <b>Install</b>, or download it from <b>git-scm.com</b>.</li>
+  <li><b>Windows:</b> download the installer from <b>git-scm.com</b> and accept the default options.</li>
+  <li><b>Linux (Ubuntu/Debian):</b> <code>sudo apt install git</code>.</li>
+</ul>
+<div class="term cmd"><div class="bar"><i></i><i></i><i></i><span>Check</span></div><pre><span class="c">$ git --version</span>
+git version 2.54.0</pre></div>
+
+<h3 id="s-node"><span class="num">5</span>Node.js (runs the dashboard and builds the app)</h3>
+<p>Go to <b>nodejs.org</b> and download the <b>LTS</b> version (22 or newer). Run the installer with the default options. npm, Node's package installer, comes with it.</p>
+<div class="term cmd"><div class="bar"><i></i><i></i><i></i><span>Check (open a new terminal first)</span></div><pre><span class="c">$ node --version</span>
+v24.19.0
+<span class="c">$ npm --version</span>
+11.17.0</pre></div>
+
+<h3 id="s-docker"><span class="num">6</span>Docker Desktop (runs the backend)</h3>
+<ol class="steps">
+  <li>Download <b>Docker Desktop</b> from <b>docker.com</b> and install it. On Windows, accept the offer to install or enable <b>WSL 2</b>, and restart if asked.</li>
+  <li>Open Docker Desktop and accept its terms. Wait until it says <b>Engine running</b> (bottom left).</li>
+  <li>Docker must be running whenever you use the local backend. You can set it to start when you sign in (Settings → General).</li>
+</ol>
+<div class="term cmd"><div class="bar"><i></i><i></i><i></i><span>Check (open a new terminal first)</span></div><pre><span class="c">$ docker --version</span>
+Docker version 29.8.2, build 7fc2dff</pre></div>
+<div class="callout tip"><span class="h">"docker: command not found" on a Mac?</span><p>Close the terminal and open a new one. If it still happens, open Docker Desktop → Settings → Advanced and choose to install the command-line tools system-wide.</p></div>
+
+<h3 id="s-supabase"><span class="num">7</span>Supabase CLI (controls the backend)</h3>
+<p>The Supabase CLI starts, stops and resets the local backend. Install it <b>as a separate program</b>:</p>
+<table>
+  <thead><tr><th style="width:18%">System</th><th>How to install</th></tr></thead>
+  <tbody>
+    <tr><td>macOS</td><td>First install <b>Homebrew</b> (follow the one-line command on <b>brew.sh</b>), then run<br><code>brew install supabase/tap/supabase</code></td></tr>
+    <tr><td>Windows</td><td>First install <b>Scoop</b> (follow the commands on <b>scoop.sh</b> in PowerShell), then run<br><code>scoop bucket add supabase https://github.com/supabase/scoop-bucket.git</code><br><code>scoop install supabase</code></td></tr>
+    <tr><td>Linux</td><td>Download the package for your system from <b>github.com/supabase/cli/releases</b> and install it (for example <code>sudo dpkg -i supabase_*.deb</code>).</td></tr>
+  </tbody>
+</table>
+<div class="term cmd"><div class="bar"><i></i><i></i><i></i><span>Check: 2.120 or newer</span></div><pre><span class="c">$ supabase --version</span>
+2.120.0</pre></div>
+<div class="callout warn"><span class="h">Don't use "npx supabase"</span><p>The WearWise project blocks npm packages from running install scripts, for security, so the npm version of the Supabase CLI can't download its program. Always use the separately installed <code>supabase</code> command.</p></div>
+
+<h3 id="s-android"><span class="num">8</span>Android Studio and Java (builds the phone app)</h3>
+<p>You need these to build and run the phone app, on an emulator or a real Android phone.</p>
+<ol class="steps">
+  <li>Download <b>Android Studio</b> from <b>developer.android.com/studio</b> and install it. Open it and choose the <b>Standard</b> setup. It downloads the Android SDK and an emulator, which takes a while.</li>
+  <li>In Android Studio: <b>More Actions → SDK Manager</b>. Under <i>SDK Platforms</i>, tick <b>Android 16 (API 36)</b>. Under <i>SDK Tools</i>, make sure <b>Android SDK Build-Tools</b>, <b>Platform-Tools</b> and <b>Emulator</b> are ticked. Click <b>Apply</b>.</li>
+  <li><b>More Actions → Virtual Device Manager → +</b> (Create device). Pick a phone such as <b>Pixel 8</b>, then a system image with <b>API 36</b> (click the download icon next to it), then <b>Finish</b>.</li>
+  <li>Install <b>Java JDK 17</b>, the version WearWise was tested with. For example, use <b>Eclipse Temurin 17</b> from <b>adoptium.net</b> (choose version 17 and the installer for your system).</li>
+  <li>Tell your terminal where Android and Java are (below), then open a new terminal.</li>
+</ol>
+<h4>macOS: add these lines to the file ~/.zshrc</h4>
+<p>Run <code>open -e ~/.zshrc</code> (create the file with <code>touch ~/.zshrc</code> if it doesn't exist), paste the lines at the end, save, and open a new terminal.</p>
+<div class="term cmd"><div class="bar"><i></i><i></i><i></i><span>~/.zshrc</span></div><pre>export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator"
+export JAVA_HOME="$(/usr/libexec/java_home -v 17)"</pre></div>
+<h4>Windows: set environment variables</h4>
+<p>Start → type <b>environment variables</b> → <i>Edit the system environment variables</i> → <b>Environment Variables…</b>. Under <i>User variables</i>:</p>
+<ul>
+  <li><b>New…</b> <code>ANDROID_HOME</code> = <code>C:\Users\&lt;you&gt;\AppData\Local\Android\Sdk</code></li>
+  <li><b>New…</b> <code>JAVA_HOME</code> = the folder the JDK 17 installer created, for example <code>C:\Program Files\Eclipse Adoptium\jdk-17…</code></li>
+  <li>Select <b>Path → Edit → New</b> and add <code>%ANDROID_HOME%\platform-tools</code>.</li>
+</ul>
+<p class="small">Linux: add <code>export ANDROID_HOME=$HOME/Android/Sdk</code>, the same PATH line as macOS, and <code>JAVA_HOME</code> pointing at your JDK 17 to <code>~/.bashrc</code>.</p>
+<div class="term cmd"><div class="bar"><i></i><i></i><i></i><span>Check (new terminal)</span></div><pre><span class="c">$ adb version</span>
+Android Debug Bridge version 1.0.41
+Version 37.0.1-15733141
+<span class="c">$ java -version</span>
+openjdk version "17.0.20.1" 2026-08-18 LTS</pre></div>
+<p class="small">Building for iPhone needs a Mac with <b>Xcode</b> (from the App Store) and <b>CocoaPods</b>. See section 18.</p>
+
+<h3 id="s-check"><span class="num">9</span>Check everything</h3>
+<p>Open a <b>new</b> terminal and run these five commands. Each should print a version number. If one says "command not found", go back to its section.</p>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal</span></div><pre><span class="c">$ git --version</span>
+git version 2.54.0 (Apple Git-157)
+<span class="c">$ node --version</span>
+v24.19.0
+<span class="c">$ npm --version</span>
+11.17.0
+<span class="c">$ docker --version</span>
+Docker version 29.8.2, build 7fc2dff
+<span class="c">$ supabase --version</span>
+2.120.0</pre></div>
+<p class="small">These are the versions WearWise was tested with. Newer versions are normally fine. Node must be 22 or newer, and the Supabase CLI 2.120 or newer.</p>
+
+<!-- ======================= PART 3 ======================= -->
+<div class="part" data-part="Part 3">
+  <div class="label">Part 3</div>
+  <h2>Get WearWise running</h2>
+  <p>Download the code, start the backend, connect the apps, and open the dashboard.</p>
+</div>
+
+<h3 id="s-clone"><span class="num">10</span>Download the code</h3>
+<p>Pick a place for the project, such as your Documents folder, then download ("clone") it and install its building blocks:</p>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal</span></div><pre><span class="c">$ cd ~/Documents</span>
+<span class="c">$ git clone &lt;repository-url&gt; wearwise</span>
+<span class="c">$ cd wearwise</span>
+<span class="c">$ npm install</span>
+<span class="d">(the first time it says "added … packages" and takes a few minutes)</span>
+up to date, audited 1176 packages in 7s
+
+199 packages are looking for funding
+  run `npm fund` for details
+
+69 vulnerabilities (16 moderate, 52 high, 1 critical)
+<span class="d">…</span></pre></div>
+<ul>
+  <li><code>&lt;repository-url&gt;</code> is the address of the WearWise repository, for example <code>https://github.com/&lt;organisation&gt;/wearwise.git</code>. For a private repository, Git asks you to sign in to GitHub the first time. <b>GitHub Desktop</b> (<i>File → Clone repository</i>) also works if you prefer clicking.</li>
+  <li><code>npm install</code> takes a few minutes the first time. On later runs it says <i>up to date</i>.</li>
+</ul>
+<div class="callout warn"><span class="h">About the "vulnerabilities" message</span><p>npm reports known advisories in the project's development tools (Expo CLI, Metro, Jest). This doesn't stop anything working, and the handover documents record it (<code>docs/knowledge-transfer.md</code>). <b>Don't run <code>npm audit fix --force</code></b>: it downgrades Expo and breaks the app. Fixing them properly needs an Expo upgrade.</p></div>
+
+<h3 id="s-backend"><span class="num">11</span>Start the local backend</h3>
+<p>Make sure Docker Desktop is running, then, in the <b>wearwise</b> folder:</p>
+<div class="term cmd"><div class="bar"><i></i><i></i><i></i><span>Terminal</span></div><pre><span class="c">$ supabase start</span></pre></div>
+<p>The first time, this downloads the Supabase images (several GB), which can take 5–20 minutes. Then it creates a fresh database, applies the 11 WearWise <b>migrations</b> (the steps that build the tables and security rules), loads the <b>demo data</b> and uploads the demo recordings. It finishes by printing a summary like this, which you can show again at any time with <code>supabase status</code>:</p>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>supabase status (keys hidden in this guide)</span></div><pre><span class="c">$ supabase status</span>
+supabase local development setup is running.
+
+╭──────────────────────────────────────╮
+│ 🔧 Development Tools                 │
+├─────────┬────────────────────────────┤
+│ Studio  │ http://127.0.0.1:54323     │
+│ Mailpit │ http://127.0.0.1:54324     │
+│ MCP     │ http://127.0.0.1:54321/mcp │
+╰─────────┴────────────────────────────╯
+
+╭──────────────────────────────────────────────────────╮
+│ 🌐 APIs                                              │
+├────────────────┬─────────────────────────────────────┤
+│ Project URL    │ http://127.0.0.1:54321              │
+│ REST           │ http://127.0.0.1:54321/rest/v1      │
+│ GraphQL        │ http://127.0.0.1:54321/graphql/v1   │
+│ Edge Functions │ http://127.0.0.1:54321/functions/v1 │
+╰────────────────┴─────────────────────────────────────╯
+
+╭──────────────────────────────────────────────────────────────╮
+│ 🔑 Authentication Keys                                       │
+├─────────────┬────────────────────────────────────────────────┤
+│ Publishable │ <span class="redact">••••••••••• (hidden)</span>                           │
+│ Secret      │ <span class="redact">••••••••••• (hidden)</span>                           │
+╰─────────────┴────────────────────────────────────────────────╯
+<span class="d">… (Database and Storage sections)</span></pre></div>
+<table class="kv">
+  <tbody>
+    <tr><td>Project URL <code>:54321</code></td><td>The address the apps talk to.</td></tr>
+    <tr><td>Studio <code>:54323</code></td><td>A website for looking inside the database (section 12).</td></tr>
+    <tr><td>Mailpit <code>:54324</code></td><td>Catches every email the local backend "sends" (section 15).</td></tr>
+    <tr><td>Keys</td><td>You never need to copy them by hand: section 13 does it for you. The <b>Secret</b> key must never go into an app or a document.</td></tr>
+  </tbody>
+</table>
+<div class="callout tip"><span class="h">Start again from clean demo data</span><p><code>supabase db reset</code> wipes the local database and rebuilds it from the migrations and demo data. It's handy if you've made a mess while testing. It never touches anything outside your computer.</p></div>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal</span></div><pre><span class="c">$ supabase db reset</span>
+Resetting local database...
+Recreating database...
+Initialising schema...
+Seeding globals from roles.sql...
+Applying migration 20260826000001_profiles.sql...
+Applying migration 20260826000002_recordings.sql...
+<span class="d">… (9 more migrations)</span>
+Applying migration 20261017000011_terms_2026_10_17.sql...
+Seeding data from supabase/seed.sql...
+Seeding data from supabase/seed/demo-recordings.sql...
+Restarting containers...
+Updating Storage bucket: recordings
+Uploading: supabase/seed/recordings/… <span class="d">(9 demo recording files)</span>
+Finished supabase db reset on branch main.</pre></div>
+
+<h3 id="s-studio"><span class="num">12</span>Look inside the database (Studio)</h3>
+<p>Open <b>http://127.0.0.1:54323</b> in your browser. This is <b>Supabase Studio</b>, a control panel for your local backend.</p>
+<figure>
+  <img class="shot-web" src="img/setup/studio-users.jpg" alt="">
+  <figcaption><b>Authentication → Users</b> (the padlock icon on the left) lists the three demo accounts.</figcaption>
+</figure>
+<figure>
+  <img class="shot-web" src="img/setup/studio-profiles.jpg" alt="">
+  <figcaption><b>Table Editor → profiles</b> (the table icon on the left). <code>recorded_sessions</code> holds 3 simulated demo sessions.</figcaption>
+</figure>
+<h4>The demo accounts (local only; every health value is simulated)</h4>
+<table>
+  <thead><tr><th>Email</th><th style="width:22%">Password</th><th>What it is</th></tr></thead>
+  <tbody>
+    <tr><td><code>demo.participant@example.invalid</code></td><td><code>wearwise-demo-only</code></td><td>A participant with simulated recordings, shared with the researcher. Use in the app.</td></tr>
+    <tr><td><code>demo.other@example.invalid</code></td><td><code>wearwise-demo-only</code></td><td>A participant who shares nothing.</td></tr>
+    <tr><td><code>demo.researcher@example.invalid</code></td><td><code>wearwise-demo-only</code></td><td>A researcher. Use on the dashboard.</td></tr>
+  </tbody>
+</table>
+<div class="callout note"><span class="h">Creating a researcher account</span><p>Researcher and clinician accounts aren't created in the app. In Studio, open the <b>SQL Editor</b>, paste the file <code>supabase/admin/create-viewer.sql</code>, change the three values marked <code>&lt;-- CHANGE</code> (email, role, name), and click <b>Run</b>. The result shows a one-time password: give it to the person privately. To turn an existing account into a researcher, use <code>supabase/admin/set-role.sql</code> the same way.</p></div>
+
+<h3 id="s-connect"><span class="num">13</span>Connect the apps to your backend</h3>
+<p>The dashboard and the app need to know the backend's address and its public key. One command finds both and writes them into each app's settings file:</p>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal (in the wearwise folder)</span></div><pre><span class="c">$ npm run backend:local</span>
+
+&gt; backend:local
+&gt; node scripts/use-backend.mjs local
+
+Mobile app (development builds) → http://192.168.1.20:54321
+Dashboard (vite dev)            → http://127.0.0.1:54321
+
+Restart Metro with a clean cache so the app picks it up:  cd apps/mobile &amp;&amp; npx expo start -c
+A phone must be on the same network as this computer, and the computer's firewall must allow port 54321.</pre></div>
+<p><b>Why two addresses?</b> On a phone, "127.0.0.1" means the phone itself. So the app gets your computer's address on your Wi-Fi network (here <code>192.168.1.20</code>; yours will differ), and the dashboard, which runs on the computer, uses <code>127.0.0.1</code>.</p>
+<p>Check what each app will use at any time:</p>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal</span></div><pre><span class="c">$ npm run backend:status</span>
+
+Mobile app, development builds: http://192.168.1.20:54321  (from apps/mobile/.env.development.local)
+Mobile app, release builds:     https://&lt;your-project&gt;.supabase.co  (from apps/mobile/.env.production)
+Dashboard, vite dev:            http://127.0.0.1:54321  (from apps/dashboard/.env.development.local)
+Dashboard, production build:    https://&lt;your-project&gt;.supabase.co  (from apps/dashboard/.env)</pre></div>
+<table>
+  <thead><tr><th style="width:30%">If you use…</th><th>Then</th></tr></thead>
+  <tbody>
+    <tr><td>The Android emulator</td><td>The default usually works. If the app can't reach the backend, run <code>npm run backend:local -- --host 10.0.2.2</code> (the emulator's name for your computer).</td></tr>
+    <tr><td>A real phone</td><td>Phone and computer on the <b>same Wi-Fi</b> (not a guest network). When your computer asks whether to allow incoming connections (macOS) or shows a Windows Defender Firewall prompt, click <b>Allow</b> (on Windows, for <i>Private networks</i>).</td></tr>
+    <tr><td>A different Wi-Fi network later</td><td>Your computer's address changes. Run <code>npm run backend:local</code> again and restart the app's bundler with <code>-c</code> (section 16).</td></tr>
+  </tbody>
+</table>
+<p class="small">These settings files (<code>.env.development.local</code>) are only used by development builds, so they can never leak into a release build. They're also excluded from Git. <code>npm run backend:cloud</code> switches back to the hosted backend (section 25).</p>
+
+<h3 id="s-dash"><span class="num">14</span>Start the web dashboard</h3>
+<p>Open a <b>new terminal window</b> (the dashboard keeps running in it), go to the wearwise folder and start it:</p>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal 2: leave it running</span></div><pre><span class="c">$ cd ~/Documents/wearwise</span>
+<span class="c">$ npm run dev -w dashboard</span>
+
+&gt; dashboard@0.1.0 dev
+&gt; vite
+
+  VITE v8.3.4  ready in 107 ms
+
+  ➜  Local:   http://localhost:5192/
+  ➜  Network: use --host to expose</pre></div>
+<div class="split">
+  <div class="text">
+    <ol class="steps">
+      <li>Open <b>http://localhost:5192</b> in Chrome or Edge.</li>
+      <li>Sign in as <code>demo.researcher@example.invalid</code> with the password <code>wearwise-demo-only</code>.</li>
+      <li><b>Participants</b> lists <i>Demo Participant</i>. Click it to see the simulated sessions, charts, a high-heart-rate alert and a possible fall, and to download CSV files.</li>
+    </ol>
+    <p>The <b>WearWise User Guide</b> explains every dashboard screen.</p>
+    <p class="small">To stop the dashboard, press <span class="k">Ctrl C</span> in its window.</p>
+  </div>
+  <div class="side" style="flex-basis:64mm"><figure><img class="shot-web" src="img/dash/01-sign-in.jpg" alt=""><figcaption>The dashboard sign-in page, served from your computer.</figcaption></figure></div>
+</div>
+<figure>
+  <img class="shot-web" src="img/dash/02-participants.jpg" alt="">
+  <figcaption><b>Signed in as the demo researcher.</b> If you see this, the backend and the dashboard both work.</figcaption>
+</figure>
+
+<h3 id="s-mail"><span class="num">15</span>Emails on your computer (Mailpit)</h3>
+<p>The local backend doesn't send real emails. Every email, such as password resets and sign-up confirmations, lands in <b>Mailpit</b> at <b>http://127.0.0.1:54324</b>. Try it:</p>
+<div class="phones" style="gap:6mm">
+  <figure style="flex-basis:56mm"><img class="shot-web" src="img/setup/dash-reset-password.jpg" alt=""><figcaption><b>1.</b> Dashboard → <i>Forgot password?</i> → enter a demo email → <i>Send reset link</i>.</figcaption></figure>
+  <figure style="flex-basis:56mm"><img class="shot-web" src="img/setup/dash-check-email.jpg" alt=""><figcaption><b>2.</b> The dashboard confirms. Nothing has left your computer.</figcaption></figure>
+</div>
+<figure>
+  <img class="shot-web" src="img/setup/mailpit-inbox.jpg" alt="">
+  <figcaption><b>3.</b> Mailpit shows the email. Click it to read it and use its link.</figcaption>
+</figure>
+<p class="small">Locally, sign-up email confirmation is switched off, so new app accounts are signed straight in.</p>
+
+<!-- ======================= PART 4 ======================= -->
+<div class="part" data-part="Part 4">
+  <div class="label">Part 4</div>
+  <h2>Run the phone app</h2>
+  <p>Build the app onto an Android emulator or a real phone, then try the whole system.</p>
+</div>
+
+<h3 id="s-emu"><span class="num">16</span>On the Android emulator</h3>
+<ol class="steps">
+  <li>In Android Studio, open <b>Virtual Device Manager</b> and click <b>▶</b> next to your virtual phone. Wait until its home screen appears.</li>
+  <li>Open a <b>new terminal window</b> and build the app:</li>
+</ol>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal 3: leave it running</span></div><pre><span class="c">$ cd ~/Documents/wearwise/apps/mobile</span>
+<span class="c">$ npx expo run:android</span>
+<span class="d">… builds the app (5–15 minutes the first time), installs it on the emulator and opens it …</span></pre></div>
+<div class="split">
+  <div class="text">
+    <ol class="steps" start="3" style="counter-reset: s 2">
+      <li>WearWise opens on the <b>sign-in screen</b>, with no "backend not configured" message. Sign in as <code>demo.participant@example.invalid</code> / <code>wearwise-demo-only</code>. The demo recordings are restored into <b>History</b>.</li>
+      <li>The terminal keeps running <b>Metro</b>, the "bundler" that sends the app its code. Leave it open while you use the app.</li>
+    </ol>
+    <h4>Next time</h4>
+    <p>You only rebuild after changing native settings or updating packages. Normally, start the emulator, open the WearWise app on it, and start just Metro:</p>
+    <div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal 3</span></div><pre><span class="c">$ npx expo start -c</span>
+Starting project at …/wearwise/apps/mobile
+Starting Metro Bundler
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Android Bundled 3709ms node_modules/expo-router/entry.js (2346 modules)</pre></div>
+    <p class="small"><code>-c</code> clears Metro's cache. Always use it after <code>backend:local</code> or <code>backend:cloud</code>, because the backend address is built into the bundle. In the Metro window, press <b>r</b> to reload the app.</p>
+  </div>
+  <div class="side"><figure><img class="phone" src="img/app/01-sign-in.jpg" alt=""><figcaption>The app's first screen.</figcaption></figure></div>
+</div>
+<div class="callout warn"><span class="h">Expo Go won't work</span><p>WearWise uses its own native code (Bluetooth, encrypted storage), so it always runs as its own "development build" made by <code>npx expo run:android</code>. The Expo Go app from the Play Store can't open it.</p></div>
+
+<h3 id="s-phone"><span class="num">17</span>On a real Android phone</h3>
+<p>A real phone is needed to use a real patch, because emulators have no Bluetooth.</p>
+<ol class="steps">
+  <li><b>Turn on Developer options:</b> on the phone, open Settings → <b>About phone</b> (on Samsung: About phone → <b>Software information</b>) and tap <b>Build number</b> 7 times.</li>
+  <li><b>Turn on USB debugging:</b> Settings → <b>Developer options</b> → <b>USB debugging</b> on.</li>
+  <li>Connect the phone with a USB cable. On the phone, tap <b>Allow</b> when it asks to allow USB debugging from this computer.</li>
+  <li>Check the computer can see it:</li>
+</ol>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal</span></div><pre><span class="c">$ adb devices</span>
+List of devices attached
+<span class="redact">R3C…(your phone's serial)</span>	device
+emulator-5554	device</pre></div>
+<ol class="steps" start="5" style="counter-reset: s 4">
+  <li>Put the phone on the <b>same Wi-Fi</b> as the computer, then build and install:
+    <div class="term cmd" style="margin-top:2mm"><div class="bar"><i></i><i></i><i></i><span>Terminal (apps/mobile)</span></div><pre><span class="c">$ npx expo run:android --device</span>
+<span class="d">… choose your phone from the list …</span></pre></div></li>
+  <li>If the list says <i>unauthorized</i>, unlock the phone and accept the USB debugging prompt.</li>
+</ol>
+<div class="callout note"><span class="h">Phone not on the same Wi-Fi?</span><p>With the phone on USB you can route the backend through the cable: run <code>adb reverse tcp:54321 tcp:54321</code>, then <code>npm run backend:local -- --host 127.0.0.1</code>, then restart Metro with <code>npx expo start -c</code>.</p></div>
+<div class="callout warn"><span class="h">Every development build follows this computer</span><p>Any phone that once ran a development build from this computer loads its code from Metro here (port 8081). Switching <code>backend:local</code> / <code>backend:cloud</code> and restarting Metro switches all of them.</p></div>
+
+<h3 id="s-ios"><span class="num">18</span>On an iPhone (Mac only)</h3>
+<p>You need a Mac with <b>Xcode</b> (App Store) and <b>CocoaPods</b> (<code>brew install cocoapods</code>). Then, in <code>apps/mobile</code>:</p>
+<div class="term cmd"><div class="bar"><i></i><i></i><i></i><span>Terminal (apps/mobile)</span></div><pre><span class="c">$ npx expo run:ios</span>             <span class="d"># the iOS simulator</span>
+<span class="c">$ npx expo run:ios --device</span>    <span class="d"># a connected iPhone</span></pre></div>
+<p>A real iPhone also needs your Apple developer team chosen in Xcode. See <code>docs/deployment.md</code> (section <i>iOS: macOS with Xcode</i>). The iOS app has had less real-device testing than Android.</p>
+
+<h3 id="s-try"><span class="num">19</span>Try the whole system</h3>
+<p>This walk-through uses every part: a new participant records with the simulated patch and shares with the demo researcher.</p>
+<ol class="steps">
+  <li><b>Create a test participant:</b> in the app, sign out if needed, tap <span class="ui">Create Account</span>, and use any address (for example <code>you+test1@example.com</code>), a password of 10+ characters, and tick the three boxes. You're signed straight in.</li>
+  <li><b>Connect the simulated patch:</b> <b>Devices → Use Simulation</b>. Home starts showing live readings. About 12 seconds later a practice <b>possible fall</b> alarm appears: tap <span class="ui">I'm OK</span>.</li>
+  <li><b>Record:</b> on Home, under <b>Record</b>, tap <span class="ui">Start recording</span>, wait a minute, then <span class="ui">Stop recording</span> → <span class="ui">Stop</span>. It appears in <b>History</b> and is backed up within a minute.</li>
+  <li><b>Check the backend:</b> in Studio, <b>Table Editor → recorded_sessions</b> now has your session.</li>
+  <li><b>Share:</b> <b>Profile → Privacy &amp; access → Share my data → Create code</b>. Note the code.</li>
+  <li><b>Add the participant on the dashboard:</b> signed in as the demo researcher, click <span class="ui">+ Add participant</span> and type the code. Your test participant appears. Open it to see the session.</li>
+</ol>
+<div class="phones four">
+  <figure><img class="phone" src="img/app/05-devices-empty.jpg" alt=""><figcaption>Devices → Use Simulation.</figcaption></figure>
+  <figure><img class="phone" src="img/app/06-home-live.jpg" alt=""><figcaption>Live readings.</figcaption></figure>
+  <figure><img class="phone" src="img/app/10-recording.jpg" alt=""><figcaption>Recording.</figcaption></figure>
+  <figure><img class="phone" src="img/app/24-share-code.jpg" alt=""><figcaption>The share code.</figcaption></figure>
+</div>
+<div class="callout note"><span class="h">Offline test (optional)</span><p>Turn on airplane mode, or run <code>supabase stop</code>, and record a session: it records normally and waits as "not backed up". Turn the network back on (or <code>supabase start</code>) and bring the app to the front: it uploads within a minute. <b>Profile → Privacy &amp; access</b> shows the backup status and has <b>Back up now</b>.</p></div>
+
+<!-- ======================= PART 5 ======================= -->
+<div class="part" data-part="Part 5">
+  <div class="label">Part 5</div>
+  <h2>The WearWise patch</h2>
+  <p>Wire the sensors, install the firmware from the dashboard, and pair the patch with a phone.</p>
+</div>
+
+<h3 id="s-parts"><span class="num">20</span>Parts and wiring</h3>
+<table>
+  <thead><tr><th style="width:24%">Part</th><th style="width:30%">Measures</th><th>Connects with</th></tr></thead>
+  <tbody>
+    <tr><td>ESP32 dev board</td><td>Controller, Bluetooth, Wi-Fi</td><td>Classic ESP32 (ESP-WROOM-32, not S2/S3/C3), 4 MB flash, USB (CP210x or CH340 chip)</td></tr>
+    <tr><td>MAX30102</td><td>Heart rate, SpO₂, pulse wave</td><td>I²C (SDA/SCL)</td></tr>
+    <tr><td>MAX30205</td><td>Skin temperature</td><td>I²C (SDA/SCL)</td></tr>
+    <tr><td>MMA8452Q</td><td>Movement, possible falls</td><td>I²C (SDA/SCL); INT1 reserved</td></tr>
+    <tr><td>AD8232 + electrodes</td><td>ECG (single lead, education only)</td><td>Analog output plus two lead-off pins</td></tr>
+  </tbody>
+</table>
+<p>Any subset of the sensors works: the patch reports only what it finds when it starts.</p>
+<figure>
+  <img class="shot-web narrow" src="../../images/pin-diagram.png" alt="WearWise pin diagram">
+  <figcaption><b>Wiring.</b> Every module runs on <b>3.3 V</b> from the board's 3V3 pin, with all grounds connected. The three I²C modules share SDA (GPIO21) and SCL (GPIO22). Full table: <code>docs/hardware.md</code>.</figcaption>
+</figure>
+<table>
+  <thead><tr><th>Signal</th><th>ESP32 pin</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>I²C SDA / SCL</td><td><b>GPIO21</b> / <b>GPIO22</b></td><td>MAX30102, MAX30205 and MMA8452Q. Add 4.7 kΩ pull-ups for long wires.</td></tr>
+    <tr><td>AD8232 OUTPUT</td><td><b>GPIO34</b></td><td>ECG input, sampled at 250 Hz.</td></tr>
+    <tr><td>AD8232 LO+ / LO−</td><td><b>GPIO32</b> / <b>GPIO33</b></td><td>Lead-off detection; also how the patch finds the AD8232 at start-up.</td></tr>
+    <tr><td>MMA8452Q INT1</td><td>GPIO27</td><td>Reserved for future use.</td></tr>
+    <tr><td>BOOT button</td><td>GPIO0</td><td>On the board. Opens a 60-second pairing window and clears a pairing lock-out.</td></tr>
+  </tbody>
+</table>
+<div class="callout safety"><span class="h">Safety: ECG electrodes</span><p>Whenever ECG electrodes are on a person, power the board from a <b>battery or USB power bank only</b>, never from a mains-powered computer, charger or bench supply. The AD8232 module isn't isolated. WearWise is a research prototype, not a medical device.</p></div>
+
+<h3 id="s-flash"><span class="num">21</span>Install the firmware (Patch setup)</h3>
+<p>The easiest way needs no programming tools: the dashboard's <b>Patch setup</b> page installs the bundled firmware (0.9.6) over USB and gives the patch its Bluetooth PIN. It works in <b>Chrome or Edge</b> on a computer, signed in as a <b>researcher or clinician</b>. Nothing about the patch is sent to the backend.</p>
+<figure>
+  <img class="shot-web" src="img/dash/12-patch-setup.jpg" alt="">
+  <figcaption><b>Patch setup</b> in the dashboard's top bar.</figcaption>
+</figure>
+<ol class="steps">
+  <li>Plug the patch into the computer with a USB <b>data</b> cable (some cables only charge). Plug in <b>one patch at a time</b>.</li>
+  <li>Click <span class="ui">Connect patch</span> and choose its port in Chrome's list: usually <i>CP210x</i>, <i>USB Serial</i> or <i>USB-SERIAL CH340</i>. No port listed? Install the USB driver for the board's chip (<b>Silicon Labs CP210x</b> or <b>WCH CH340</b>) and try again.</li>
+  <li>The page shows the patch's Bluetooth name (<code>WearWise-XXXX</code>), its firmware version and whether it has a label PIN. Choose:
+    <table style="margin-top:2mm">
+      <tbody>
+        <tr><td style="width:28%">Set up</td><td>For a <b>new patch</b>: installs the firmware, writes a new random PIN and erases the patch's settings (paired phones and Wi-Fi).</td></tr>
+        <tr><td>Update</td><td>New firmware, keeps the PIN, paired phones and Wi-Fi.</td></tr>
+        <tr><td>New PIN</td><td>For a <b>new participant</b>: a new PIN and erased settings, firmware unchanged.</td></tr>
+        <tr><td>Erase everything</td><td>Press and hold for 2 seconds. Wipes the whole patch. <b>Set up</b> can follow straight away.</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li><b>Print the PIN on a label and stick it on the patch.</b> The participant types it when pairing.</li>
+</ol>
+<div class="callout tip"><span class="h">"The patch didn't answer"?</span><p>Hold <b>BOOT</b>, tap <b>EN/RST</b>, release BOOT, and connect again. If it still fails, unplug the patch and plug it back in. <i>Technical details</i> under the card shows the full log.</p></div>
+<p class="small">Developers can also build and flash the firmware from source with ESP-IDF 5.4.2. See section 23.</p>
+
+<h3 id="s-pair"><span class="num">22</span>Pair the patch with a phone</h3>
+<div class="split">
+  <div class="text">
+    <ol class="steps">
+      <li>Power the patch (USB power bank or battery) and keep it near the phone.</li>
+      <li>In the app: <b>Devices → Pair a Device</b>. Allow <i>Nearby devices</i> / Bluetooth if asked.</li>
+      <li>Tap <span class="ui">CONNECT</span> next to the patch's name (on its label).</li>
+      <li>Type the <b>6-digit label PIN</b> when the phone asks. Ignore Android's "0000 or 1234" hint.</li>
+      <li>Home starts showing the signals the patch has. Sensors it lacks say so.</li>
+    </ol>
+    <h4>Pairing rules (enforced by the patch)</h4>
+    <ul>
+      <li>A patch accepts a new phone only when it has never been paired, or within <b>60 s of pressing BOOT</b>.</li>
+      <li><b>3 failed attempts</b> lock pairing until BOOT is pressed or a pairing succeeds.</li>
+      <li>It remembers <b>two</b> phones. A third replaces the oldest (press BOOT first). One phone is connected at a time.</li>
+    </ul>
+    <p>Refused? In the phone's Bluetooth settings, remove the old WearWise entry, press BOOT, and pair again.</p>
+  </div>
+  <div class="side"><figure><img class="phone" src="img/app/28-pair-scan.jpg" alt=""><figcaption>Two patches found by a real phone.</figcaption></figure></div>
+</div>
+
+<h3 id="s-idf"><span class="num">23</span>Optional: build the firmware from source</h3>
+<p>Only needed to change the firmware. Install <b>ESP-IDF v5.4.2</b> (Espressif's toolkit) as described in <code>docs/firmware.md</code>, then:</p>
+<div class="term cmd"><div class="bar"><i></i><i></i><i></i><span>Terminal (ESP-IDF environment)</span></div><pre><span class="c">$ cd firmware/wearwise-esp32</span>
+<span class="c">$ idf.py set-target esp32</span>
+<span class="c">$ idf.py build</span>
+<span class="c">$ idf.py -p &lt;PORT&gt; flash monitor</span>      <span class="d"># e.g. /dev/cu.usbserial-0001 or COM5; Ctrl ] quits the monitor</span></pre></div>
+<p>The serial log at start-up lists every sensor found. A board flashed this way that was never set up on the Patch setup page makes up its own PIN and prints it on this log.</p>
+
+<!-- ======================= PART 6 ======================= -->
+<div class="part" data-part="Part 6">
+  <div class="label">Part 6</div>
+  <h2>Everyday use and next steps</h2>
+  <p>Starting and stopping, moving to a hosted backend, tests, and fixes for common problems.</p>
+</div>
+
+<h3 id="s-daily"><span class="num">24</span>Daily start and stop</h3>
+<div class="cards two">
+  <div class="card"><div class="t">Start working</div>
+    <ol style="margin:1mm 0 0; font-size:8.8pt">
+      <li>Open <b>Docker Desktop</b>.</li>
+      <li>Terminal 1, in wearwise: <code>supabase start</code></li>
+      <li>Terminal 2, in wearwise: <code>npm run dev -w dashboard</code></li>
+      <li>Start the emulator (or plug in the phone).</li>
+      <li>Terminal 3, in wearwise/apps/mobile: <code>npx expo start -c</code>, then open WearWise on the device.</li>
+    </ol></div>
+  <div class="card"><div class="t">Stop working</div>
+    <ol style="margin:1mm 0 0; font-size:8.8pt">
+      <li>Press <span class="k">Ctrl C</span> in terminals 2 and 3.</li>
+      <li>Terminal 1: <code>supabase stop</code>. Your local data is kept.</li>
+      <li><code>supabase stop --no-backup</code> also deletes the local data.</li>
+      <li>Quit Docker Desktop if you like.</li>
+    </ol></div>
+</div>
+<table>
+  <thead><tr><th style="width:40%">Command (in wearwise)</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td><code>supabase status</code></td><td>Is the backend running, and its addresses.</td></tr>
+    <tr><td><code>supabase db reset</code></td><td>Rebuild the local database with fresh demo data.</td></tr>
+    <tr><td><code>npm run backend:status</code></td><td>Which backend each app uses.</td></tr>
+    <tr><td><code>npm run backend:local</code> / <code>backend:cloud</code></td><td>Switch the apps between your local backend and the hosted one. Then restart Metro with <code>-c</code>.</td></tr>
+    <tr><td><code>git pull</code> then <code>npm install</code></td><td>Get the latest code from the repository.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-cloud"><span class="num">25</span>Moving to a hosted backend</h3>
+<p>The local backend is for development and testing. For a real study, the organisation runs WearWise on its own <b>Supabase Cloud</b> project, or on a self-hosted Supabase over HTTPS. The same code works with each, chosen only by configuration. In outline:</p>
+<ol class="steps">
+  <li>Create a Supabase project under the organisation's account.</li>
+  <li><code>supabase login</code>, <code>supabase link --project-ref &lt;ref&gt;</code>, then <code>supabase db push</code> to apply the same migrations. <b>Never</b> load the demo data into it.</li>
+  <li>Set Auth, email (SMTP) and Realtime settings in its dashboard.</li>
+  <li>Put its URL and <b>publishable</b> key in <code>apps/mobile/.env</code>, <code>apps/mobile/.env.production</code> and <code>apps/dashboard/.env</code>, then run <code>npm run backend:cloud</code> and restart Metro.</li>
+</ol>
+<p>Release builds accept only <b>https://</b> addresses. The full steps, including release builds of the app and hosting the dashboard, are in <code>docs/deployment.md</code>.</p>
+<div class="callout warn"><span class="h">Keep secrets out of the apps and the repository</span><p>The apps need only the project URL and its publishable key. Service keys, database passwords, access tokens and signing keys stay with their owner and are never committed. See <code>docs/security.md</code>.</p></div>
+
+<h3 id="s-tests"><span class="num">26</span>Running the tests</h3>
+<table>
+  <thead><tr><th style="width:36%">What</th><th>Command (in wearwise)</th></tr></thead>
+  <tbody>
+    <tr><td>Phone app: types and unit tests</td><td><code>npm run typecheck -w mobile</code> then <code>npm test -w mobile</code></td></tr>
+    <tr><td>Dashboard: types and unit tests</td><td><code>npm run typecheck -w dashboard</code> then <code>npm test -w dashboard</code></td></tr>
+    <tr><td>Database security rules (<b>resets the local database</b>)</td><td><code>bash supabase/sql-tests/run-on-local-stack.sh</code></td></tr>
+    <tr><td>Database: pgTAP tests only</td><td><code>supabase test db</code></td></tr>
+    <tr><td>Hardware test procedures</td><td>See <code>docs/testing/hardware-test-matrix.md</code></td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-fix"><span class="num">27</span>Troubleshooting</h3>
+<table>
+  <thead><tr><th style="width:34%">Problem</th><th>Fix</th></tr></thead>
+  <tbody>
+    <tr><td><code>supabase start</code>: "Cannot connect to the Docker daemon"</td><td>Docker isn't running. Open Docker Desktop and wait for <i>Engine running</i>.</td></tr>
+    <tr><td><code>supabase start</code>: "port is already allocated"</td><td>Something else uses ports 54321–54327, often another Supabase project. Stop it (<code>supabase stop --project-id &lt;other&gt;</code>) or quit the other program.</td></tr>
+    <tr><td>"command not found" for git, node, docker, supabase or adb</td><td>Open a new terminal. If it persists, reinstall that tool or check the PATH settings in section 8.</td></tr>
+    <tr><td>The app says the backend isn't configured</td><td><code>npm run backend:local</code>, then restart Metro with <code>npx expo start -c</code> and reload the app.</td></tr>
+    <tr><td>The app can't reach <code>http://192.168.x.x:54321</code></td><td>Same Wi-Fi (not a guest network)? Firewall allows port 54321? Did the computer's address change? Run <code>npm run backend:local</code> again and restart Metro with <code>-c</code>. On the emulator, try <code>--host 10.0.2.2</code>.</td></tr>
+    <tr><td>Changed the backend but the app still uses the old one</td><td>The address is bundled in: <code>npx expo start -c</code>, then reload.</td></tr>
+    <tr><td>"Invalid login credentials" with a demo account</td><td>The database was reset without the demo data, or the app is on another backend: <code>supabase db reset</code>; <code>npm run backend:status</code>.</td></tr>
+    <tr><td><code>npx expo run:android</code> fails to find the SDK or Java</td><td>Check <code>ANDROID_HOME</code> and <code>JAVA_HOME</code> (JDK 17) from section 8, in a new terminal.</td></tr>
+    <tr><td><code>adb devices</code> lists nothing, or <i>unauthorized</i></td><td>Try another cable or USB port, turn USB debugging off and on, and accept the prompt on the phone.</td></tr>
+    <tr><td>Dashboard: "Not configured" page</td><td><code>npm run backend:local</code>, then restart <code>npm run dev -w dashboard</code>.</td></tr>
+    <tr><td>Can't see Participants or Patch setup</td><td>You're signed in as a participant. Use a researcher account (section 12).</td></tr>
+    <tr><td>Share code "invalid or expired"</td><td>Codes work once, last 24 hours, and a newer code replaces an unused one. Make a new code.</td></tr>
+    <tr><td>Patch setup: no port in Chrome's list</td><td>Install the CP210x or CH340 driver, use a data cable, use Chrome or Edge.</td></tr>
+    <tr><td>Pairing refused</td><td>Remove the old WearWise entry in the phone's Bluetooth settings, press BOOT, pair again within 60 s with the label PIN.</td></tr>
+    <tr><td>A possible-fall alarm keeps appearing with the simulation</td><td>On purpose: about 12 s after connecting and after a recording starts or stops, then every 3 minutes. Tap <i>I'm OK</i>.</td></tr>
+    <tr><td>A phone you didn't mean to test with now uses the local backend</td><td>It's a development build following this computer's Metro. Run <code>npm run backend:cloud</code> and restart Metro with <code>-c</code>.</td></tr>
+  </tbody>
+</table>
+<p>Many more cases are in <code>docs/troubleshooting.md</code>.</p>
+
+<h3 id="s-gloss"><span class="num">28</span>Glossary</h3>
+<table class="kv">
+  <tbody>
+    <tr><td>Repository (repo)</td><td>The project's folder of code, with its history, stored in Git.</td></tr>
+    <tr><td>Terminal / command line</td><td>A window for typing commands (section 2).</td></tr>
+    <tr><td>Docker / container</td><td>Software that runs other programs (here, the Supabase backend) in self-contained boxes.</td></tr>
+    <tr><td>Supabase</td><td>The backend platform WearWise uses: a Postgres database, logins, file storage and live messaging.</td></tr>
+    <tr><td>Migration</td><td>A file that creates or changes database tables and security rules. Applied in order.</td></tr>
+    <tr><td>Seed / demo data</td><td>Made-up accounts and simulated recordings, loaded into the local database only.</td></tr>
+    <tr><td>Row Level Security (RLS)</td><td>Database rules that decide who can read or change each row. WearWise's privacy is enforced here.</td></tr>
+    <tr><td>Publishable key / secret key</td><td>Supabase keys. The publishable key is safe inside apps. The secret key must stay private.</td></tr>
+    <tr><td>Metro</td><td>The bundler that sends the app its JavaScript code while you develop.</td></tr>
+    <tr><td>Development build</td><td>A test version of the app that loads its code from Metro on your computer.</td></tr>
+    <tr><td>Emulator</td><td>A virtual Android phone running on your computer. No Bluetooth.</td></tr>
+    <tr><td>LAN IP address</td><td>Your computer's address on your Wi-Fi network, such as 192.168.1.20.</td></tr>
+    <tr><td>Port</td><td>A numbered "door" on a computer: 54321 (backend API), 54323 (Studio), 54324 (Mailpit), 5192 (dashboard), 8081 (Metro).</td></tr>
+    <tr><td>Firmware</td><td>The program that runs on the patch's ESP32 board.</td></tr>
+  </tbody>
+</table>
+<div class="callout note"><span class="h">Where to go next</span><p>The <b>WearWise User Guide</b> explains every screen of the app and the dashboard. In the repository, <code>README.md</code> is the technical quick start and <code>docs/knowledge-transfer.md</code> is the full handover guide (architecture, database, security, deployment).</p></div>
+<div class="credits">
+  <div class="t">Made by the WearWise Project Team</div>
+  <table class="kv compact"><tbody>
+    <tr><td>Zakiul Atheef</td><td>Project Lead, Scrum Master, Technical Lead, Security Engineering Lead and Integration Lead</td></tr>
+    <tr><td>Hari Bethelli</td><td>Cloud &amp; Data Engineer</td></tr>
+    <tr><td>Siri Bethelli</td><td>UI/UX &amp; Data Visualisation Engineer</td></tr>
+    <tr><td>Thevindu Kodagoda Munasinghage</td><td>Security Engineer, Documentation Lead and QA &amp; Testing Lead</td></tr>
+  </tbody></table>
+  <p class="small"><b>Project Owner:</b> Shanmuga Sundar Dhanabalan, Deputy Director, CTI, La Trobe University (original project brief and initial project context). <b>Development:</b> the WearWise Project Team, the student development team. © 2026 WearWise Project Team · La Trobe University CSE3CAP Capstone Project. Licensed under the PolyForm Noncommercial License 1.0.0: free to use, copy and change for noncommercial purposes, not for sale. See <code>LICENSE</code>, <code>NOTICE</code> and <code>TEAM.md</code> in the repository.</p>
+  <p class="small credits-end">WearWise Setup Guide · handover release v1.0.0, October 2026. WearWise is a research prototype and not a medical device. Security practices are informed by relevant guidance; nothing about WearWise is certified.</p>
+</div>
+
+</body>
+</html>

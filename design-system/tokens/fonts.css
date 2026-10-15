@@ -1,0 +1,4 @@
+/* Poppins is the WearWise brand typeface (brand guide §12). No font binaries were
+   supplied with the brand guide, so it is loaded from Google Fonts. Swap these
+   @import lines for local @font-face rules if licensed files arrive. */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");

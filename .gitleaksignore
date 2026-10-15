@@ -1,0 +1,4 @@
+# Known gitleaks false positives (checked by hand). One fingerprint per line.
+# apps/mobile/src/platform/secure-storage/database-key.ts: KEY is the *name* of the Keychain /
+# Keystore slot ('wearwise.db.key.v1'), not a secret; the key itself is random per install.
+dc04e52e5a6226028c649b224f684e23824ca5c8:apps/mobile/src/platform/secure-storage/database-key.ts:generic-api-key:16

@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Adding a Researcher or Clinician</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body data-doc="WearWise: Adding a Researcher or Clinician">
+
+<!-- ======================= COVER ======================= -->
+<section class="cover">
+  <div class="band"></div>
+  <div class="inner">
+    <img class="logo" src="../../../apps/dashboard/src/assets/brand/logo.svg" alt="WearWise">
+    <div class="kicker">Administrator guide</div>
+    <h1>Adding a researcher<br>or clinician</h1>
+    <div class="sub">Create a dashboard account for a researcher or clinician, hand it over safely, and manage their access later. No coding needed: everything is done in the Supabase SQL Editor and the WearWise dashboard.</div>
+  </div>
+  <div class="shots">
+    <img class="wide" src="img/admin/a1-sql-filled.jpg" alt="" style="width:92mm">
+    <img class="wide" src="img/admin/a4-signin.jpg" alt="" style="width:40mm">
+    <img class="ph" src="img/app/24-share-code.jpg" alt="" style="width:30mm">
+  </div>
+  <div class="meta">
+    <div><b>Handover release v1.0.0</b> · app 0.1.0 · firmware 0.9.6<br>October 2026 · WearWise Project Team<br><span class="team">Zakiul Atheef · Hari Bethelli · Siri Bethelli · Thevindu Kodagoda Munasinghage</span></div>
+    <div style="text-align:right">Research prototype.<br>Not a medical device.</div>
+  </div>
+</section>
+
+<!-- ======================= CONTENTS ======================= -->
+<section class="toc">
+  <h2>Contents</h2>
+  <!--TOC-->
+  <div class="callout note" style="margin-top:8mm"><span class="h">The short version</span>
+    <ol style="margin:1mm 0 0">
+      <li>Supabase Dashboard → <b>SQL Editor</b> → paste <code>supabase/admin/create-viewer.sql</code> → change the email, role and name → <b>Run</b> (choose <b>Run without RLS</b> if asked).</li>
+      <li>Send the person the <b>dashboard address</b> and their <b>email</b>. Send the <b>one-time password</b> separately and privately.</li>
+      <li>They sign in, accept the terms, and change the password (top-right menu → <b>Change password</b>).</li>
+      <li>Participants share with them using a <b>share code</b> from the WearWise app.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= PART 1 ======================= -->
+<div class="part" data-part="Part 1">
+  <div class="label">Part 1</div>
+  <h2>Before you start</h2>
+  <p>How dashboard access works, and what you need to have ready.</p>
+</div>
+
+<h3 id="s-how"><span class="num">1</span>How access works</h3>
+<p>WearWise participants own their data. A researcher or clinician (a "viewer") uses the <b>web dashboard</b>, and sees a participant's data only after that participant shares it with them. Viewer accounts <b>can't be created by signing up</b>: an administrator creates them, as described in this guide.</p>
+<div class="cards">
+  <div class="card"><div class="ico">1</div><div class="t">You create the account</div><p>In the Supabase SQL Editor. You get a one-time password to hand over privately.</p></div>
+  <div class="card"><div class="ico">2</div><div class="t">They sign in</div><p>They accept the terms themselves and choose their own password.</p></div>
+  <div class="card"><div class="ico">3</div><div class="t">Participants share</div><p>A participant creates a one-time share code in the app. The researcher enters it on the dashboard and sees only the signals that participant chose.</p></div>
+</div>
+<table>
+  <thead><tr><th style="width:22%">Role</th><th>What it means</th></tr></thead>
+  <tbody>
+    <tr><td>Researcher</td><td>Dashboard access: participants who share with them, sessions, charts, CSV downloads, alerts, live view, and Patch setup (installing firmware on patches).</td></tr>
+    <tr><td>Clinician</td><td>The same dashboard and permissions. The role label is shown to participants, so choose the one that describes the person.</td></tr>
+    <tr><td>Participant</td><td>A normal app user. Participants create their own accounts in the app. Use this guide only for researchers and clinicians.</td></tr>
+  </tbody>
+</table>
+<div class="callout note"><span class="h">Nothing is shared automatically</span><p>A new researcher account sees <b>no data at all</b> until a participant gives them a share code. The participant decides which signals are shared and can remove access at any time. The researcher can also remove a participant from their own list.</p></div>
+
+<h3 id="s-need"><span class="num">2</span>What you need</h3>
+<ul class="checklist">
+  <li><b>Access to the WearWise Supabase project.</b> You must be a member of the Supabase organisation that holds the project, at supabase.com. Local test setups use Supabase Studio at <code>http://127.0.0.1:54323</code> instead: same screens.</li>
+  <li><b>The file <code>supabase/admin/create-viewer.sql</code></b> from the WearWise repository. If you don't have the repository, its full text is in Appendix A.</li>
+  <li><b>The person's email address.</b> It must <b>not already be a participant account</b>: one account can't share data with itself. Ask them for a work address that they don't use in the WearWise app.</li>
+  <li><b>Their role</b> (researcher or clinician) and the <b>name participants will see</b>, for example "Dr Alex Chen".</li>
+  <li><b>The dashboard address</b> for your project, for example <code>https://wearwise-dashboard.example.org</code>.</li>
+  <li><b>A private way to send a password</b>, separate from email: a phone call, a text message, or your organisation's password-sharing tool.</li>
+</ul>
+<p class="small">The screenshots in this guide come from a local test copy of WearWise (Supabase Studio and a local dashboard) using made-up details. The hosted Supabase Dashboard uses the same SQL Editor.</p>
+
+<!-- ======================= PART 2 ======================= -->
+<div class="part" data-part="Part 2">
+  <div class="label">Part 2</div>
+  <h2>Create the account</h2>
+  <p>About five minutes in the Supabase SQL Editor.</p>
+</div>
+
+<h3 id="s-open"><span class="num">3</span>Open the SQL Editor</h3>
+<ol class="steps">
+  <li>Go to <b>supabase.com</b>, sign in, and open the <b>WearWise project</b>. (Local test setup: open <code>http://127.0.0.1:54323</code>.)</li>
+  <li>In the left sidebar, click <b>SQL Editor</b> (the <span class="k">&gt;_</span> icon).</li>
+  <li>Click <b>+</b> (New query) to get an empty editor.</li>
+</ol>
+
+<h3 id="s-paste"><span class="num">4</span>Paste the script and fill in three values</h3>
+<p>Open <code>supabase/admin/create-viewer.sql</code> in any text editor, copy <b>all</b> of it, and paste it into the SQL Editor. Then change only the three values on the lines marked <code>&lt;-- CHANGE</code>, keeping the single quotes around each one:</p>
+<figure>
+  <img class="shot-web" src="img/admin/a1-sql-filled.jpg" alt="">
+  <figcaption><b>Lines 15–17</b> hold the three values: the email, the role, and the name participants will see.</figcaption>
+</figure>
+<table>
+  <thead><tr><th style="width:12%">Line</th><th style="width:40%">Change this</th><th>To (example)</th></tr></thead>
+  <tbody>
+    <tr><td>15</td><td><code>'dr.name@example.org'</code></td><td>their email: <code>'dr.chen@example.invalid'</code></td></tr>
+    <tr><td>16</td><td><code>'researcher'</code></td><td><code>'researcher'</code> or <code>'clinician'</code>, exactly as written</td></tr>
+    <tr><td>17</td><td><code>'Dr Name'</code></td><td>the name participants see: <code>'Dr Alex Chen'</code> (up to 80 characters)</td></tr>
+  </tbody>
+</table>
+<div class="callout warn"><span class="h">Change nothing else</span><p>Leave the rest of the script exactly as it is. If a name contains an apostrophe, type it twice: <code>'Dr O''Brien'</code>.</p></div>
+
+<h3 id="s-run"><span class="num">5</span>Run it</h3>
+<p>Click the green <b>Run</b> button (top right). The SQL Editor may stop and warn you first:</p>
+<div class="split">
+  <div class="text">
+    <p><b>"Potential issues detected"</b> says the query has "destructive operations" and "creates a table without enabling Row Level Security". Both refer to <code>new_viewer</code>, a <b>temporary scratch table</b> the script uses to hold the details while it works. It exists only for this one run and is never reachable from the apps.</p>
+    <p>Click <b>Run without RLS</b>.</p>
+    <p class="small">"Run and enable RLS" would also work, but it adds a step that isn't needed. <b>Cancel</b> changes nothing.</p>
+  </div>
+  <div class="side" style="flex-basis:84mm"><figure><img class="shot-web" src="img/admin/a2-potential-issues.jpg" alt=""><figcaption>The SQL Editor's warning. Choose <b>Run without RLS</b>.</figcaption></figure></div>
+</div>
+
+<h3 id="s-otp"><span class="num">6</span>Copy the one-time password</h3>
+<p>After a moment, <b>Results</b> shows one row: the email, role, name and a <b>one-time password</b>.</p>
+<figure>
+  <img class="shot-web" src="img/admin/a3-result.jpg" alt="">
+  <figcaption><b>The result.</b> The password is hidden in this guide. Yours shows 16 random letters and numbers.</figcaption>
+</figure>
+<ul>
+  <li>Copy the password now and keep it somewhere private until you've sent it. It isn't stored anywhere you can read later. If it's lost, make a new one (section 14).</li>
+  <li>The account is ready at once. The email address is already confirmed, so no confirmation email is sent.</li>
+  <li>The SQL Editor <b>saves your query</b>, with the email in it, under <b>Private</b> in its side list. Once you're done, right-click it there and choose <b>Delete query</b>.</li>
+</ul>
+<div class="callout safety"><span class="h">Handle the password carefully</span><p>Anyone with the email address and this password can sign in as the researcher. Never put it in the same message as the email address or the dashboard link, in a shared document, or in a group chat.</p></div>
+
+<h3 id="s-send"><span class="num">7</span>Send the welcome details</h3>
+<p>Send two separate messages. The first can be an ordinary email:</p>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Example welcome email (no password in it)</span></div><pre>Subject: Your WearWise dashboard account
+
+Hello Dr Chen,
+
+Your WearWise researcher account is ready.
+
+  Dashboard:  https://&lt;your dashboard address&gt;
+  Email:      dr.chen@example.invalid
+
+I'll send your one-time password separately. When you first sign in,
+please read and accept the terms, then change the password: click your
+name at the top right, then "Change password".
+
+Participants share their data with you by giving you a one-time share
+code from the WearWise app. Enter it under Participants → Add participant.
+For Patch setup (installing firmware on patches), use Chrome or Edge.</pre></div>
+<p>Send the <b>one-time password</b> separately and privately: a phone call, a text message, or your organisation's password-sharing tool.</p>
+
+<!-- ======================= PART 3 ======================= -->
+<div class="part" data-part="Part 3">
+  <div class="label">Part 3</div>
+  <h2>The researcher's first sign-in</h2>
+  <p>What the new researcher or clinician sees. You can send them this part.</p>
+</div>
+
+<h3 id="s-signin"><span class="num">8</span>Sign in with the one-time password</h3>
+<div class="split">
+  <div class="text">
+    <ol class="steps">
+      <li>Open the dashboard address in a web browser on a computer.</li>
+      <li>Type your email and the one-time password exactly as received. It's case-sensitive.</li>
+      <li>Click <b>Sign in</b>.</li>
+    </ol>
+    <p class="small">"Invalid login credentials"? Check for spaces before or after the password, and that you're on the right dashboard address. Still stuck? Ask the administrator for a new password (section 14).</p>
+  </div>
+  <div class="side" style="flex-basis:62mm"><figure><img class="shot-web" src="img/admin/a4-signin.jpg" alt=""><figcaption>The sign-in page.</figcaption></figure></div>
+</div>
+
+<h3 id="s-terms"><span class="num">9</span>Accept the terms</h3>
+<div class="split">
+  <div class="text">
+    <p>The first time, the dashboard asks the person to read and agree to the <b>Terms of Use</b>, the <b>Privacy Policy</b>, the <b>Collection Notice</b>, the research information and the <b>Researcher &amp; clinician terms</b>. Each one is a link.</p>
+    <p>Tick the box and click <b>Continue</b>.</p>
+    <div class="callout note"><span class="h">Why the administrator can't do this</span><p>Agreeing to the terms is a personal decision. The script deliberately leaves it for the person to do at their first sign-in. When the terms are updated later, everyone is asked again.</p></div>
+  </div>
+  <div class="side" style="flex-basis:62mm"><figure><img class="shot-web" src="img/admin/a5-terms.jpg" alt=""><figcaption>"Before you continue": tick, then Continue.</figcaption></figure></div>
+</div>
+
+<h3 id="s-pw"><span class="num">10</span>Change the password</h3>
+<p>Right away, replace the one-time password with one only the person knows:</p>
+<div class="phones" style="gap:6mm; align-items:flex-start">
+  <figure style="flex-basis:44mm"><img class="shot-web" src="img/admin/a7-account-menu.jpg" alt=""><figcaption><b>1.</b> Click your name (top right) → <b>Change password</b>.</figcaption></figure>
+  <figure style="flex-basis:56mm"><img class="shot-web" src="img/admin/a8-change-password.jpg" alt=""><figcaption><b>2.</b> Current (one-time) password, then the new one twice.</figcaption></figure>
+  <figure style="flex-basis:56mm"><img class="shot-web" src="img/admin/a9-password-changed.jpg" alt=""><figcaption><b>3.</b> "Password changed". Click <b>Done</b>.</figcaption></figure>
+</div>
+<p>The new password needs <b>at least 10 characters</b> and can't be a common password. Capital and lowercase letters, a number and a symbol are recommended, and the strength bar shows how strong it is. The same menu has the light/dark <b>Theme</b> and <b>Sign out</b>.</p>
+
+<h3 id="s-ready"><span class="num">11</span>Ready: add participants</h3>
+<figure>
+  <img class="shot-web" src="img/admin/a6-participants-empty.jpg" alt="">
+  <figcaption><b>A new researcher's dashboard.</b> "No one is sharing with you yet" until a participant gives them a share code.</figcaption>
+</figure>
+<div class="split">
+  <div class="text">
+    <ol class="steps">
+      <li>The <b>participant</b> opens the WearWise app: <b>Profile → Privacy &amp; access → Share my data</b>, ticks the signals to share, and taps <b>Create code</b>.</li>
+      <li>They give the researcher the code, for example <code>AWWXK-59EF5</code>. It works <b>once</b> and expires after <b>24 hours</b>.</li>
+      <li>The <b>researcher</b> clicks <b>+ Add participant</b>, types the code and clicks <b>Add participant</b>. The participant appears straight away.</li>
+    </ol>
+    <p>The <b>WearWise User Guide</b> explains every dashboard screen (sections 16–22).</p>
+  </div>
+  <div class="side two" style="flex-basis:104mm">
+    <figure style="flex:0 0 36mm"><img class="phone" src="img/app/24-share-code.jpg" alt=""><figcaption>The participant's code.</figcaption></figure>
+    <figure><img class="shot-web" src="img/dash/08-add-participant.jpg" alt=""><figcaption>The researcher enters it.</figcaption></figure>
+  </div>
+</div>
+
+<!-- ======================= PART 4 ======================= -->
+<div class="part" data-part="Part 4">
+  <div class="label">Part 4</div>
+  <h2>Check and manage access</h2>
+  <p>Seeing who has access, promoting an existing account, resetting a password, and suspending someone.</p>
+</div>
+<p>Each task below uses another script from <code>supabase/admin/</code>, run the same way: <b>SQL Editor → New query → paste the whole file → change the lines marked <code>&lt;-- CHANGE</code> → Run</b>.</p>
+
+<h3 id="s-overview"><span class="num">12</span>See every researcher and clinician</h3>
+<p><code>overview.sql</code> is read-only: it changes nothing. It holds two queries, and the SQL Editor shows the result of the <b>last one only</b> (who shares what with whom). To see the list of researchers and clinicians, <b>select the lines of query 1</b> with the mouse and click <b>Run selected</b>:</p>
+<figure>
+  <img class="shot-web" src="img/admin/a10-overview.jpg" alt="">
+  <figcaption><b>Query 1 selected, then "Run selected".</b> Every researcher and clinician, their status, when they were created, and how many participants share with them now.</figcaption>
+</figure>
+<p>Run the whole file (nothing selected) to see query 2: each participant, the viewer they share with, which signals (<code>1</code> ECG, <code>2</code> SpO₂, <code>3</code> temperature, <code>4</code> heart rate, <code>5</code> movement, <code>6</code> pulse wave), whether falls are included, and since when. This is a good list to review regularly, and to hand over when the project changes hands.</p>
+
+<h3 id="s-setrole"><span class="num">13</span>Make an existing account a researcher</h3>
+<p>If the person <b>already has a WearWise account</b> (for example, they tried the app), <code>create-viewer.sql</code> stops with an error and changes nothing (section 17). Use <b><code>set-role.sql</code></b> instead: change their email and the role, then Run.</p>
+<ul>
+  <li>It works only if the account's <b>email address is confirmed</b>. "No rows returned" means no account with that email, or an unconfirmed one: nothing was changed.</li>
+  <li>The person is <b>signed out everywhere</b> and signs in again under the new role. Their own recordings are kept.</li>
+  <li>A researcher or clinician <b>can't create share codes</b>, so a separate email for dashboard work is usually better.</li>
+  <li>The same script with <code>'participant'</code> turns a viewer back into a normal app user. They lose dashboard access at once.</li>
+</ul>
+
+<h3 id="s-reset"><span class="num">14</span>Locked out: a new one-time password</h3>
+<p>First, the person can try <b>Forgot password?</b> on the dashboard sign-in page, which emails a reset link. If the email can't reach them, run <b><code>reset-password.sql</code></b> with their email:</p>
+<ul>
+  <li>Like <code>create-viewer.sql</code>, it may show the <b>"Potential issues detected"</b> warning. Choose <b>Run without RLS</b>.</li>
+  <li>The result shows a new <b>one-time password</b> and <code>account_found = true</code>. (<code>false</code> means no account has that email, and nothing changed.)</li>
+  <li>The account is signed out everywhere, so the old password stops working. Send the new one privately, as in section 7. The person changes it after signing in.</li>
+</ul>
+
+<h3 id="s-suspend"><span class="num">15</span>Suspend or reactivate someone</h3>
+<p>When a researcher leaves the study, or their access should pause, run <b><code>set-status.sql</code></b> with <code>'suspended'</code> and their email:</p>
+<figure>
+  <img class="shot-web" src="img/admin/a11-suspend.jpg" alt="">
+  <figcaption><b>Suspended.</b> The result confirms the new status and how many signed-in sessions were ended.</figcaption>
+</figure>
+<div class="split">
+  <div class="text">
+    <ul>
+      <li>A suspended researcher or clinician <b>sees nothing</b>. The dashboard signs them out and says <i>"You can't use this dashboard"</i>.</li>
+      <li>Every participant's share with them is hidden at once. <b>Nothing is deleted</b>: run the script again with <code>'active'</code> and their access comes back as it was.</li>
+      <li>Suspending a <b>participant</b> hides their shared data from every viewer, and their unused share code stops working.</li>
+    </ul>
+    <p class="small">The change takes effect on the person's very next request. The database checks the account's status itself, whatever a browser still has open.</p>
+  </div>
+  <div class="side" style="flex-basis:62mm"><figure><img class="shot-web" src="img/admin/a12-suspended-signin.jpg" alt=""><figcaption>What a suspended researcher sees.</figcaption></figure></div>
+</div>
+
+<h3 id="s-remove"><span class="num">16</span>Removing access for good</h3>
+<table>
+  <thead><tr><th style="width:36%">You want to…</th><th>Do this</th></tr></thead>
+  <tbody>
+    <tr><td>End one participant's sharing with one researcher</td><td>The participant: app → Profile → Privacy &amp; access → <b>Remove access</b>. Or the researcher: dashboard → the participant → <b>Remove participant</b>.</td></tr>
+    <tr><td>End everything a researcher can see, keeping the record</td><td><b>Suspend</b> them (section 15). It can be undone.</td></tr>
+    <tr><td>Delete an account and all its data</td><td>A developer runs <code>node supabase/scripts/admin.mjs delete-account &lt;email&gt;</code> (Appendix B). It deletes the account's recording files first, then the account. <b>This can't be undone.</b> Don't delete users from Authentication → Users: that leaves their recording files behind in Storage.</td></tr>
+  </tbody>
+</table>
+
+<!-- ======================= PART 5 ======================= -->
+<div class="part" data-part="Part 5">
+  <div class="label">Part 5</div>
+  <h2>Help</h2>
+  <p>Error messages, good practice, and the script itself.</p>
+</div>
+
+<h3 id="s-trouble"><span class="num">17</span>Troubleshooting</h3>
+<figure>
+  <img class="shot-web" src="img/admin/a13-already-exists.jpg" alt="">
+  <figcaption><b>"… already has an account. Nothing was changed."</b> The most common error. Use <code>set-role.sql</code> (section 13), or ask the person for a different email.</figcaption>
+</figure>
+<table>
+  <thead><tr><th style="width:38%">Message or problem</th><th>What to do</th></tr></thead>
+  <tbody>
+    <tr><td><code>Not an email address: …</code></td><td>Check line 15: one address, inside single quotes, no spaces.</td></tr>
+    <tr><td><code>Role must be researcher or clinician, not "…"</code></td><td>Line 16 must say exactly <code>'researcher'</code> or <code>'clinician'</code>.</td></tr>
+    <tr><td><code>syntax error at or near …</code></td><td>A quote was deleted, or a name contains an apostrophe. Paste the whole file again and type <code>''</code> for an apostrophe.</td></tr>
+    <tr><td>"Potential issues detected"</td><td>Expected for <code>create-viewer.sql</code> and <code>reset-password.sql</code>. Choose <b>Run without RLS</b> (section 5).</td></tr>
+    <tr><td><code>set-role.sql</code> / <code>set-status.sql</code>: no rows returned</td><td>No account with that email (check spelling). For <code>set-role.sql</code>, the account's email may not be confirmed yet.</td></tr>
+    <tr><td>The one-time password was lost</td><td>Run <code>reset-password.sql</code> (section 14).</td></tr>
+    <tr><td>"Invalid login credentials" on first sign-in</td><td>Spaces copied with the password, or the wrong dashboard address (a test site instead of the real one). Otherwise reset the password.</td></tr>
+    <tr><td>"You can't use this dashboard"</td><td>The account is suspended (section 15).</td></tr>
+    <tr><td>Signed in, but sees <i>My data</i> and <i>Sharing</i> instead of Participants</td><td>That's a participant account. Make it a researcher with <code>set-role.sql</code>.</td></tr>
+    <tr><td>"Forgot password?" emails never arrive</td><td>The project needs its own email (SMTP) settings: Supabase → Authentication → Emails. See <code>docs/operations/researcher-access.md</code>.</td></tr>
+    <tr><td>Share code "invalid or expired"</td><td>Codes work once and last 24 hours, and a newer code replaces an unused one. Ask the participant for a new code.</td></tr>
+    <tr><td>Patch setup is missing or can't find the patch</td><td>Use Chrome or Edge on a computer, with a researcher or clinician account (see the Setup Guide).</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-good"><span class="num">18</span>Good practice</h3>
+<ul class="checklist">
+  <li>One account per person. Never share a login between colleagues.</li>
+  <li>Use an email address the person doesn't use as a WearWise participant.</li>
+  <li>Send the one-time password separately from the email address and the dashboard link, and ask the person to change it at first sign-in.</li>
+  <li>Delete your saved queries in the SQL Editor once you're done: they contain email addresses.</li>
+  <li>Suspend accounts promptly when someone leaves the study.</li>
+  <li>Review <code>overview.sql</code> regularly, and whenever the project changes hands.</li>
+  <li>Only people who need to manage accounts should be members of the Supabase project.</li>
+</ul>
+<p class="small">WearWise is a research prototype, not a medical device. Its security practices are informed by relevant guidance; nothing about WearWise is certified.</p>
+
+<!-- ======================= APPENDICES ======================= -->
+<h3 id="s-sql" style="break-before: page; margin-top:0"><span class="num">A</span>The create-viewer.sql script</h3>
+<p>For administrators without the WearWise repository: this is the complete script, as of handover release v1.0.0. Copy all of it. The repository copy at <code>supabase/admin/create-viewer.sql</code> is authoritative if the two ever differ.</p>
+<div class="term" style="break-inside:auto"><div class="bar"><i></i><i></i><i></i><span>supabase/admin/create-viewer.sql</span></div><pre style="font-size:6.5pt; line-height:1.38; padding:2.4mm 3.5mm"><!--INCLUDE-ESCAPED:../../../supabase/admin/create-viewer.sql--></pre></div>
+
+<h3 id="s-cli"><span class="num">B</span>For developers: the command line</h3>
+<p><code>supabase/scripts/admin.mjs</code> does the same tasks from a terminal, using a Supabase <b>personal access token</b> (Supabase → Account → Access Tokens). Read the token without showing it or saving it in your shell history:</p>
+<div class="term"><div class="bar"><i></i><i></i><i></i><span>Terminal (in the wearwise folder)</span></div><pre><span class="c">$ read -rs SB_PAT &amp;&amp; export SB_PAT</span>      <span class="d"># paste the token, press Enter (nothing is shown)</span>
+<span class="c">$ node supabase/scripts/admin.mjs create-viewer dr.chen@clinic.org clinician "Dr Chen"</span>
+<span class="c">$ node supabase/scripts/admin.mjs set-role someone@example.org researcher</span>
+<span class="c">$ node supabase/scripts/admin.mjs delete-account someone@example.org</span>        <span class="d"># dry run: shows what would go</span>
+<span class="c">$ node supabase/scripts/admin.mjs delete-account someone@example.org --yes</span>  <span class="d"># deletes; can't be undone</span>
+<span class="c">$ unset SB_PAT</span></pre></div>
+<p>A token is personal: each administrator creates their own, and never commits or shares it. Full details: <code>docs/operations/researcher-access.md</code>.</p>
+<div class="credits">
+  <div class="t">Made by the WearWise Project Team</div>
+  <table class="kv compact"><tbody>
+    <tr><td>Zakiul Atheef</td><td>Project Lead, Scrum Master, Technical Lead, Security Engineering Lead and Integration Lead</td></tr>
+    <tr><td>Hari Bethelli</td><td>Cloud &amp; Data Engineer</td></tr>
+    <tr><td>Siri Bethelli</td><td>UI/UX &amp; Data Visualisation Engineer</td></tr>
+    <tr><td>Thevindu Kodagoda Munasinghage</td><td>Security Engineer, Documentation Lead and QA &amp; Testing Lead</td></tr>
+  </tbody></table>
+  <p class="small"><b>Project Owner:</b> Shanmuga Sundar Dhanabalan, Deputy Director, CTI, La Trobe University (original project brief and initial project context). <b>Development:</b> the WearWise Project Team, the student development team. © 2026 WearWise Project Team · La Trobe University CSE3CAP Capstone Project. Licensed under the PolyForm Noncommercial License 1.0.0: free to use, copy and change for noncommercial purposes, not for sale. See <code>LICENSE</code>, <code>NOTICE</code> and <code>TEAM.md</code> in the repository.</p>
+  <p class="small credits-end">WearWise: Adding a Researcher or Clinician · handover release v1.0.0, October 2026. Screenshots use a local test copy with made-up details.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:var(--font-core);font-size:var(--type-body-size);line-height:var(--type-body-lh);color:var(--text-body);background:var(--surface-page);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{color:var(--text-heading);margin:0;font-family:var(--font-core)}
+h1{font-size:var(--type-h1-size);font-weight:var(--type-h1-weight);line-height:var(--type-h1-lh);letter-spacing:var(--type-h1-ls)}
+h2{font-size:var(--type-h2-size);font-weight:var(--type-h2-weight);line-height:var(--type-h2-lh);letter-spacing:var(--type-h2-ls)}
+h3{font-size:var(--type-h3-size);font-weight:var(--type-h3-weight);line-height:var(--type-h3-lh)}
+p{margin:0;text-wrap:pretty}
+a{color:var(--text-link);text-decoration:none;font-weight:var(--fw-medium)}
+a:hover{color:var(--action-primary-hover);text-decoration:underline}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--border-focus);outline-offset:2px}
+@keyframes ww-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes ww-fade-up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Screen entrance: a short rise and fade. The 6px travel is the brand guide's
+   entrance distance — far enough to read as arriving, short enough not to feel
+   like a slide transition. */
+@keyframes ww-enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ww-enter{animation:ww-enter var(--dur-enter) var(--ease-out) both}
+
+/* One global honour of the OS setting, so no component has to remember. Motion is
+   removed, not shortened — a 0.01ms animation still fires its start and end states,
+   which is what keeps draw-on charts visible rather than blank. */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+
+/* Theme-swapped artwork. Used by Logo when no explicit `onDark` is given: both
+   files are in the DOM and the stylesheet picks, so a theme toggle needs no JS. */
+.ww-art-dark{display:none}
+[data-theme="dark"] .ww-art-dark{display:block}
+[data-theme="dark"] .ww-art-light{display:none}

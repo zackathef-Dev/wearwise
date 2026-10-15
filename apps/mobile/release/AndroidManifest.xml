@@ -1,0 +1,14 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+  <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" tools:node="remove" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" tools:node="remove" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" tools:node="remove" />
+  <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove" />
+  <uses-permission android:name="android.permission.CAMERA" tools:node="remove" />
+  <uses-permission android:name="android.permission.USE_BIOMETRIC" tools:node="remove" />
+  <uses-permission android:name="android.permission.USE_FINGERPRINT" tools:node="remove" />
+  <application android:allowBackup="false" android:usesCleartextTraffic="false"
+    android:fullBackupContent="false" android:dataExtractionRules="@xml/wearwise_data_extraction_rules"
+    tools:replace="android:allowBackup,android:fullBackupContent,android:usesCleartextTraffic,android:dataExtractionRules" />
+</manifest>

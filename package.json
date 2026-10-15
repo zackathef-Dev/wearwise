@@ -1,0 +1,15 @@
+{
+  "name": "wearwise",
+  "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "description": "WearWise \u2014 wearable data, shown plainly. Monorepo: participant mobile app, shared packages, firmware, backend.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "backend:local": "node scripts/use-backend.mjs local",
+    "backend:cloud": "node scripts/use-backend.mjs cloud",
+    "backend:status": "node scripts/use-backend.mjs status"
+  }
+}

@@ -1,0 +1,36 @@
+WearWise
+Copyright (c) 2026 WearWise Project Team
+
+The WearWise Project Team:
+- Zakiul Atheef
+- Hari Bethelli
+- Siri Bethelli
+- Thevindu Kodagoda Munasinghage
+
+WearWise is licensed under the PolyForm Noncommercial License 1.0.0 (see LICENSE). In short:
+anyone may use, copy, change and share it for any noncommercial purpose, including personal
+study, research, teaching and use by educational, research, health, charitable and government
+organisations. Selling it, or using it for any other commercial purpose, needs written
+permission from the WearWise Project Team. Anyone who shares a copy must pass on LICENSE,
+including its "Required Notice" line.
+
+WearWise is a research prototype. It is not a medical device, its measurements are not
+clinically validated, and it must not be used for diagnosis, treatment or emergency response.
+
+Third-party components
+----------------------
+
+Third-party software used by WearWise remains under its own licence. The licence above
+covers only the WearWise Project Team's own work.
+
+- npm dependencies of the apps and packages: each under its own licence, as recorded in its
+  package (see package-lock.json for the full list).
+- The Poppins typeface, copied into apps/dashboard/src/assets/fonts/: SIL Open Font License
+  1.1, Copyright 2020 The Poppins Project Authors. Licence text:
+  apps/dashboard/src/assets/fonts/OFL.txt.
+- The ESP32 firmware is built with Espressif's ESP-IDF and its components, including NimBLE
+  and Mbed TLS, under the Apache License 2.0. The bundled firmware images in
+  apps/dashboard/public/firmware/ contain them. Licence text:
+  apps/dashboard/public/firmware/LICENSE-Apache-2.0.txt.
+- Supabase, Expo, React Native and the other tools named in the documentation are products
+  of their respective owners.

@@ -1,0 +1,8 @@
+# Netlify: set the site's base directory to apps/dashboard. Headers and the SPA
+# fallback come from public/_headers and public/_redirects (copied into dist/).
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"

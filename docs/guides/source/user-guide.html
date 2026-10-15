@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WearWise User Guide</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body data-doc="WearWise User Guide">
+
+<!-- ======================= COVER ======================= -->
+<section class="cover">
+  <div class="band"></div>
+  <div class="inner">
+    <img class="logo" src="../../../apps/dashboard/src/assets/brand/logo.svg" alt="WearWise">
+    <div class="kicker">User guide</div>
+    <h1>The WearWise app<br>and web dashboard</h1>
+    <div class="sub">How to use every screen of the WearWise phone app and the researcher dashboard, step by step, with screenshots.</div>
+  </div>
+  <div class="shots">
+    <img class="ph" src="img/app/06-home-live.jpg" alt="">
+    <img class="ph" src="img/app/13-session-detail.jpg" alt="">
+    <img class="wide" src="img/dash/03-live-view.jpg" alt="">
+  </div>
+  <div class="meta">
+    <div><b>Handover release v1.0.0</b> · app 0.1.0 · firmware 0.9.6<br>October 2026 · WearWise Project Team<br><span class="team">Zakiul Atheef · Hari Bethelli · Siri Bethelli · Thevindu Kodagoda Munasinghage</span></div>
+    <div style="text-align:right">Research prototype.<br>Not a medical device.</div>
+  </div>
+</section>
+
+<!-- ======================= CONTENTS ======================= -->
+<section class="toc">
+  <h2>Contents</h2>
+  <!--TOC-->
+</section>
+
+<!-- ======================= PART 1 ======================= -->
+<div class="part" data-part="Part 1">
+  <div class="label">Part 1</div>
+  <h2>Getting to know WearWise</h2>
+  <p>What WearWise is, who uses which part, and the words this guide uses.</p>
+</div>
+
+<h3 id="s-what"><span class="num">1</span>What WearWise is</h3>
+<p>WearWise is a <b>research prototype</b> for collecting wearable sensor data with the participant in control. It has three parts that work together:</p>
+<div class="cards">
+  <div class="card"><div class="ico">1</div><div class="t">The patch</div><p>A small sensor board worn on the body. It measures heart rate, blood oxygen (SpO₂), pulse wave, skin temperature, movement and ECG, and sends the readings to the phone over Bluetooth.</p></div>
+  <div class="card"><div class="ico">2</div><div class="t">The phone app</div><p>Shows the readings live, records sessions, warns about a possible fall, and backs recordings up. The participant decides who can see what.</p></div>
+  <div class="card"><div class="ico">3</div><div class="t">The web dashboard</div><p>Where a researcher or clinician sees the data a participant chose to share: sessions, charts, alerts and live view. It also installs firmware on patches.</p></div>
+</div>
+<figure>
+  <img class="shot-web" src="../../images/architecture.png" alt="WearWise system architecture">
+  <figcaption><b>How the parts connect.</b> The patch talks only to the phone. The phone keeps every recording in an encrypted database on the phone and backs it up to the project's backend. The dashboard shows only what the participant shares.</figcaption>
+</figure>
+
+<div class="callout safety">
+  <span class="h">Important: WearWise is not a medical device</span>
+  <p>Its readings are prototype sensor measurements and are not clinically validated. "Possible fall detected" means the movement looked like a fall. It can miss falls and it can raise false alarms. No emergency service or contact is ever alerted. Don't use WearWise to diagnose, treat or monitor any medical condition. If you feel unwell, contact a doctor or emergency services directly.</p>
+</div>
+
+<h3 id="s-who"><span class="num">2</span>Who uses what</h3>
+<table>
+  <thead><tr><th style="width:22%">Person</th><th style="width:30%">Uses</th><th>Can do</th></tr></thead>
+  <tbody>
+    <tr><td>Participant</td><td>The phone app (and, optionally, the dashboard's <i>My data</i> pages)</td><td>Wear the patch, see live readings, record sessions, answer fall alarms, and decide who sees which signals. Can stop sharing at any time.</td></tr>
+    <tr><td>Researcher or clinician</td><td>The web dashboard</td><td>See participants who shared with them, open sessions and charts, download CSV files, receive alerts, watch live view while a participant allows it, and set up patches.</td></tr>
+    <tr><td>Administrator</td><td>The backend (see the Setup Guide)</td><td>Creates researcher and clinician accounts. Participants create their own accounts in the app.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-words"><span class="num">3</span>Words used in this guide</h3>
+<table class="kv">
+  <tbody>
+    <tr><td>Patch / sensor</td><td>The WearWise sensor board. Its Bluetooth name looks like <code>WearWise-6280</code>.</td></tr>
+    <tr><td>Simulated patch</td><td>A pretend patch built into the app. It produces realistic test data, so you can try everything without hardware. Simulated data is always labelled <span class="pill">Simulated</span>.</td></tr>
+    <tr><td>Signal</td><td>One kind of measurement: ECG, heart rate, SpO₂, skin temperature, movement or pulse wave.</td></tr>
+    <tr><td>Session / recording</td><td>A stretch of time you chose to save, with the signals you picked.</td></tr>
+    <tr><td>Backed up</td><td>A copy of the session has been uploaded to the project's backend (the "cloud").</td></tr>
+    <tr><td>Share code</td><td>A one-time code, like <code>AWWXK-59EF5</code>, that a participant gives a researcher so they can see chosen signals.</td></tr>
+    <tr><td>Live view</td><td>A temporary mode in which a researcher can watch the readings as they arrive. Nothing is saved.</td></tr>
+  </tbody>
+</table>
+
+<!-- ======================= PART 2 ======================= -->
+<div class="part" data-part="Part 2">
+  <div class="label">Part 2</div>
+  <h2>The phone app</h2>
+  <p>For participants. Screens are shown from an Android phone. iPhone looks the same.</p>
+</div>
+
+<h3 id="s-account"><span class="num">4</span>Signing in and creating an account</h3>
+<div class="phones">
+  <figure><img class="phone" src="img/app/01-sign-in.jpg" alt=""><figcaption><b>Sign in.</b> Email and password, or <span class="ui">Create Account</span>.</figcaption></figure>
+  <figure><img class="phone" src="img/app/02-create-account.jpg" alt=""><figcaption><b>Create account.</b> Name, email and a password.</figcaption></figure>
+  <figure><img class="phone" src="img/app/03-create-account-consent.jpg" alt=""><figcaption><b>Agreements.</b> Tick all three boxes to continue.</figcaption></figure>
+</div>
+<h4>Create an account</h4>
+<ol class="steps">
+  <li>Open WearWise and tap <span class="ui">Create Account</span>.</li>
+  <li>Enter your <b>full name</b> and <b>email address</b>.</li>
+  <li>Choose a <b>password of at least 10 characters</b>. The checklist under the box turns green as you go. Capital letters, a number and a symbol are recommended, and very common passwords are refused.</li>
+  <li>Tick <b>I'm 18 or older</b>. WearWise is a research study for adults.</li>
+  <li>Tick <b>I agree to the Terms of Use and Privacy Policy</b>. The links under the box open each document.</li>
+  <li>Tick <b>I consent to WearWise storing my health readings</b>, then tap <span class="ui">Create Account</span>.</li>
+</ol>
+<p>Depending on how the study is set up, you may need to confirm your email address first: open the email WearWise sends and tap its link.</p>
+<h4>Forgot your password?</h4>
+<p>On the sign-in screen tap <span class="ui">Forgot password?</span>, enter your email and follow the link in the email you receive. The link works once and expires after an hour.</p>
+
+<h3 id="s-tabs"><span class="num">5</span>Finding your way around</h3>
+<p>The bar at the bottom of the screen has five tabs. You can reach every feature from one of them.</p>
+<table>
+  <thead><tr><th style="width:18%">Tab</th><th>What it's for</th></tr></thead>
+  <tbody>
+    <tr><td>Home</td><td>Live readings from your patch, recording, recent alerts and this week's summary.</td></tr>
+    <tr><td>Alerts</td><td>Possible falls and readings that stayed outside the usual range.</td></tr>
+    <tr><td>Devices</td><td>Pair, connect, rename or forget a patch; use the simulation; Wi-Fi streaming; automatic backup.</td></tr>
+    <tr><td>History</td><td>Every session you recorded, with charts.</td></tr>
+    <tr><td>Profile</td><td>Your details, privacy and sharing, backup, password, notifications, documents and sign-out.</td></tr>
+  </tbody>
+</table>
+<p>The <b>bell</b> at the top of Home opens your notifications. The circle with your initials opens your profile.</p>
+
+<h3 id="s-home"><span class="num">6</span>The Home screen</h3>
+<div class="split">
+  <div class="text">
+    <p>Home is where you see your readings as they arrive. From top to bottom:</p>
+    <ul>
+      <li><b>Sensor card.</b> Which patch is connected and how. With no patch it says <i>No sensor yet</i> and offers <span class="ui">Pair a device</span>.</li>
+      <li><b>ECG strip.</b> The last 3 seconds of your heart's electrical signal. <span class="pill">LIVE</span> shows it is updating.</li>
+      <li><b>Reading tiles.</b> Heart rate (BPM), SpO₂ (%), skin temperature (°C) and movement (<i>Still</i>, <i>Moving</i> or <i>Active</i>). Each tile says <span class="pill">Normal</span>, <span class="pill grey">Below normal</span> or <span class="pill grey">High</span>.</li>
+      <li><b>What "Normal" means.</b> Explains the reference ranges (table below).</li>
+      <li><b>Record.</b> Starts a recording (section 8).</li>
+      <li><b>Alerts</b> and <b>This week.</b> Your latest alerts, then minutes recorded, sessions and how many are backed up. <span class="ui">Sync</span> backs up now.</li>
+    </ul>
+    <p>A tile shows a dash (—) and a short reason when there's no reading, for example <i>Not connected</i> or <i>Finger on the sensor</i>. Signals your patch doesn't have say so.</p>
+  </div>
+  <div class="side two">
+    <figure><img class="phone" src="img/app/04-home-not-connected.jpg" alt=""><figcaption>No patch connected yet.</figcaption></figure>
+    <figure><img class="phone" src="img/app/06-home-live.jpg" alt=""><figcaption>Live readings from a patch.</figcaption></figure>
+  </div>
+</div>
+<div class="split">
+  <div class="text">
+    <h4 style="margin-top:0">See more detail</h4>
+    <p>Tap a tile (for example <b>Heart rate</b>) to open its chart under the ECG. Choose <span class="ui">30 s</span>, <span class="ui">1 min</span> or <span class="ui">5 min</span> to change how much history it shows. Tap <b>×</b> to close it.</p>
+    <h4>The reference ranges</h4>
+    <table>
+      <thead><tr><th>Signal</th><th>"Normal"</th><th>An alert opens when…</th></tr></thead>
+      <tbody>
+        <tr><td>Heart rate</td><td>60–100 BPM</td><td>below 60 or above 100 for 15 s</td></tr>
+        <tr><td>SpO₂</td><td>95 % or more</td><td>below 95 % for 15 s</td></tr>
+        <tr><td>Skin temp</td><td>31–37.5 °C</td><td>above 37.5 °C for 60 s</td></tr>
+      </tbody>
+    </table>
+    <p class="small">These ranges are general reference values for adults at rest, used to label prototype measurements. They are not a diagnosis. Skin temperature is lower than core body temperature.</p>
+  </div>
+  <div class="side"><figure><img class="phone" src="img/app/08-heart-rate-detail.jpg" alt=""><figcaption>Heart rate opened, showing the last minute.</figcaption></figure></div>
+</div>
+
+<h3 id="s-devices"><span class="num">7</span>Connecting your patch</h3>
+<div class="split">
+  <div class="text">
+    <p>Open the <b>Devices</b> tab. The first time, it says <i>No devices yet</i> and offers two buttons:</p>
+    <ul>
+      <li><span class="ui">Pair a Device</span>: connect a real WearWise patch over Bluetooth.</li>
+      <li><span class="ui">Use Simulation</span>: use the built-in simulated patch. Use this to try the app, or on an emulator, which has no Bluetooth.</li>
+    </ul>
+    <h4>Pair a real patch</h4>
+    <ol class="steps">
+      <li>Switch the patch on and keep it near the phone. If the phone asks for <b>Nearby devices</b> or Bluetooth permission, allow it.</li>
+      <li>Tap <span class="ui">Pair a Device</span>. The app scans and lists every WearWise patch nearby by name, such as <code>WearWise-6280</code>, with its signal strength.</li>
+      <li>Tap <span class="ui">CONNECT</span> next to <b>your</b> patch. The name is on the patch's label.</li>
+      <li>When the phone asks for a PIN, type the <b>6-digit PIN printed on the patch's label</b>. Android may suggest "0000 or 1234": ignore that and use the label PIN.</li>
+    </ol>
+    <div class="callout tip"><span class="h">Pairing refused?</span>
+      <p>A patch accepts a new phone only when it has never been paired, or for <b>60 seconds after its BOOT button is pressed</b>. Three wrong attempts lock pairing until BOOT is pressed. In the phone's Bluetooth settings, remove any old WearWise entry, press BOOT on the patch, then pair again.</p></div>
+  </div>
+  <div class="side two">
+    <figure><img class="phone" src="img/app/05-devices-empty.jpg" alt=""><figcaption>Devices, before any patch.</figcaption></figure>
+    <figure><img class="phone" src="img/app/28-pair-scan.jpg" alt=""><figcaption>Two patches found while scanning (real phone).</figcaption></figure>
+  </div>
+</div>
+<div class="split">
+  <div class="text">
+    <h4 style="margin-top:0">Once connected</h4>
+    <p>Your patch appears under <b>Your devices</b> with a <span class="pill">Connected</span> badge and three buttons:</p>
+    <ul>
+      <li><span class="ui">Disconnect</span> stops the connection. It changes to <span class="ui">Reconnect</span>.</li>
+      <li><span class="ui">Rename</span> gives the patch a name you'll recognise.</li>
+      <li><span class="ui">Forget</span> removes it from the app. Its past recordings stay in History.</li>
+    </ul>
+    <p>If the connection drops, the app tries again on its own and continues the same recording.</p>
+    <h4>Wi-Fi streaming (optional)</h4>
+    <p>A real patch can also stream over Wi-Fi when the phone and patch are on the same network. Use <span class="ui">Set up Wi-Fi</span> on the Wi-Fi card. The patch supports <b>2.4 GHz networks only</b>, and Bluetooth stays connected as a fallback. The simulation has no radio, so the card says <i>Not available</i>.</p>
+    <h4>Automatic sync</h4>
+    <p>Leave <b>Automatic sync</b> on to upload sessions whenever you're online.</p>
+  </div>
+  <div class="side"><figure><img class="phone" src="img/app/16-devices-connected.jpg" alt=""><figcaption>A connected patch (here the simulation).</figcaption></figure></div>
+</div>
+
+<h3 id="s-record"><span class="num">8</span>Recording a session</h3>
+<p>Live readings on Home are <b>not saved</b> until you record. A recording saves the signals you pick, on your phone first, then backs them up.</p>
+<div class="phones">
+  <figure><img class="phone" src="img/app/09-record-panel.jpg" alt=""><figcaption><b>1. Pick what to save</b>, then start.</figcaption></figure>
+  <figure><img class="phone" src="img/app/10-recording.jpg" alt=""><figcaption><b>2. Recording.</b> Timer, signals, samples and gaps.</figcaption></figure>
+  <figure><img class="phone" src="img/app/11-stop-confirm.jpg" alt=""><figcaption><b>3. Stop and save.</b> Confirm to finish.</figcaption></figure>
+</div>
+<ol class="steps">
+  <li>Connect your patch (section 7) and scroll down Home to the <b>Record</b> card.</li>
+  <li>Under <i>Pick what to save</i>, tap the signals to include. Ticked chips are saved. Tap a chip again to leave it out.</li>
+  <li>Tap <span class="ui">Start recording · N signals</span>. A red dot and a timer show it is recording. <i>Samples</i> counts the readings saved and <i>gaps</i> counts any interruptions.</li>
+  <li>To finish, tap <span class="ui">Stop recording</span>, then <span class="ui">Stop</span> to confirm. <span class="ui">Keep recording</span> carries on.</li>
+</ol>
+<p>The finished session appears in <b>History</b>. It's uploaded when you're online, and Home's <i>This week</i> card shows <i>Backed up 2/2</i> when everything is safe.</p>
+<div class="callout note"><span class="h">Offline is fine</span><p>WearWise records normally without internet. Sessions wait as "not backed up" and upload by themselves once you're online again. To start it yourself, use <span class="ui">Sync</span> on Home or <span class="ui">Back up now</span> in <b>Profile → Privacy &amp; access</b>.</p></div>
+
+<h3 id="s-fall"><span class="num">9</span>When a possible fall is detected</h3>
+<div class="split">
+  <div class="text">
+    <p>If the movement sensor sees a pattern that looks like a fall (a short drop, a hard impact, then stillness), the app shows a full-screen <b>POSSIBLE FALL DETECTED</b> card and sounds an alarm, even when the phone is on silent.</p>
+    <ol class="steps">
+      <li>If you're fine, tap <span class="ui">I'm OK</span>. The alarm stops and the event is saved as <i>Marked OK</i>.</li>
+      <li>If nobody answers within <b>30 seconds</b>, the event is saved as <i>unanswered</i>.</li>
+    </ol>
+    <p>The card shows the strength of the impact in <i>g</i>, and <span class="pill">SIMULATED</span> when it comes from the simulation.</p>
+    <div class="callout safety"><span class="h">No one is called</span><p>WearWise does not contact emergency services, family or anyone else. A researcher you share falls with sees the event on the dashboard, but only when they're looking. Fall detection is a simple prototype rule and can be wrong in both directions.</p></div>
+    <div class="callout tip"><span class="h">Using the simulation?</span><p>The simulated patch includes a pretend fall about 12 seconds after it starts streaming (on connecting, and again when a recording starts or stops), then every 3 minutes, so you can practise. Just tap <span class="ui">I'm OK</span>.</p></div>
+  </div>
+  <div class="side"><figure><img class="phone" src="img/app/07-fall-alarm.jpg" alt=""><figcaption>The possible-fall alarm with its 30-second countdown.</figcaption></figure></div>
+</div>
+
+<h3 id="s-alerts"><span class="num">10</span>Alerts</h3>
+<div class="split">
+  <div class="text">
+    <p>The <b>Alerts</b> tab lists, newest first:</p>
+    <ul>
+      <li><b>Fall detected</b>: every possible fall, with the impact, the time and whether it happened during a recording.</li>
+      <li><b>High / low readings</b>: a heart rate, SpO₂ or skin temperature that stayed outside its range for the time in the table in section 6. One alert covers the whole time it stayed out of range and shows its peak.</li>
+    </ul>
+    <p>A red dot marks alerts you haven't seen. The number on the tab icon counts them. Tap the bin icon to delete one alert, or <span class="ui">Clear all</span> to delete them all. <span class="ui">How alerts work</span> explains the rules in the app.</p>
+    <p>In <b>Profile → Notifications</b> you can also get alerts as phone notifications while WearWise is running, and choose whether a possible fall sounds an alarm.</p>
+  </div>
+  <div class="side"><figure><img class="phone" src="img/app/17-alerts.jpg" alt=""><figcaption>Three possible falls from the simulation.</figcaption></figure></div>
+</div>
+
+<h3 id="s-history"><span class="num">11</span>History and session details</h3>
+<div class="phones">
+  <figure><img class="phone" src="img/app/12-history.jpg" alt=""><figcaption><b>History.</b> One card per session.</figcaption></figure>
+  <figure><img class="phone" src="img/app/13-session-detail.jpg" alt=""><figcaption><b>Session detail.</b> ECG for the whole session.</figcaption></figure>
+  <figure><img class="phone" src="img/app/14-session-detail-hr.jpg" alt=""><figcaption><b>Heart rate</b> tab of the same session.</figcaption></figure>
+</div>
+<p><b>History</b> lists every session on this phone: the patch, date and time, signals saved, falls (if any) and length. Sessions are saved on the phone first, then backed up. <span class="ui">Select</span> lets you pick several sessions at once.</p>
+<p>Tap a session to open it:</p>
+<ul>
+  <li>Badges at the top show whether it's <i>Uploaded to cloud</i>, how long it is, and whether it's simulated.</li>
+  <li>Tabs switch between signals: <b>ECG, SpO₂, Temp, HR, Move, PPG</b> (pulse wave).</li>
+  <li>The large number is the session average. Below the chart, <span class="ui">All</span>, <span class="ui">1 min</span> or <span class="ui">10 s</span> zooms the chart. <i>Minimum</i>, <i>Maximum</i> and <i>Samples</i> summarise the signal.</li>
+  <li>Falls during the session are listed with the time into the session, the impact and the answer (for example <i>Marked OK</i>).</li>
+  <li><span class="ui">Advanced details</span> shows technical information about the recording.</li>
+</ul>
+<div class="split">
+  <div class="text">
+    <h4 style="margin-top:0">Deleting a session</h4>
+    <p>At the bottom of a session, tap <span class="ui">Delete Session</span>. WearWise asks first, because a deleted session is removed <b>from this phone and from the cloud backup</b>, and can't be undone. Tap <span class="ui">Delete</span> to confirm or <span class="ui">Keep</span> to cancel.</p>
+    <p>A researcher you shared with also stops seeing a deleted session.</p>
+  </div>
+  <div class="side"><figure><img class="phone" src="img/app/15-delete-confirm.jpg" alt=""><figcaption>Deleting asks for confirmation.</figcaption></figure></div>
+</div>
+
+<h3 id="s-profile"><span class="num">12</span>Profile and settings</h3>
+<div class="phones">
+  <figure><img class="phone" src="img/app/18-profile.jpg" alt=""><figcaption><b>Profile.</b> Your details and health information.</figcaption></figure>
+  <figure><img class="phone" src="img/app/19-profile-settings.jpg" alt=""><figcaption><b>Account and notifications</b>, further down.</figcaption></figure>
+  <figure><img class="phone" src="img/app/20-health-info.jpg" alt=""><figcaption><b>Health information.</b> Optional; stays on the phone.</figcaption></figure>
+</div>
+<table class="kv">
+  <tbody>
+    <tr><td>Name and picture</td><td>Tap the pencil next to your name to change your name or profile picture.</td></tr>
+    <tr><td>Health information</td><td>Sex, date of birth, height, weight and blood group. All optional. It is stored only in the encrypted database on your phone and <b>is not uploaded</b>.</td></tr>
+    <tr><td>Privacy &amp; access</td><td>Who can see your data, sharing codes, live view and backup status (sections 13 and 14).</td></tr>
+    <tr><td>Cloud &amp; sync</td><td>Whether everything is backed up (<i>Up to date</i>).</td></tr>
+    <tr><td>Change password</td><td>Enter your current password, then a new one (10+ characters).</td></tr>
+    <tr><td>Legal &amp; privacy</td><td>The Terms of Use, Privacy Policy, Collection Notice, research information and health &amp; safety notes, and at the end the team who made WearWise and its licence.</td></tr>
+    <tr><td>Storage consent on record</td><td>The date you agreed to WearWise storing your readings.</td></tr>
+    <tr><td>Notifications</td><td><b>Phone notifications</b>: show alerts and patch drop-outs as notifications while WearWise is running. <b>Sound</b>: a possible fall sounds an alarm, even on silent, until you answer it.</td></tr>
+    <tr><td>Appearance</td><td>Turn on the dark appearance if you prefer it.</td></tr>
+    <tr><td>Export all my data / Request account deletion</td><td>Opens an email to the study's privacy contact so they can act on your request (or the privacy policy, if no contact has been set up).</td></tr>
+    <tr><td>Sign out</td><td>Asks first. Your saved recordings stay on this phone for your next sign-in.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-share"><span class="num">13</span>Sharing your data with a researcher</h3>
+<p>Nobody can see your recordings until you share them. You decide <b>who</b>, <b>which signals</b> and <b>whether falls are included</b>, and you can change or end it at any time. Sharing is done with a one-time <b>share code</b>.</p>
+<div class="phones">
+  <figure><img class="phone" src="img/app/22-privacy-live-share.jpg" alt=""><figcaption><b>Privacy &amp; access → Share my data.</b></figcaption></figure>
+  <figure><img class="phone" src="img/app/23-share-pick.jpg" alt=""><figcaption><b>Choose the signals</b> and whether to include falls.</figcaption></figure>
+  <figure><img class="phone" src="img/app/24-share-code.jpg" alt=""><figcaption><b>Your code.</b> It works once, for 24 hours.</figcaption></figure>
+</div>
+<ol class="steps">
+  <li>Go to <b>Profile → Privacy &amp; access</b> and scroll to <b>Share my data</b>.</li>
+  <li>Tap <span class="ui">Share my data</span>. Under <i>What do you want to share?</i>, tick the signals the researcher may see. Turn <b>Include falls</b> on or off.</li>
+  <li>Tap <span class="ui">Create code</span>. Your code appears, for example <code>AWWXK-59EF5</code>. It works <b>once</b> and expires after <b>24 hours</b>.</li>
+  <li>Tap <span class="ui">Copy</span> or <span class="ui">Share</span> and give the code to the researcher. They enter it on the dashboard (section 17). Then tap <span class="ui">Done</span>.</li>
+</ol>
+<div class="callout warn"><span class="h">Only give the code to someone you trust</span><p>Once they enter it, they can see your name and your backed-up sessions for the signals you chose (not your email), until you remove them. The code is shown only once. Making a new code cancels an unused one.</p></div>
+<div class="split">
+  <div class="text">
+    <h4 style="margin-top:0">See and change who has access</h4>
+    <p><b>People with access</b> lists everyone you share with: their name, email, role, since when, and what they <i>can see</i>.</p>
+    <ul>
+      <li><span class="ui">Change</span> picks different signals for that person.</li>
+      <li><span class="ui">Remove access</span> ends their access straight away.</li>
+    </ul>
+    <p>While a code is waiting to be used, a card says <i>A share code is waiting to be used</i>, with <span class="ui">Make a new code</span> and <span class="ui">Cancel code</span>.</p>
+    <div class="callout note"><span class="h">Only backed-up sessions are shared</span><p>People you share with see sessions once they're backed up to the cloud, not recordings that are only on your phone.</p></div>
+  </div>
+  <div class="side"><figure><img class="phone" src="img/app/21-privacy.jpg" alt=""><figcaption>One researcher can see seven signals.</figcaption></figure></div>
+</div>
+
+<h3 id="s-live"><span class="num">14</span>Live view (for setting up the patch)</h3>
+<p>Live view lets a researcher you already share with watch your readings <b>as they arrive</b>, for example while they help you put the patch on. <b>Nothing is saved</b>: readings go straight to them and aren't stored anywhere. It switches itself off after the time you choose.</p>
+<div class="phones">
+  <figure><img class="phone" src="img/app/25-live-view-ready.jpg" alt=""><figcaption><b>Choose how long</b>, then start.</figcaption></figure>
+  <figure><img class="phone" src="img/app/26-live-view-on.jpg" alt=""><figcaption><b>Live view on.</b> Time left and Stop.</figcaption></figure>
+  <figure><img class="phone" src="img/app/27-record-request.jpg" alt=""><figcaption><b>A recording request</b> from the researcher.</figcaption></figure>
+</div>
+<ol class="steps">
+  <li>Connect your patch. Until you do, the button says <i>Connect your sensor to use live view</i>.</li>
+  <li>In <b>Profile → Privacy &amp; access</b>, find <b>Live view for setup</b>. Under <i>Who would see it</i> you can check who will be watching.</li>
+  <li>Under <i>How long</i>, choose <span class="ui">30 min</span>, <span class="ui">1 h</span>, <span class="ui">2 h</span>, <span class="ui">4 h</span> or <span class="ui">8 h</span>, then tap <span class="ui">Start live view</span>.</li>
+  <li>Keep WearWise open. Live view pauses while the app is in the background. Home shows a banner with the time left.</li>
+  <li>Tap <span class="ui">Stop live view</span> at any time. The researcher can also stop it from their side.</li>
+</ol>
+<p><b>Recording requests.</b> During live view the researcher can ask you to start a recording. A card explains what would be saved. Tap <span class="ui">Start recording</span> to agree or <span class="ui">Not now</span> to decline. Nothing records unless you tap Start, and you can stop the recording on Home at any time.</p>
+
+<!-- ======================= PART 3 ======================= -->
+<div class="part" data-part="Part 3">
+  <div class="label">Part 3</div>
+  <h2>The web dashboard</h2>
+  <p>For researchers and clinicians, in any modern browser on a computer. (Patch setup needs Chrome or Edge.)</p>
+</div>
+
+<h3 id="s-dsign"><span class="num">15</span>Signing in</h3>
+<div class="split">
+  <div class="text">
+    <p>Open the dashboard address your project gave you and sign in with your email and password.</p>
+    <ul>
+      <li><b>Researcher and clinician accounts</b> are set up by a WearWise administrator.</li>
+      <li><b>Participants</b> can sign in with the same email and password as the app. They see their own data (section 22).</li>
+    </ul>
+    <p><b>Forgot password?</b> Under the password box, click <span class="ui">Forgot password?</span>, enter your email and click <span class="ui">Send reset link</span>. The link in the email works once and expires after an hour.</p>
+    <p>The links at the bottom of every page open the Terms, Privacy Policy, Collection Notice, Health &amp; safety and Accessibility documents. <span class="ui">© 2026 WearWise Project Team</span> opens the team credits.</p>
+  </div>
+  <div class="side" style="flex-basis:78mm"><figure><img class="shot-web" src="img/dash/01-sign-in.jpg" alt=""><figcaption>The dashboard sign-in page.</figcaption></figure></div>
+</div>
+
+<h3 id="s-dparts"><span class="num">16</span>Participants</h3>
+<div class="keep">
+<figure>
+  <img class="shot-web" src="img/dash/02-participants.jpg" alt="">
+  <figcaption><b>Participants.</b> Everyone who has shared data with you, what they share, since when, how many sessions and the latest one.</figcaption>
+</figure>
+<p>After signing in you land on <b>Participants</b>. You see only people who gave you a share code, and only the signals each of them chose. A <span class="pill grey">Falls</span> chip means falls are included. Click a name to open that participant. The <b>⋯</b> menu at the end of a row has <span class="ui">Open</span> and <span class="ui">Remove participant</span>, which ends your access.</p>
+</div>
+
+<h3 id="s-dadd"><span class="num">17</span>Adding a participant with a share code</h3>
+<div class="split">
+  <div class="text">
+    <ol class="steps">
+      <li>Ask the participant to create a share code in their app (section 13).</li>
+      <li>On <b>Participants</b>, click <span class="ui">+ Add participant</span>.</li>
+      <li>Type the code. Capitals, dashes and spaces don't matter. Click <span class="ui">Add participant</span>.</li>
+      <li>The participant appears in the list straight away, with the signals they chose.</li>
+    </ol>
+    <div class="callout tip"><span class="h">"Invalid or expired code"?</span><p>A code works <b>once</b>, lasts <b>24 hours</b>, and a newer code replaces an unused one. Ask for a new code. After 10 wrong tries in an hour, adding is paused for that hour.</p></div>
+  </div>
+  <div class="side" style="flex-basis:80mm"><figure><img class="shot-web" src="img/dash/08-add-participant.jpg" alt=""><figcaption>Enter the participant's share code.</figcaption></figure>
+  <figure style="margin-top:4mm"><img class="shot-web" src="img/dash/09-participant-menu.jpg" alt=""><figcaption>The row menu: Open or Remove participant.</figcaption></figure></div>
+</div>
+
+<h3 id="s-dlive"><span class="num">18</span>A participant's page and live view</h3>
+<figure>
+  <img class="shot-web" src="img/dash/03-live-view.jpg" alt="">
+  <figcaption><b>Participant page with live view on.</b> The summary (signals shared, falls, since when, sessions), then the live ECG and reading tiles while the participant allows it.</figcaption>
+</figure>
+<p>The top of the page summarises the sharing. When the participant has <b>live view</b> on, the <b>Live view</b> card shows their connected patch, the live ECG and the reading tiles, labelled <span class="pill">Live</span> (and <span class="pill">Simulated</span> for simulated data). The text under the title says until when, and that <i>nothing is stored</i>.</p>
+<ul>
+  <li><span class="ui">Start recording</span> sends the participant a request. Nothing records unless they tap Start on their phone. While it records, <span class="ui">Stop recording</span> ends it. The session appears under <b>Sessions</b> once it's backed up.</li>
+  <li><span class="ui">Stop live view</span> ends live view for both of you.</li>
+  <li><span class="ui">Remove participant</span> (top right) ends your access.</li>
+</ul>
+<p>When live view is off, the card says the readings will appear once the participant switches on <i>Live view for setup</i> in their app. If their app goes to the background, it shows <span class="pill grey">Paused</span> until they open it again.</p>
+
+<h3 id="s-dsessions"><span class="num">19</span>Sessions, falls and charts</h3>
+<figure>
+  <img class="shot-web" src="img/dash/04-sessions-falls.jpg" alt="">
+  <figcaption><b>Sessions and Falls</b>, further down the participant page: each session's start, length, status and signals, and every fall with its impact and answer.</figcaption>
+</figure>
+<p>Further down the participant page, <b>Sessions</b> lists each backed-up session with its start time, length, status (<span class="pill">Complete</span>, <span class="pill">Simulated</span>), the signals shared and the device. <b>Falls</b> lists possible falls with the impact, the lowest reading during the drop (<i>free-fall low</i>) and the participant's answer. Click a session, or <span class="ui">View in session</span>, to open it.</p>
+<figure>
+  <img class="shot-web narrow" src="img/dash/05-session-summary.jpg" alt="">
+  <figcaption><b>Session detail.</b> A banner marks simulated data. The table summarises each shared signal over the whole session.</figcaption>
+</figure>
+
+<figure class="pb">
+  <img class="shot-web" src="img/dash/06-session-charts.jpg" alt="">
+  <figcaption><b>Charts.</b> All charts share one time axis. The vertical line marks the possible fall.</figcaption>
+</figure>
+<h4>Using the charts</h4>
+<ul>
+  <li><b>Zoom:</b> drag across any chart to zoom all of them to that time. Double-click to see the whole session again. The buttons do the same: <span class="ui">Earlier</span>, <span class="ui">Later</span>, <span class="ui">Zoom in</span>, <span class="ui">Zoom out</span>, <span class="ui">Whole session</span>.</li>
+  <li><b>Falls</b> appear as vertical markers. <span class="ui">Show on charts</span> in the Falls table jumps to one.</li>
+  <li><b>Download CSV</b> on each chart saves that signal as a spreadsheet file.</li>
+  <li><b>Table view of this window</b> shows the numbers behind what's on screen.</li>
+</ul>
+<p class="small">Summaries are computed on the participant's phone over the whole session. Fall times come from the phone's clock and line up with the charts to within about a second.</p>
+
+<h3 id="s-dalerts"><span class="num">20</span>Alerts</h3>
+<figure>
+  <img class="shot-web" src="img/dash/07-alerts.jpg" alt="">
+  <figcaption><b>Alerts.</b> Falls and readings that stayed out of range, for participants who share them with you.</figcaption>
+</figure>
+<p>Click the <b>bell</b> in the top bar to open <b>Alerts</b>. New alerts are marked <span class="pill">New</span>. <i>Status</i> shows how a fall was answered (<i>Marked OK</i> or unanswered) or whether an out-of-range reading has <i>Ended</i>. <span class="ui">View in session</span> opens the moment in its session.</p>
+<ul>
+  <li><b>Browser notifications:</b> click <span class="ui">Turn on</span> to get a notification when a new alert arrives while WearWise is open in that browser.</li>
+  <li><b>Alert sound:</b> a short tone for each new alert, and an urgent one for a possible fall. Browsers block sound until you've clicked the page once.</li>
+  <li><span class="ui">Refresh</span> reloads the list.</li>
+</ul>
+<div class="callout safety"><span class="h">The dashboard is not a monitoring service</span><p>Alerts appear only while someone is looking at the dashboard. Nothing is sent by SMS or call, and nobody is on watch.</p></div>
+
+<h3 id="s-dpatch"><span class="num">21</span>Patch setup and your account</h3>
+<figure>
+  <img class="shot-web narrow" src="img/dash/12-patch-setup.jpg" alt="">
+  <figcaption><b>Patch setup</b> installs firmware on a patch over USB and gives it the PIN printed on its label.</figcaption>
+</figure>
+<p><b>Patch setup</b> (top bar) prepares a patch for a participant: plug it in with a USB data cable, click <span class="ui">Connect patch</span>, then choose <span class="ui">Set up</span> for a new patch, <span class="ui">Update</span> for new firmware, or <span class="ui">New PIN</span> for a new participant. Print the PIN on the patch's label. It only works in <b>Chrome or Edge</b>. The full steps are in the <b>WearWise Setup Guide</b>.</p>
+<div class="split" style="margin-top:4mm">
+  <div class="text">
+    <h4 style="margin-top:0">Your account menu</h4>
+    <p>Click your name at the top right to see your role and:</p>
+    <ul>
+      <li><b>Theme:</b> <span class="ui">System</span>, <span class="ui">Light</span> or <span class="ui">Dark</span>.</li>
+      <li><span class="ui">Change password</span>: enter your current password and a new one twice. The checklist shows the rules.</li>
+      <li><span class="ui">Sign out</span>.</li>
+    </ul>
+  </div>
+  <div class="side" style="flex-basis:58mm"><figure><img class="shot-web" src="img/dash/10-account-menu.jpg" alt=""><figcaption>The account menu.</figcaption></figure></div>
+</div>
+
+<h3 id="s-dpart"><span class="num">22</span>The dashboard for participants</h3>
+<p>Participants can sign in to the dashboard with their app account to see their data on a bigger screen. They get two pages:</p>
+<figure>
+  <img class="shot-web" src="img/dash/13-participant-my-data.jpg" alt="">
+  <figcaption><b>My data.</b> Your backed-up sessions and falls. Only you, and people you share with, can see them.</figcaption>
+</figure>
+<figure>
+  <img class="shot-web" src="img/dash/14-participant-sharing.jpg" alt="">
+  <figcaption><b>Sharing.</b> Who can see your data and which signals. <span class="ui">Stop sharing</span> ends their access straight away. New share codes are made in the app.</figcaption>
+</figure>
+
+<!-- ======================= PART 4 ======================= -->
+<div class="part" data-part="Part 4">
+  <div class="label">Part 4</div>
+  <h2>Help</h2>
+  <p>Your privacy at a glance, and what to do when something doesn't work.</p>
+</div>
+
+<h3 id="s-privacy"><span class="num">23</span>Your privacy at a glance</h3>
+<ul class="checklist">
+  <li>Recordings are kept in an <b>encrypted database on your phone</b> and work fully offline.</li>
+  <li>Finished sessions are backed up to the study's backend so they aren't lost with the phone.</li>
+  <li>Health information you add to your profile <b>stays on your phone</b>.</li>
+  <li>Nobody sees your data until <b>you</b> give them a share code. They see only the signals you chose, only while you keep sharing.</li>
+  <li>Either side can end sharing at any time: <span class="ui">Remove access</span> in the app, or <span class="ui">Stop sharing</span> / <span class="ui">Remove participant</span> on the dashboard.</li>
+  <li>Live view saves nothing and switches itself off.</li>
+  <li>The patch never connects to the internet itself. Only your phone does.</li>
+</ul>
+
+<h3 id="s-faq"><span class="num">24</span>Frequently asked questions</h3>
+<table class="kv compact">
+  <tbody>
+    <tr><td>Is WearWise a medical device?</td><td>No. It is a research prototype. Its readings are not clinically validated and must not be used for diagnosis or treatment.</td></tr>
+    <tr><td>Who can see my readings?</td><td>Only you, and the researchers you give a share code to. They see only the signals you chose, only while you keep sharing, and never your email address.</td></tr>
+    <tr><td>Do I need the internet?</td><td>Not for recording. WearWise records and shows readings offline and backs sessions up when you're online again.</td></tr>
+    <tr><td>What if I lose my phone?</td><td>Sessions that were backed up are restored when you sign in on a new phone. Recordings that were never backed up stay encrypted on the old phone. Tell the study team, change your password, and ask for a <b>New PIN</b> on your patch.</td></tr>
+    <tr><td>Can I delete my data?</td><td>Yes. Delete a session in History (it is removed from your phone and the backup). To delete your account, use <span class="ui">Request account deletion</span> in Profile.</td></tr>
+    <tr><td>Will WearWise call for help if I fall?</td><td>No. It shows a <i>possible fall</i> alarm on your phone, and a researcher who shares falls sees it on their dashboard. Nobody else is contacted.</td></tr>
+    <tr><td>Why does it say "Simulated"?</td><td>You are using the built-in simulated patch, which produces pretend readings for trying the app.</td></tr>
+    <tr><td>Can I use my patch with two phones?</td><td>A patch remembers two phones or tablets, but connects to one at a time.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-trouble"><span class="num">25</span>Troubleshooting</h3>
+<table class="compact">
+  <thead><tr><th style="width:32%">Problem</th><th>What to do</th></tr></thead>
+  <tbody>
+    <tr><td>The app says the backend isn't configured</td><td>This is a setup problem, not something you did. Tell the person who installed the app (Setup Guide, Troubleshooting).</td></tr>
+    <tr><td>No patch found when scanning</td><td>Check the patch is on and close by. Allow <i>Nearby devices</i> / Bluetooth. Close WearWise on any other phone: a patch talks to one phone at a time.</td></tr>
+    <tr><td>"The patch didn't accept this device"</td><td>Remove the old WearWise entry in the phone's Bluetooth settings, press <b>BOOT</b> on the patch, and pair again within 60 seconds, typing the label PIN.</td></tr>
+    <tr><td>A third phone or tablet can't pair</td><td>A patch remembers two devices. Press BOOT and pair: the oldest is replaced.</td></tr>
+    <tr><td>Heart rate about double at first, or SpO₂ around 80 %</td><td>Hold still for 10–20 seconds with steady, light finger pressure. Prototype modules can read poorly before settling.</td></tr>
+    <tr><td>ECG says "leads off"</td><td>An electrode isn't touching the skin. Check the electrodes and the lead colours.</td></tr>
+    <tr><td>The fall alarm keeps appearing with the simulation</td><td>That's on purpose (section 9). Tap <span class="ui">I'm OK</span>.</td></tr>
+    <tr><td>A session stays "not backed up"</td><td>Check your internet connection, then <span class="ui">Back up now</span> in Profile → Privacy &amp; access.</td></tr>
+    <tr><td>The researcher can't see my sessions</td><td>Only backed-up sessions are shared. Also check that the code was used within 24 hours, and that you didn't make a newer code.</td></tr>
+    <tr><td>The live view button is greyed out</td><td>Connect your patch first.</td></tr>
+    <tr><td>The researcher sees nothing in live view</td><td>Live view is off, its time ran out, or WearWise is in the background (it pauses). Start it again and keep the app open.</td></tr>
+    <tr><td>Wi-Fi streaming never starts</td><td>Use a 2.4 GHz network. Bluetooth carries the data anyway.</td></tr>
+    <tr><td>The dashboard plays no alert sound</td><td>Click anywhere on the page once. Browsers block sound until you do.</td></tr>
+    <tr><td>Can't see Participants or Patch setup on the dashboard</td><td>Those pages are for researcher and clinician accounts. Ask the administrator.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-safety"><span class="num">26</span>Safety notes</h3>
+<div class="callout safety"><span class="h">Please read</span>
+<ul>
+  <li>WearWise is a research prototype. It is not a medical device, and its readings are not clinically validated.</li>
+  <li>"Possible fall detected" can be wrong, and real falls can be missed. Nobody is alerted outside WearWise.</li>
+  <li>Never rely on WearWise in an emergency. Call emergency services directly.</li>
+  <li><b>ECG electrodes on a person:</b> the patch must run on a battery or USB power bank, never on a mains-powered computer or charger.</li>
+  <li>Stop wearing the patch if it irritates your skin, gets hot, or is damaged.</li>
+</ul></div>
+<div class="credits">
+  <div class="t">Made by the WearWise Project Team</div>
+  <table class="kv compact"><tbody>
+    <tr><td>Zakiul Atheef</td><td>Project Lead, Scrum Master, Technical Lead, Security Engineering Lead and Integration Lead</td></tr>
+    <tr><td>Hari Bethelli</td><td>Cloud &amp; Data Engineer</td></tr>
+    <tr><td>Siri Bethelli</td><td>UI/UX &amp; Data Visualisation Engineer</td></tr>
+    <tr><td>Thevindu Kodagoda Munasinghage</td><td>Security Engineer, Documentation Lead and QA &amp; Testing Lead</td></tr>
+  </tbody></table>
+  <p class="small"><b>Project Owner:</b> Shanmuga Sundar Dhanabalan, Deputy Director, CTI, La Trobe University (original project brief and initial project context). <b>Development:</b> the WearWise Project Team, the student development team. © 2026 WearWise Project Team · La Trobe University CSE3CAP Capstone Project. Licensed under the PolyForm Noncommercial License 1.0.0: free to use, copy and change for noncommercial purposes, not for sale. See <code>LICENSE</code>, <code>NOTICE</code> and <code>TEAM.md</code> in the repository.</p>
+  <p class="small credits-end">WearWise User Guide · handover release v1.0.0, October 2026. Screens show synthetic demo data. Security practices are informed by relevant guidance; nothing about WearWise is certified.</p>
+</div>
+
+</body>
+</html>

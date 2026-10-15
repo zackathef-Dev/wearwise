@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WearWise Security Documentation</title>
+<link rel="stylesheet" href="guide.css">
+</head>
+<body data-doc="WearWise Security Documentation" data-author="Zakiul Atheef">
+
+<!-- ======================= COVER ======================= -->
+<section class="cover">
+  <div class="band"></div>
+  <div class="inner">
+    <img class="logo" src="../../../apps/dashboard/src/assets/brand/logo.svg" alt="WearWise">
+    <div class="kicker">Security documentation</div>
+    <h1>WearWise<br>security</h1>
+    <div class="sub">How WearWise protects participants' data across the sensor patch, the phone app, the backend and the web dashboard: controls, secrets, testing, open risks and the owner's responsibilities.</div>
+  </div>
+  <div class="shots">
+    <img class="wide" src="../../images/architecture.png" alt="" style="width:150mm">
+  </div>
+  <div class="meta">
+    <div><b>Author: Zakiul Atheef</b><br>Version 1.0 · 14 October 2026 · handover release v1.0.0<br><span class="team">WearWise Project Team: Zakiul Atheef · Hari Bethelli · Siri Bethelli · Thevindu Kodagoda Munasinghage</span></div>
+    <div style="text-align:right">Research prototype. Not a medical device.<br>Not certified or independently tested.</div>
+  </div>
+</section>
+
+<!-- ======================= CONTENTS ======================= -->
+<section class="toc">
+  <h2>Contents</h2>
+  <!--TOC-->
+</section>
+
+<!-- ======================= PART 1 ======================= -->
+<div class="part" data-part="Part 1">
+  <div class="label">Part 1</div>
+  <h2>Overview</h2>
+  <p>What this document covers, the security position in one page, and the system and data it protects.</p>
+</div>
+
+<h3 id="s-about"><span class="num">1</span>About this document</h3>
+<table class="kv doc-control">
+  <tbody>
+    <tr><td>Title</td><td>WearWise Security Documentation</td></tr>
+    <tr><td>Author</td><td><b>Zakiul Atheef</b></td></tr>
+    <tr><td>Project team</td><td>WearWise Project Team: Zakiul Atheef, Hari Bethelli, Siri Bethelli and Thevindu Kodagoda Munasinghage (roles at the end of this document)</td></tr>
+    <tr><td>Licence</td><td>PolyForm Noncommercial License 1.0.0 (<code>LICENSE</code>): free for noncommercial use, not for sale</td></tr>
+    <tr><td>Version and date</td><td>1.0, 14 October 2026</td></tr>
+    <tr><td>Applies to</td><td>Handover release v1.0.0: phone app 0.1.0 (Expo SDK 57, React Native 0.86), web dashboard 0.1.0, patch firmware 0.9.6 (ESP-IDF 5.4), Supabase backend with 11 database migrations</td></tr>
+    <tr><td>Audience</td><td>The project owner, the organisation's IT and privacy staff, ethics reviewers, and developers who maintain WearWise</td></tr>
+    <tr><td>Classification</td><td>Public: contains no secrets, credentials or personal data. Intended for the project owner, maintainers and, once publication is approved, the public repository. Vulnerability reports go through <code>SECURITY.md</code>.</td></tr>
+    <tr><td>Status</td><td>Engineering documentation of a <b>research prototype</b>. Not a certification, a penetration-test report or a medical-device assessment.</td></tr>
+    <tr><td>Next review</td><td>Before any use with real participants, after any major upgrade, and at least once a year</td></tr>
+  </tbody>
+</table>
+<p><b>Sources.</b> This document consolidates and brings up to date the security material in the repository: <code>docs/security.md</code>, the security audit of 13 October 2026 (<code>docs/security/audit-2026-10-13.md</code>), the release security report of 20 September 2026, the database, firmware, Bluetooth-protocol and deployment documentation, and the handover dry run and hardware tests of 14 October 2026. Where the code has changed since an earlier review, this document follows the current code.</p>
+<p><b>Severity labels</b> used throughout: <span class="sev high">High</span> <span class="sev med">Medium</span> <span class="sev low">Low</span> <span class="sev info">Info</span>. Status: <span class="sev ok">Fixed</span> for resolved items.</p>
+
+<h3 id="s-summary"><span class="num">2</span>Security summary</h3>
+<div class="callout safety"><span class="h">Position statement</span><p>WearWise is a capstone <b>research prototype</b> that handles health-related data. Its security practices are informed by relevant guidance: the OWASP Mobile Application Security Verification Standard (MASVS), the OWASP Top 10, and Supabase's security recommendations. <b>No part of the system has been certified, penetration-tested by a third party or formally audited</b>, and it is not a medical device. Treat it as a prototype until the owner's own independent review says otherwise.</p></div>
+<h4>What is in place</h4>
+<ul class="checklist">
+  <li><b>Authorisation lives in the database.</b> Row Level Security on every table, no privileges for anonymous users, least-privilege grants, and server-side checks for roles, account status, consent, 18+ and terms. 277 SQL checks and 8 pgTAP tests verify it.</li>
+  <li><b>Participant-controlled sharing.</b> One-time hashed share codes create scoped, revocable grants. A participant's email is never shown to researchers.</li>
+  <li><b>Encrypted at every hop.</b> Bluetooth LE Secure Connections with a 6-digit passkey. Optional Wi-Fi streaming over TLS with a certificate pinned over the authenticated Bluetooth link. HTTPS only in release builds.</li>
+  <li><b>Encrypted on the phone.</b> SQLCipher database with its key in the OS secure store, Android backup off, screenshots blocked in release builds, and an iOS privacy cover.</li>
+  <li><b>No secrets in the code or the repository.</b> The apps carry only the project URL and its publishable key. A handover scan found no credentials.</li>
+  <li><b>Hardened dashboard.</b> Strict Content-Security-Policy allowing one backend host, no framing, HSTS, PKCE sign-in, and no caching of recordings.</li>
+</ul>
+<h4>Most important open items (Part 6)</h4>
+<table class="compact">
+  <thead><tr><th style="width:9%">Risk</th><th style="width:12%">Rating</th><th>Issue</th></tr></thead>
+  <tbody>
+    <tr><td>R-01</td><td><span class="sev high">High</span></td><td>Patch flash is unencrypted and USB download is open: brief physical access can copy bonds, the TLS key and the PIN. Fix: Secure Boot V2 and flash encryption (one-way, per chip).</td></tr>
+    <tr><td>R-02</td><td><span class="sev med">Medium</span></td><td>No two-factor sign-in for researchers and clinicians.</td></tr>
+    <tr><td>R-03</td><td><span class="sev med">Medium</span></td><td>Open sign-up: scripted accounts could fill storage (no CAPTCHA or enrolment code).</td></tr>
+    <tr><td>R-04</td><td><span class="sev med">Medium</span></td><td>The app can't cryptographically prove a patch is genuine.</td></tr>
+    <tr><td>R-05</td><td><span class="sev med">Medium</span></td><td>Hosted project settings outside the migrations (Site URL, SMTP, email confirmation) must be set by the owner.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-system"><span class="num">3</span>System overview and trust boundaries</h3>
+<figure>
+  <img class="shot-web" style="width:68%; margin:0 auto" src="../../images/architecture.png" alt="WearWise architecture">
+  <figcaption><b>WearWise architecture.</b> The patch talks only to the phone. The phone talks to Supabase. The dashboard reads only what participants share.</figcaption>
+</figure>
+<table class="compact">
+  <thead><tr><th style="width:24%">Component</th><th>Role</th><th style="width:30%">Technology</th></tr></thead>
+  <tbody>
+    <tr><td>Sensor patch</td><td>Reads sensors and streams packets to one phone</td><td>ESP32, ESP-IDF 5.4, C (firmware 0.9.6)</td></tr>
+    <tr><td>Phone app</td><td>Pairing, live view, recording, encrypted local store, upload, sharing</td><td>React Native 0.86, Expo SDK 57, SQLCipher</td></tr>
+    <tr><td>Backend</td><td>Accounts, cloud copy of recordings, sharing, alerts, live-view relay</td><td>Supabase: Postgres 17, Auth, Storage, Realtime, PostgREST</td></tr>
+    <tr><td>Web dashboard</td><td>Researchers and clinicians (and participants' own view); Patch setup over USB</td><td>React 19, Vite, static site</td></tr>
+  </tbody>
+</table>
+<h4>Trust boundaries</h4>
+<ol class="steps">
+  <li><b>Radio (patch ↔ phone):</b> Bluetooth LE, and optionally Wi-Fi on the local network. Anyone nearby can transmit, so links must be encrypted and authenticated.</li>
+  <li><b>Phone ↔ Internet ↔ Supabase:</b> HTTPS. The app and its publishable key are public, so <b>every privilege decision is made by the database</b>, never by the app.</li>
+  <li><b>Browser ↔ Supabase:</b> the same public API, with the same rules. The dashboard is a static site holding no secrets.</li>
+  <li><b>Device storage:</b> phones and patches can be lost or stolen. Data at rest on the phone is encrypted. On the patch it is not yet (R-01).</li>
+  <li><b>Administration:</b> Supabase project members, service keys and access tokens bypass Row Level Security, so they must be held by few people.</li>
+</ol>
+<p class="small">Design choices that reduce the attack surface: there are no Edge Functions and no server code of WearWise's own (Postgres functions and policies do the server work); the patch never talks to the backend; and the backend is chosen by configuration only.</p>
+
+<h3 id="s-data"><span class="num">4</span>Data inventory and classification</h3>
+<p>The apps contain no analytics or remote crash-reporting service, so no health data leaves through telemetry. Recordings are encrypted on the phone and protected by access control in the cloud. They are not end-to-end encrypted with the phone's key, so a Supabase project administrator can read them.</p>
+<table class="compact">
+  <thead><tr><th style="width:21%">Data</th><th style="width:13%">Class</th><th style="width:33%">Where it is kept</th><th>Protection and visibility</th></tr></thead>
+  <tbody>
+    <tr><td>Recordings: ECG, pulse wave, heart rate, SpO₂, skin temperature, movement</td><td>Health (sensitive)</td><td>Phone: SQLCipher database. Cloud: <code>recorded_sessions</code>, <code>recorded_channels</code> rows and private Storage files (<code>.wwch</code>)</td><td>Encrypted on the phone. Cloud: RLS and private bucket. Viewers see only granted signals while the grant is live</td></tr>
+    <tr><td>Possible falls, vital alerts</td><td>Health (sensitive)</td><td>Phone database; <code>fall_events</code>, <code>vital_alerts</code></td><td>RLS. Falls are visible to a viewer only if the grant includes falls</td></tr>
+    <tr><td>Health profile: sex, date of birth, height, weight, blood group</td><td>Health (sensitive)</td><td><b>Phone only</b> (encrypted database)</td><td>Never uploaded</td></tr>
+    <tr><td>Email, display name, role, status</td><td>Personal</td><td>Supabase Auth, <code>profiles</code></td><td>Own row only. Viewers see the display name, <b>never the email</b></td></tr>
+    <tr><td>Password</td><td>Credential</td><td>Supabase Auth (salted hash)</td><td>Never stored by the apps. Minimum 10 characters, enforced by the server</td></tr>
+    <tr><td>Consent, 18+ and terms records</td><td>Compliance record</td><td><code>profiles</code></td><td>Timestamps set by the server. Only known terms versions are accepted</td></tr>
+    <tr><td>Share codes</td><td>Access token</td><td><code>share_codes</code></td><td>SHA-256 hash only. Single use, 24 h. RPC only</td></tr>
+    <tr><td>Access grants</td><td>Authorisation record</td><td><code>access_grants</code></td><td>Changed only by RPCs. Revoked rows kept as an audit trail</td></tr>
+    <tr><td>Session tokens</td><td>Credential</td><td>Phone: OS secure store (this device only). Browser: storage managed by supabase-js</td><td>Wiped on sign-out (on the phone, even when offline)</td></tr>
+    <tr><td>Wi-Fi name and password</td><td>Credential</td><td>Phone secure store, per patch and per account. Patch: RAM only</td><td>Sent only over the authenticated, encrypted Bluetooth link</td></tr>
+    <tr><td>Patch identity, Bluetooth address, connection events</td><td>Device identifier</td><td>Phone database</td><td>Encrypted, scoped to the account</td></tr>
+    <tr><td>Patch label PIN, bonds, TLS private key</td><td>Credential</td><td>Patch flash (<code>wwcfg</code>, NVS)</td><td><b>Plain-text flash</b> (R-01)</td></tr>
+    <tr><td>Live-view readings</td><td>Health (transient)</td><td>Nowhere: Realtime broadcast only</td><td>Private channel per grant. Nothing stored</td></tr>
+    <tr><td>Preferences (theme, sync toggle)</td><td>Non-sensitive</td><td>Phone: unencrypted key-value store. Browser: local storage</td><td>No personal or health data</td></tr>
+  </tbody>
+</table>
+
+<!-- ======================= PART 2 ======================= -->
+<div class="part" data-part="Part 2">
+  <div class="label">Part 2</div>
+  <h2>Threat model</h2>
+  <p>Who might attack WearWise, what they're after, and how each threat is handled.</p>
+</div>
+
+<h3 id="s-actors"><span class="num">5</span>Assets and threat actors</h3>
+<div class="cards two">
+  <div class="card"><div class="t">Assets</div><p>Participants' health recordings and alerts · account credentials and sessions · the authorisation model (who may see whom) · patch pairing secrets · service keys and signing keys · availability of recording (it must not be lost).</p></div>
+  <div class="card"><div class="t">Actors</div><p>A curious or malicious <b>app user</b> holding the public key · a <b>researcher</b> trying to see more than was shared · an <b>attacker within radio range</b> · an attacker on the <b>same Wi-Fi</b> · a <b>thief</b> of a phone or patch · <b>automated abuse</b> of sign-up · a compromised <b>dependency</b> · a careless or compromised <b>administrator</b>.</p></div>
+</div>
+
+<h3 id="s-threats"><span class="num">6</span>Threats and mitigations</h3>
+<table class="compact">
+  <thead><tr><th style="width:27%">Threat</th><th>Mitigation</th><th style="width:15%">Residual</th></tr></thead>
+  <tbody>
+    <tr><td>A user calls the API directly with the public key to read others' data (OWASP: broken access control)</td><td>RLS on every table, <code>anon</code> has no privileges, own-row policies, viewer access only through live grants, Storage object-name rules. Verified by 277 SQL checks, 8 pgTAP tests and two-user API tests</td><td><span class="sev low">Low</span></td></tr>
+    <tr><td>A user promotes themselves to researcher, or edits consent or status columns</td><td>Only <code>display_name</code> is client-writable. Roles change only through admin SQL. The sign-up trigger refuses sign-ups without consent, 18+ and known terms</td><td><span class="sev low">Low</span></td></tr>
+    <tr><td>A researcher sees more than the participant shared</td><td>Grants scoped to signal types and falls. Sessions visible only if they contain a granted signal. Email hidden. Access ends at once when revoked or suspended</td><td><span class="sev low">Low</span>: session metadata (device name, firmware) is visible (R-07)</td></tr>
+    <tr><td>Share codes are guessed or brute-forced</td><td>Single-use codes, about 49.5 bits, 24 h, SHA-256 stored, 10 failures per hour per viewer (locked per researcher against races)</td><td><span class="sev low">Low</span></td></tr>
+    <tr><td>Eavesdropping or tampering on Bluetooth</td><td>LE Secure Connections only, passkey (label PIN), bonding. Every characteristic needs an encrypted, authenticated link. Weak or short-key links are dropped and their bonds deleted</td><td><span class="sev low">Low</span></td></tr>
+    <tr><td>A nearby attacker pairs with a patch</td><td>Pairing only with no bonds or within 60 s of pressing BOOT. Lock-out after 3 failures. At most two bonded devices. Unauthenticated links dropped after 30 s</td><td><span class="sev med">Medium</span>: label PIN is fixed per patch (R-06)</td></tr>
+    <tr><td>A look-alike patch receives the Wi-Fi password or sends fake readings</td><td>A saved patch whose identity changes is refused. Strict protocol and packet checks (CRC, IDs, rates)</td><td><span class="sev med">Medium</span>: no cryptographic patch identity (R-04)</td></tr>
+    <tr><td>Interception or hijack of the Wi-Fi stream</td><td>TLS with the patch certificate pinned (SHA-256 read over authenticated Bluetooth). Per-socket proof-of-possession within 3 s, compared in constant time. Release builds refuse Wi-Fi without a pin</td><td><span class="sev low">Low</span>: 4-byte PoP (R-10)</td></tr>
+    <tr><td>A stolen phone exposes recordings</td><td>SQLCipher with the key in Keychain/Keystore (this device only). Android backup off. Screenshots blocked</td><td><span class="sev low">Low</span>: depends on the device lock</td></tr>
+    <tr><td>A stolen patch is cloned</td><td>None in the current build</td><td><span class="sev high">High</span> (R-01)</td></tr>
+    <tr><td>Scripted sign-ups fill storage</td><td>Uploads only into one's own folder with the app's exact file names. 50 MiB per file. Consent required</td><td><span class="sev med">Medium</span> (R-03)</td></tr>
+    <tr><td>Phishing or reuse of a researcher's password</td><td>10+ characters, common passwords refused by the apps, suspension ends all sessions</td><td><span class="sev med">Medium</span>: no 2FA (R-02)</td></tr>
+    <tr><td>Script injection in the dashboard (OWASP: injection, XSS)</td><td>React escaping, strict CSP (<code>script-src 'self'</code>, one backend host), no framing. Live-view values validated and clamped</td><td><span class="sev low">Low</span></td></tr>
+    <tr><td>Password-reset or sign-in link abuse</td><td>PKCE flow, recovery links only, refusal of a link for a different account, redirect allow-list</td><td><span class="sev low">Low</span></td></tr>
+    <tr><td>Malicious dependency install scripts (supply chain)</td><td><code>ignore-scripts=true</code>, lockfile, pinned flasher library</td><td><span class="sev low">Low</span>: see the advisories (section 26)</td></tr>
+    <tr><td>Secrets committed or bundled into an app</td><td>Gitignored <code>.env</code> and keystores, release-config check, APK audit script, handover scan</td><td><span class="sev low">Low</span></td></tr>
+    <tr><td>A malicious <code>wearwise://</code> link crashes or misdirects the app</td><td>Every incoming link is checked before the router reads it. Protected routes check session ownership</td><td><span class="sev low">Low</span></td></tr>
+    <tr><td>Administrator error or a compromised admin</td><td>Admin scripts check their inputs and end sessions on change. Tokens read without echoing them. Few project members</td><td><span class="sev med">Medium</span>: organisational (section 17)</td></tr>
+  </tbody>
+</table>
+
+<!-- ======================= PART 3 ======================= -->
+<div class="part" data-part="Part 3">
+  <div class="label">Part 3</div>
+  <h2>Security controls</h2>
+  <p>The controls in each layer, and where they live in the code.</p>
+</div>
+
+<h3 id="s-ble"><span class="num">7</span>Patch firmware and Bluetooth</h3>
+<table class="kv compact">
+  <tbody>
+    <tr><td>Pairing mode</td><td>I/O capability DisplayOnly, bonding, MITM protection, <b>LE Secure Connections only</b>, 16-byte keys. A link that isn't Secure Connections, isn't authenticated or uses a short key is dropped and its bond deleted.</td></tr>
+    <tr><td>Passkey</td><td>The 6-digit <b>label PIN</b>, written by the dashboard's Patch setup (random, guessable values like 123456 skipped, verified on the chip). A patch never set up there makes its own and prints it once on the serial console.</td></tr>
+    <tr><td>When pairing is allowed</td><td>Only with no bonds, or within <b>60 s of pressing BOOT</b>. <b>Three failed pairings</b> lock pairing until BOOT is pressed (survives reboots).</td></tr>
+    <tr><td>Bonds</td><td>At most <b>two</b> bonded phones or tablets. A third replaces the oldest. One connection at a time.</td></tr>
+    <tr><td>Link protection</td><td>Every characteristic requires an encrypted, authenticated link. A link that doesn't authenticate is dropped after <b>30 s</b> (60 s while the PIN prompt is up), so nobody can hold the only connection slot.</td></tr>
+    <tr><td>Randomness</td><td>Secrets are generated with the hardware true-random source enabled.</td></tr>
+    <tr><td>Serial console</td><td>The PIN is printed only for an unlabelled patch. Readings only in a debug build.</td></tr>
+    <tr><td>Packets</td><td>Versioned binary format with CRC-32. The app checks length, framing, version, sensor, encoding, CRC, session ID and patch ID on every packet.</td></tr>
+    <tr><td>At rest</td><td><span class="sev high">Open</span> Flash, NVS (bonds, TLS key) and the PIN record are plain text, and ROM download mode is open (R-01). The documented fix is in the firmware README, "Production hardening": Secure Boot V2, flash encryption in release mode, NVS encryption and disabled ROM download. These burn eFuses (permanent) and need chip revision 3.0 or later plus a signed-update path in Patch setup.</td></tr>
+  </tbody>
+</table>
+<p class="small">Code: <code>firmware/wearwise-esp32/main/communication/</code> (<code>gatt.c</code>, <code>ble_pairing.c</code>), <code>main/core/factory_config.h</code>. Protocol: <code>docs/ble-protocol.md</code>. The hardware tests of 14 October confirmed an encrypted, authenticated, bonded link with a 128-bit key on reconnect, and a fresh PIN pairing (H6, H13).</p>
+
+<h3 id="s-wifi"><span class="num">8</span>Wi-Fi streaming</h3>
+<p>Bluetooth carries all data on its own. Wi-Fi is an optional, faster path on the same local network:</p>
+<ol class="steps">
+  <li>The phone sends the network name and password over the <b>authenticated Bluetooth link</b>. The patch keeps them in RAM only. The phone keeps them in its secure store, per patch and per account.</li>
+  <li>The phone reads the SHA-256 of the patch's self-signed P-256 certificate over Bluetooth, and opens <code>wss://&lt;patch-ip&gt;/stream</code> accepting <b>only</b> that certificate (native pinned-WebSocket modules).</li>
+  <li>Within 3 s it sends a proof-of-possession value that only a phone which read it over authenticated Bluetooth knows. A wrong or late value closes the socket. Each socket is authenticated separately, with at most two sockets.</li>
+  <li>Frames are byte-identical to Bluetooth packets and get the same checks. Release builds refuse Wi-Fi streaming without a pin.</li>
+</ol>
+<p class="small">Residual: the proof-of-possession value is 4 bytes, lasts one boot and is shared by bonded phones (R-10). The patch supports 2.4 GHz networks only. WPA2 passwords under 8 characters are refused before they're sent.</p>
+
+<h3 id="s-app"><span class="num">9</span>Phone app</h3>
+<table class="kv compact">
+  <tbody>
+    <tr><td>Local database</td><td>op-sqlite with <b>SQLCipher</b>. The key is 32 random bytes in the OS secure store. If the store can't open, the app runs memory-only and says so: there is no plain-text fallback.</td></tr>
+    <tr><td>Session</td><td>Stored by supabase-js in Keychain/Keystore with <code>AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY</code>. Sign-out wipes stored keys even offline. A fresh iOS install discards a session left by an earlier install.</td></tr>
+    <tr><td>Account isolation on one phone</td><td>The device registry, saved Wi-Fi and sync state belong to the account. Notifications are cleared on sign-out. Sync checks account identity.</td></tr>
+    <tr><td>Network</td><td><b>HTTPS only in release builds</b>, checked at run time (<code>public-config.ts</code>) and at build time (<code>scripts/check-release-config.cjs</code>, which refuses http, loopback and private-LAN hosts, and any non-public key). The release Android manifest forbids cleartext traffic.</td></tr>
+    <tr><td>Screens</td><td>Release Android builds set <code>FLAG_SECURE</code> (no screenshots or recent-apps previews). iOS shows a privacy cover in the app switcher.</td></tr>
+    <tr><td>Backups</td><td>Android <code>allowBackup=false</code>. Data is excluded from cloud backup and device transfer.</td></tr>
+    <tr><td>Deep links</td><td>Every incoming <code>wearwise://</code> link is validated before Expo Router reads it. Email links use PKCE.</td></tr>
+    <tr><td>Input from the patch and the cloud</td><td>Strict protocol checks on Bluetooth and Wi-Fi. Restored recordings are checked (sample counts, sensors, rates) before display.</td></tr>
+    <tr><td>Other</td><td>Share code cleared from the clipboard after 2 minutes. Uploads sent as not cacheable. Generic error messages (no server details). Release Android permissions limited to Internet and Bluetooth (location only on Android ≤ 11, for scanning), plus vibration and notifications for alerts.</td></tr>
+    <tr><td>Signing</td><td>The owner's own release keystore (RSA-3072, created by <code>create-release-signing.cjs</code>). The build refuses to run without it.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-auth"><span class="num">10</span>Accounts and authentication</h3>
+<ul>
+  <li><b>Supabase Auth, email and password.</b> Minimum 10 characters, enforced by the server. The apps also refuse common passwords and show strength (<code>packages/password</code>).</li>
+  <li><b>Sign-up gate.</b> The <code>create_profile_after_signup</code> trigger refuses an account without consent, an 18+ confirmation and a terms version the server knows. The server stamps the times itself.</li>
+  <li><b>Roles are server-controlled:</b> participant, researcher, clinician. Researcher and clinician accounts can't be self-registered. Administrators create them with <code>supabase/admin/create-viewer.sql</code> (one-time password, terms accepted by the person at first sign-in).</li>
+  <li><b>Account status:</b> active or suspended. RESTRICTIVE policies stop suspended accounts uploading, and viewers see nothing. Suspension, role change and admin password reset <b>end every session</b> of the account.</li>
+  <li><b>Email links:</b> PKCE in the app and the dashboard. Redirect allow-list: <code>wearwise://auth/confirmed</code>, <code>wearwise://auth/reset</code> and the dashboard's <code>/reset-password</code>.</li>
+  <li><b>Changing a password</b> in the dashboard asks for the current one.</li>
+</ul>
+<p class="small">Not yet: multi-factor authentication (R-02), CAPTCHA or an enrolment code at sign-up (R-03), and leaked-password protection (a Supabase plan setting).</p>
+
+<h3 id="s-rls"><span class="num">11</span>Database access control</h3>
+<p>RLS is <b>enabled on every table in <code>public</code></b>, and privileges start from nothing: <code>anon</code> has no table privilege and can execute no function. <code>authenticated</code> gets only what the apps use (pinned by a test), and RLS then decides which rows.</p>
+<table class="compact">
+  <thead><tr><th style="width:18%">Table</th><th>Read</th><th>Write</th></tr></thead>
+  <tbody>
+    <tr><td><code>profiles</code></td><td>Own row</td><td>Trigger creates it. Own row, <code>display_name</code> column only, while active</td></tr>
+    <tr><td><code>recorded_sessions</code></td><td>Own. A viewer: non-discarded sessions with a granted signal</td><td>Own, active and 18+ accounts. Server-stamped columns excluded</td></tr>
+    <tr><td><code>recorded_channels</code></td><td>Own. A viewer: granted signals</td><td>Own rows, into own sessions only</td></tr>
+    <tr><td><code>fall_events</code></td><td>Own. A viewer: if the grant includes falls</td><td>Own, into own sessions</td></tr>
+    <tr><td><code>vital_alerts</code></td><td>Own. A viewer: granted signals</td><td>Own. A session reference must be own and uploaded</td></tr>
+    <tr><td><code>access_grants</code></td><td>Participant: own, including revoked. Grantee: live ones only</td><td>RPC only</td></tr>
+    <tr><td><code>share_codes</code>, <code>share_code_attempts</code></td><td>None</td><td>RPC only (no table privileges at all)</td></tr>
+  </tbody>
+</table>
+<p>A "viewer" holds a <b>live</b> grant: not revoked, both accounts active, and the grantee still a researcher or clinician. Access ends the moment any of these stops being true. All RPCs are <code>security definer</code> with an empty <code>search_path</code>. A read-only <b>schema fingerprint</b> (<code>supabase/admin/schema-fingerprint.sql</code>) proves that a hosted database matches the migrations.</p>
+
+<h3 id="s-share"><span class="num">12</span>Sharing and live view</h3>
+<ul>
+  <li><b>Share codes:</b> created by the participant with <code>create_share_code()</code>. Format <code>XXXXX-XXXXX</code>, about 49.5 bits from an unbiased generator, valid 24 h, single use. A new code replaces an unused one, and only the SHA-256 hash is stored.</li>
+  <li><b>Redemption</b> (<code>redeem_share_code()</code>): researchers and clinicians only. 10 failures per hour per viewer, with a per-viewer lock against racing. Failures are returned as results, not errors.</li>
+  <li><b>Grants:</b> scoped to signal types and whether falls are included. Either side can revoke (<code>revoke_access_grant()</code>), and the participant can narrow the scope (<code>update_access_grant()</code>). One live grant per pair. Revoked rows are kept as the participant's audit trail.</li>
+  <li><b>Privacy:</b> <code>list_shared_participants()</code> returns display names only, <b>never emails</b>. Browser notifications on the dashboard say only what kind of alert.</li>
+  <li><b>Live view:</b> started by the participant for 30 min to 8 h, on a <b>private Realtime channel</b> <code>live:&lt;grant id&gt;</code> that only the two parties may join. <b>Nothing is stored.</b> It pauses in the background, and removing or narrowing a viewer refreshes it at once. The phone acts only on <code>stop</code>, <code>record</code> and <code>record-stop</code> from a viewer, and a recording starts only when the participant taps Start.</li>
+</ul>
+
+<h3 id="s-storage"><span class="num">13</span>Storage and Realtime</h3>
+<ul>
+  <li><b>Bucket <code>recordings</code>:</b> private, 50 MiB per file, <code>application/octet-stream</code> only. Writes are allowed only into the uploader's own folder, by an active account, with exactly the name <code>&lt;uid&gt;/&lt;session uuid&gt;/&lt;channel uuid&gt;.wwch</code>. Reads: own folder, or a viewer with a live grant covering that channel.</li>
+  <li><b>Postgres changes:</b> only <code>fall_events</code> and <code>vital_alerts</code>, INSERT and UPDATE only. DELETE events are not filtered by RLS, so they aren't published.</li>
+  <li><b>Broadcast:</b> private channels only, no presence. <code>alerts:&lt;user id&gt;</code> may be joined only by its owner, and nobody may send on it.</li>
+  <li><b>Hosted setting:</b> Realtime "Allow public access" <b>off</b>, so a client that forgets <code>private: true</code> fails closed.</li>
+</ul>
+
+<h3 id="s-dash"><span class="num">14</span>Web dashboard</h3>
+<table class="kv compact">
+  <tbody>
+    <tr><td>Content-Security-Policy</td><td><code>default-src 'self'</code>; <code>script-src 'self'</code>; <code>connect-src 'self' https://&lt;backend&gt; wss://&lt;backend&gt;</code> (one host only); <code>frame-ancestors 'none'</code>; <code>object-src 'none'</code>; <code>base-uri 'self'</code>; <code>form-action 'self'</code>; <code>upgrade-insecure-requests</code>. <code>style-src</code> allows inline styles for the theme tokens.</td></tr>
+    <tr><td>Other headers</td><td><code>Strict-Transport-Security: max-age=63072000; includeSubDomains</code>, <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Referrer-Policy: no-referrer</code>, <code>Cross-Origin-Opener-Policy: same-origin</code>, and <code>Permissions-Policy</code> allowing only <code>serial</code> (for Patch setup).</td></tr>
+    <tr><td>Generated per deployment</td><td><code>npm run deploy-config -w dashboard</code> writes the headers for the chosen backend. The build stops if the headers name another backend.</td></tr>
+    <tr><td>Sign-in</td><td>supabase-js with PKCE. A reset link for a different account than the one signed in is refused. Safe return paths after sign-in. The 18+ and terms gate reads server columns, not client metadata.</td></tr>
+    <tr><td>Caching</td><td>Every request is <code>cache: 'no-store'</code>, so decoded recordings don't outlive sign-out in the disk cache.</td></tr>
+    <tr><td>Patch setup (Web Serial)</td><td>Runs only between the tab and the USB port. Nothing about a patch is sent to Supabase. Firmware chosen from a file always needs confirmation and shows its SHA-256 (real authenticity needs Secure Boot, R-01).</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-repo"><span class="num">15</span>Repository, build and supply chain</h3>
+<ul>
+  <li><b>No secrets in the repository.</b> Real <code>.env</code> files, keystores, Apple signing files, device databases, build outputs and Supabase Studio's saved queries (<code>supabase/snippets/</code>) are gitignored. Templates are <code>.env.example</code>.</li>
+  <li><b>Install scripts disabled:</b> the root <code>.npmrc</code> sets <code>ignore-scripts=true</code>, so dependencies can't run code at install time. The flasher library (esptool-js) is pinned.</li>
+  <li><b>Release checks:</b> <code>check-release-config.cjs</code> (HTTPS public backend, publishable key, signing present) and <code>tools/audit-apk.ps1</code>, which checks a built APK for leaked secrets and developer paths.</li>
+  <li><b>Published history:</b> the handover repository was published as a <b>fresh history</b> (14 October 2026). The personal data found in the original development history (a commit email, an old screenshot, absolute paths) is not in it.</li>
+  <li><b>Dependencies:</b> see section 26 for current advisories. Never run <code>npm audit fix --force</code>: it downgrades Expo.</li>
+</ul>
+
+<!-- ======================= PART 4 ======================= -->
+<div class="part" data-part="Part 4">
+  <div class="label">Part 4</div>
+  <h2>Secrets and operations</h2>
+  <p>Which secrets exist and who holds them, account administration, incidents, logging and local development.</p>
+</div>
+
+<h3 id="s-secrets"><span class="num">16</span>Secrets inventory</h3>
+<p>Nothing in this table is in the repository, and none of it should ever be.</p>
+<table class="compact">
+  <thead><tr><th style="width:24%">Secret</th><th style="width:19%">Created by</th><th>Kept in</th><th style="width:21%">Never</th></tr></thead>
+  <tbody>
+    <tr><td>Supabase database password</td><td>The owner, at project creation</td><td>The organisation's password manager</td><td>In a file, in the repo, in an app</td></tr>
+    <tr><td>Service-role / <code>sb_secret_</code> key</td><td>Supabase</td><td>Supabase dashboard. Used only by admin tooling at run time (<code>admin.mjs</code> fetches it in memory)</td><td>In an app, <code>.env</code> or a log</td></tr>
+    <tr><td>Personal access token (<code>sbp_…</code>)</td><td>Each administrator</td><td>The CLI's keychain (<code>supabase login</code>), or one shell session (<code>read -rs</code>)</td><td>Committed or shared</td></tr>
+    <tr><td>SMTP credentials</td><td>The owner</td><td>Supabase → Authentication → SMTP</td><td>In the repo</td></tr>
+    <tr><td>Android release keystore and passwords</td><td>The owner (<code>create-release-signing.cjs</code>)</td><td><code>apps/mobile/</code> (gitignored) <b>plus a secure backup</b>. Losing it means the app can't be updated</td><td>Committed</td></tr>
+    <tr><td>Apple signing certificate and profiles</td><td>The owner's Apple team (Xcode)</td><td>The macOS keychain and Apple account</td><td>Committed</td></tr>
+    <tr><td>Patch label PINs</td><td>Patch setup, per patch</td><td>The patch's flash and its printed label</td><td>In the repo or Supabase</td></tr>
+    <tr><td>Patch TLS key, Wi-Fi PoP</td><td>The patch (first boot / each boot)</td><td>The patch</td><td>—</td></tr>
+    <tr><td>Secure Boot signing key (once R-01 is done)</td><td>The owner</td><td>Offline, in a secure store</td><td>On a build machine without protection</td></tr>
+  </tbody>
+</table>
+<p class="small"><b>Public by design:</b> the project URL and the publishable (anon) key ship inside the apps, so treat them as public. RLS protects the data. The local stack's keys and the demo password <code>wearwise-demo-only</code> work only against a local stack on the developer's own machine. If a <b>private</b> secret is ever committed or exposed, <b>rotate it</b>: deleting the file is not enough.</p>
+
+<h3 id="s-admin"><span class="num">17</span>Account lifecycle and administration</h3>
+<table class="compact">
+  <thead><tr><th style="width:30%">Task</th><th style="width:28%">Tool</th><th>Security notes</th></tr></thead>
+  <tbody>
+    <tr><td>Add a researcher or clinician</td><td><code>supabase/admin/create-viewer.sql</code></td><td>One-time password, sent privately and separately. The person accepts the terms and changes the password at first sign-in. See the guide <i>Adding a Researcher or Clinician</i></td></tr>
+    <tr><td>Make an existing account a viewer</td><td><code>set-role.sql</code></td><td>Confirmed email only. Ends all sessions</td></tr>
+    <tr><td>Locked-out viewer</td><td><code>reset-password.sql</code></td><td>New one-time password. Ends all sessions</td></tr>
+    <tr><td>Suspend or reactivate</td><td><code>set-status.sql</code></td><td>Takes effect on the next request. Nothing deleted</td></tr>
+    <tr><td>Review who has access</td><td><code>overview.sql</code> (read-only)</td><td>Run regularly, and at every handover</td></tr>
+    <tr><td>Delete an account and its data</td><td><code>admin.mjs delete-account</code></td><td>Removes Storage files first, then the account (cascade). Can't be undone</td></tr>
+    <tr><td>Find orphaned files</td><td><code>orphaned-recordings.sql</code> (read-only)</td><td>Files left by accounts deleted in Authentication → Users</td></tr>
+  </tbody>
+</table>
+<p class="small">Good practice: one account per person; Supabase project membership only for people who administer it; suspend promptly when someone leaves; delete saved SQL Editor queries that contain email addresses. Terms changes need a migration that adds the new version to <code>private.terms_versions</code> <b>before</b> an app that sends it ships.</p>
+
+<h3 id="s-incident"><span class="num">18</span>Incident response</h3>
+<p>Follow the organisation's incident and privacy procedures. These playbooks cover the WearWise-specific steps.</p>
+<table class="compact">
+  <thead><tr><th style="width:24%">Incident</th><th>Immediate steps</th></tr></thead>
+  <tbody>
+    <tr><td>Service key, database password or access token exposed</td><td>Rotate it in the Supabase dashboard (Project Settings → API keys / Database), revoke exposed personal tokens, review Supabase logs for its use, run <code>schema-fingerprint.sql</code> to confirm the schema is unchanged, and remove the secret from wherever it leaked (history included).</td></tr>
+    <tr><td>Researcher or clinician account compromised</td><td><code>set-status.sql</code> → suspended (ends sessions and hides every share at once). Then <code>reset-password.sql</code>, and review <code>overview.sql</code> for the affected participants. Reactivate once safe.</td></tr>
+    <tr><td>Participant's phone lost or stolen</td><td>Local data is encrypted and tied to the device's secure store. Run <code>reset-password.sql</code> for the account to end its sessions, and have the participant set a new password. If the phone was paired with a patch, use <b>New PIN</b> on that patch.</td></tr>
+    <tr><td>Patch lost or stolen</td><td>Treat its bonds and TLS key as exposed (R-01). Participants <b>Forget</b> it in the app and remove it in the phone's Bluetooth settings. A recovered patch is reset with <b>Set up</b> (new PIN, settings erased).</td></tr>
+    <tr><td>Suspected unauthorised data access</td><td>Suspend the accounts involved, preserve Supabase logs, and involve the privacy officer. Notification duties (for example, Australia's Notifiable Data Breaches scheme) are the organisation's decision.</td></tr>
+    <tr><td>Vulnerable or malicious dependency</td><td>Identify where it is used (<code>npm ls &lt;package&gt;</code>), update through <code>npx expo install --fix</code> or the Expo SDK, retest on devices, and rebuild and redistribute releases.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-logging"><span class="num">19</span>Backups, logging and monitoring</h3>
+<ul>
+  <li><b>Backups:</b> enable the Supabase plan's backups or point-in-time recovery for the hosted database. Recordings also stay on participants' phones, and the cloud is an upload-only mirror plus a one-time restore onto a new phone.</li>
+  <li><b>Logs:</b> Supabase keeps Auth, API and database logs for a period that depends on the plan. WearWise has <b>no audit log of its own</b> for researcher reads (R-08). Revoked grants are kept as the participant's audit trail.</li>
+  <li><b>No telemetry:</b> the apps send no analytics or crash reports. The firmware prints no readings outside debug builds.</li>
+  <li><b>Monitoring</b> to set up: storage growth (abuse, R-03), sign-up rate, failed sign-ins, and Realtime usage, using the Supabase dashboard's reports.</li>
+</ul>
+
+<h3 id="s-local"><span class="num">20</span>Local development security</h3>
+<ul>
+  <li><code>supabase start</code> publishes the API, database, Studio and Mailpit ports on <b>all network interfaces</b>, so phones on the Wi-Fi can reach the API. Use it only on a trusted network, or firewall ports 54322–54324.</li>
+  <li>Development builds accept <code>http://</code> to local and LAN hosts, and the Android debug manifest allows cleartext traffic. <b>Release builds do neither.</b></li>
+  <li>Every development build on the network loads its code from the developer's Metro server (port 8081). Switching backends switches all of them.</li>
+  <li>Never use real participants' data on a local stack or a developer's machine. The demo seed refuses to run on a database that has accounts outside <code>@example.invalid</code>.</li>
+  <li>Test against hosted projects only with dedicated test accounts. <code>rls-live.mjs</code> creates random-password users and deletes exactly its own, but a separate development project is better.</li>
+</ul>
+
+<!-- ======================= PART 5 ======================= -->
+<div class="part" data-part="Part 5">
+  <div class="label">Part 5</div>
+  <h2>Assurance</h2>
+  <p>How the controls were verified, the history of reviews, and what changed since the last audit.</p>
+</div>
+
+<h3 id="s-tests"><span class="num">21</span>Security testing and verification</h3>
+<table class="compact">
+  <thead><tr><th style="width:40%">Check</th><th style="width:16%">Date</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>Database RLS and security suites on a real local Supabase stack</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> 277 plain-SQL checks + 8 pgTAP</td></tr>
+    <tr><td>Sync and Storage isolation through the public API, two accounts (<code>sync-live.mjs</code>)</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> 7/7 (local)</td></tr>
+    <tr><td>Two-account isolation on the hosted project</td><td>13 Oct 2026</td><td><span class="sev ok">Pass</span> 19/19. Anonymous requests to any table or RPC: permission denied</td></tr>
+    <tr><td>Hosted database matches the migrations (schema fingerprint)</td><td>14 Oct 2026</td><td><span class="sev ok">Match</span> in everything that affects behaviour (one function differs only by a comment)</td></tr>
+    <tr><td>Unit tests and type checks</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> app 283 tests (40 suites), dashboard 110, legal 49</td></tr>
+    <tr><td>Hardware: pairing, encryption, reconnect, pinned-TLS Wi-Fi, sharing, live view (H1–H13, firmware 0.9.6, Samsung phone)</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> 13/13, including an authenticated, bonded 128-bit link and a fresh PIN pairing</td></tr>
+    <tr><td>Malformed <code>wearwise://</code> links</td><td>13 Oct 2026</td><td><span class="sev ok">Pass</span> app stays up (Android emulator, iOS simulator)</td></tr>
+    <tr><td>Handover scan of tracked files and history for credentials and personal data</td><td>13 Oct 2026</td><td><span class="sev ok">Pass</span> no credentials. Personal data redacted or excluded (fresh history)</td></tr>
+    <tr><td>Git history of the published repository (7 commits, 661 file versions): keys, tokens, private keys, personal data, local paths, sensitive files</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> none found. Patch MAC addresses (now redacted) remain in older commits</td></tr>
+    <tr><td>Dependency alerts (Dependabot, 13)</td><td>14 Oct 2026</td><td><span class="sev ok">8 fixed</span> 5 assessed, none reachable in the app unmitigated (section 26)</td></tr>
+    <tr><td>Bundled firmware rebuilt from the committed tree</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> manifest records commit <code>52e94d8</code>; code byte-identical to the previous bundle (only build timestamps and hashes differ)</td></tr>
+    <tr><td>Fresh clone from GitHub, documentation only: install, type checks, lint, unit tests, dashboard build, Android native build, firmware build, backend from the migrations</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> all automated steps; hardware steps manual</td></tr>
+    <tr><td>gitleaks 8.21.2 on the published history, all local branches and the working tree</td><td>14 Oct 2026</td><td><span class="sev ok">Pass</span> no secrets; one false positive (the name of a Keystore slot) recorded in <code>.gitleaksignore</code></td></tr>
+    <tr><td>Release APK inspection (signing, permissions, FLAG_SECURE, bundle scan)</td><td>20 Sep 2026</td><td><span class="sev ok">Pass</span> for build 0.1.0. Repeat for every release with <code>tools/audit-apk.ps1</code></td></tr>
+  </tbody>
+</table>
+<h4>Not tested</h4>
+<ul>
+  <li>An independent penetration test or code review.</li>
+  <li>Over-the-air attacks with a hostile Bluetooth device, and whether each phone OS forces encryption when reconnecting to a bonded patch.</li>
+  <li>An iOS release build on a real device, and sign-in over local http on iOS.</li>
+  <li>Hosted project settings outside the migrations (email auto-confirm, refresh-token lifetime, rate limits): the owner checks these (section 25).</li>
+</ul>
+
+<h3 id="s-history"><span class="num">22</span>Review history and finding status</h3>
+<table class="compact">
+  <thead><tr><th style="width:22%">Review</th><th>Scope and outcome</th></tr></thead>
+  <tbody>
+    <tr><td>Release security report, 20 Sep 2026</td><td>Android release candidate 0.1.0, reviewed against relevant MASVS principles. Release signing, session isolation between accounts, backups off, permissions trimmed, deep-link filtering, PKCE callbacks. Raised the firmware pairing and backend policy items that the later audit closed.</td></tr>
+    <tr><td>Security audit, 13 Oct 2026</td><td>Five read-only reviews (app, dashboard, database, firmware, repository), then fixes. <b>No Critical findings</b>, and no leaked secrets in code, history or the app bundle. Two High findings, both in the firmware: pairing (<b>fixed</b>) and plain-text flash (<b>open</b>, R-01). Database fixes in migration 9 were applied to production on 13 Oct.</td></tr>
+    <tr><td>Handover verification, 14 Oct 2026</td><td>Two clean dry runs of the documented setup, hardware tests H1–H13, and a schema fingerprint of the hosted project. Fixes went into the documentation and the test infrastructure.</td></tr>
+  </tbody>
+</table>
+<table class="compact">
+  <thead><tr><th>Area (13 Oct audit)</th><th style="width:16%">Findings</th><th>Status now</th></tr></thead>
+  <tbody>
+    <tr><td>Phone app (M1–M12)</td><td>12</td><td>10 fixed. M2 patch authenticity partly fixed (R-04). M12 minor Android surface left as is.</td></tr>
+    <tr><td>Web dashboard (D1–D11)</td><td>11</td><td>9 fixed. D10 mitigated by CSP. D11 capped by the bucket's file limit.</td></tr>
+    <tr><td>Database, storage and sign-in (B1–B14)</td><td>14</td><td>9 fixed. Partly: B1 (no 2FA, R-02), B4 (sign-up abuse, R-03), B10 (session metadata, R-07), B12 (hosted settings, R-05). B3 fixed for the study team.</td></tr>
+    <tr><td>Firmware (F1–F10)</td><td>10</td><td>8 fixed. F2 open (R-01). F9 partly (R-10).</td></tr>
+    <tr><td>Repository (R1–R10)</td><td>10</td><td>R1, R2, R4, R5, R7, R9 resolved. R6 mostly fixed. R3 tracked (section 26). R8 is local only. R10 (no CI or secret scanning) addressed at handover (R-09).</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-changes"><span class="num">23</span>Changes since the 13 October audit</h3>
+<ul>
+  <li><b>Firmware 0.9.6:</b> a patch remembers <b>two</b> phones (a third replaces the oldest), instead of one owner. The unauthenticated-link deadline is <b>30 s</b> (60 s with the PIN prompt), up from 15 s and 40 s, because some Android phones ask "Pair?" before the PIN box. Hardware tests H6 and H13 confirmed the pairing behaviour.</li>
+  <li><b>Repository:</b> published to a private remote as a fresh history. The development tool configuration that gave write access to production (<code>.mcp.json</code>, audit R1) is not part of the repository. The original project reference was replaced with configuration. Studio's saved queries are now gitignored.</li>
+  <li><b>Test infrastructure:</b> plain-SQL suites moved to <code>supabase/sql-tests/</code>. A bare <code>supabase test db</code> could otherwise have run a stub granting full default privileges on a real stack (fixed during the dry run). Database checks went from 261 to 277, plus 8 pgTAP.</li>
+  <li><b>Documentation:</b> the admin runbook now covers the SQL Editor's warnings and saved queries, and the guide <i>Adding a Researcher or Clinician</i> was added.</li>
+  <li><b>Public-release review (14 October):</b> patch MAC addresses and the device IDs derived from them were redacted from test evidence, screenshots and test fixtures; the stale September change list was removed; 8 of 13 dependency alerts were fixed; the bundled firmware was rebuilt from the committed tree so its manifest records the commit; and the published git history was audited (section 21).</li>
+  <li><b>Handover readiness (14 October):</b> CI (GitHub Actions) and Dependabot added; <code>SECURITY.md</code> for private vulnerability reports; this document reclassified from internal to public, as it contains no secrets or personal data.</li>
+</ul>
+
+<!-- ======================= PART 6 ======================= -->
+<div class="part" data-part="Part 6">
+  <div class="label">Part 6</div>
+  <h2>Risks and responsibilities</h2>
+  <p>The open risks, what the owner must do before real participants, and dependency advisories.</p>
+</div>
+
+<h3 id="s-risks"><span class="num">24</span>Risk register</h3>
+<table class="compact">
+  <thead><tr><th style="width:7%">ID</th><th style="width:28%">Risk</th><th style="width:10%">Rating</th><th>Recommendation</th></tr></thead>
+  <tbody>
+    <tr><td>R-01</td><td>Patch flash unencrypted, ROM download open: physical access can clone a patch or flash other firmware</td><td><span class="sev high">High</span></td><td>For patches that leave the lab: Secure Boot V2, flash encryption (release), NVS encryption, disabled ROM download (firmware README, "Production hardening"). Needs chip revision ≥ 3.0, an offline signing key, signed images in Patch setup, and an OTA path. Try on spare boards first: eFuses are permanent.</td></tr>
+    <tr><td>R-02</td><td>Single-factor staff accounts: one leaked password exposes every participant sharing with that person</td><td><span class="sev med">Medium</span></td><td>Add TOTP enrolment and verification to the dashboard, require it for viewer access in the database, and enable leaked-password protection if the plan allows.</td></tr>
+    <tr><td>R-03</td><td>Open sign-up: scripted accounts can consume storage</td><td><span class="sev med">Medium</span></td><td>CAPTCHA (e.g. Cloudflare Turnstile, hCaptcha) or a study enrolment code. Monitor storage growth.</td></tr>
+    <tr><td>R-04</td><td>No cryptographic patch identity: a look-alike board could receive Wi-Fi details or inject readings</td><td><span class="sev med">Medium</span></td><td>A per-patch secret printed on the label next to the PIN, checked with a challenge on every connect before Wi-Fi details are sent.</td></tr>
+    <tr><td>R-05</td><td>Hosted settings outside the migrations: Site URL, redirects, SMTP, email confirmation, Realtime public access</td><td><span class="sev med">Medium</span></td><td>Apply <code>docs/deployment.md</code> §3: email confirmation on, own SMTP, Site URL and redirects for the hosted dashboard only (no localhost), Realtime public access off.</td></tr>
+    <tr><td>R-06</td><td>The label PIN is fixed per patch: anyone who reads it and presses BOOT can pair</td><td><span class="sev low">Low</span></td><td>Keep patches under supervision. Use <b>New PIN</b> whenever a patch changes hands.</td></tr>
+    <tr><td>R-07</td><td>Viewers see all columns of shareable sessions (device name, firmware, settings)</td><td><span class="sev low">Low</span></td><td>A column-limited view for viewers.</td></tr>
+    <tr><td>R-08</td><td>No audit log of researcher reads beyond Supabase's own logs</td><td><span class="sev low">Low</span></td><td>Retain Supabase logs per the protocol, or add read auditing for viewer RPCs.</td></tr>
+    <tr><td>R-09</td><td>No CI, automated tests on change, or secret scanning</td><td><span class="sev ok">Mitigated</span></td><td>Added at handover: GitHub Actions run type checks, lint, unit tests, the dashboard build, the database suites, the firmware build and a gitleaks secret scan on every push; Dependabot proposes monthly minor updates. Optional: a local gitleaks pre-commit hook (<code>CONTRIBUTING.md</code>).</td></tr>
+    <tr><td>R-10</td><td>Wi-Fi proof-of-possession is 4 bytes, per boot, shared by bonded phones</td><td><span class="sev low">Low</span></td><td>A longer, per-phone value in a future protocol version.</td></tr>
+    <tr><td>R-11</td><td>Five dependency advisories with no non-breaking fix (section 26)</td><td><span class="sev low">Low</span></td><td>Upgrade the Expo SDK and retest on devices; then dismiss or close the remaining alerts.</td></tr>
+    <tr><td>R-12</td><td>No retention or purge policy in the app or backend</td><td><span class="sev med">Medium</span> (privacy)</td><td>Define retention with the ethics approval, and implement purge and consent-withdrawal handling.</td></tr>
+    <tr><td>R-13</td><td>The original capstone Supabase project still exists with its own data and keys</td><td><span class="sev med">Medium</span></td><td>Retire it, or hand it over deliberately to the owner's organisation (<code>docs/deployment.md</code>).</td></tr>
+    <tr><td>R-14</td><td>The iOS release build and pinned-WebSocket module have had less device testing</td><td><span class="sev low">Low</span></td><td>Test an iOS release build on devices before use.</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-owner"><span class="num">25</span>Owner responsibilities before real participants</h3>
+<ul class="checklist">
+  <li><b>Ethics and governance:</b> an approved protocol, a data-storage region and retention period that match it, and a privacy notice. Fill in the organisation details in <code>packages/legal/src/org.ts</code>; the legal documents show a "draft" notice until you do.</li>
+  <li><b>Own deployment:</b> a Supabase project under the organisation's account. Apply the migrations (never the demo seed), then confirm with the schema fingerprint.</li>
+  <li><b>Project settings:</b> email confirmation on, own SMTP, Site URL and redirect URLs for the hosted dashboard only, Realtime public access off, minimum password length 10 (R-05).</li>
+  <li><b>Hosting:</b> dashboard on HTTPS with the generated security headers (<code>npm run deploy-config -w dashboard</code>).</li>
+  <li><b>Keys:</b> your own Android keystore and Apple signing, backed up. Database password and tokens in the organisation's secret store. Rotate anything ever exposed.</li>
+  <li><b>Accounts:</b> one per person, created with the admin scripts, suspended when people leave. Few Supabase project members.</li>
+  <li><b>Patches:</b> decide on production hardening (R-01) before patches go to participants. Label each patch and keep a register.</li>
+  <li><b>Backups:</b> enable the plan's backups or point-in-time recovery.</li>
+  <li><b>Updates:</b> keep the Expo SDK, React Native, Supabase CLI and images, and ESP-IDF current, and rerun every test suite after each upgrade.</li>
+  <li><b>Independent review</b> before any use beyond a supervised research prototype.</li>
+</ul>
+
+<h3 id="s-deps"><span class="num">26</span>Dependency advisories</h3>
+<p>GitHub Dependabot raised <b>13 alerts</b> on the repository (from <code>package-lock.json</code>). On 14 October 2026 <b>8 were fixed</b> by lockfile updates within the version ranges the dependents already allow (no forced upgrades), including the only critical one. After the fix <code>npm audit</code> reports 65 entries across the workspace (0 critical, 49 high, 16 moderate), or 43 without development-only packages. These are counted once per dependent path; they come from <b>five underlying packages</b>:</p>
+<table class="compact">
+  <thead><tr><th style="width:21%">Package</th><th style="width:11%">Severity</th><th style="width:15%">Status</th><th>Path and assessment</th></tr></thead>
+  <tbody>
+    <tr><td><code>shell-quote</code></td><td><span class="sev high">Critical</span></td><td><span class="sev ok">Fixed</span> 1.12.0</td><td>React Native developer tools</td></tr>
+    <tr><td><code>compression</code></td><td><span class="sev high">High</span></td><td><span class="sev ok">Fixed</span> 1.8.2</td><td>Expo CLI development server</td></tr>
+    <tr><td><code>brace-expansion</code> (6 alerts)</td><td><span class="sev high">High</span></td><td><span class="sev ok">Fixed</span> 1.1.21 / 5.0.12</td><td>File matching in build and lint tooling</td></tr>
+    <tr><td><code>braces</code></td><td><span class="sev high">High</span></td><td>No fix exists</td><td>File matching in Metro and Jest. Patterns come from the project, not users; not in the app or dashboard bundle</td></tr>
+    <tr><td><code>node-forge</code></td><td><span class="sev high">High</span></td><td>No fix exists</td><td>Expo CLI tooling (certificates, update signing). Expo Updates signing isn't used; not in the app bundle</td></tr>
+    <tr><td><code>sprintf-js</code></td><td><span class="sev med">Moderate</span></td><td>No fix exists</td><td>Test-coverage tooling, development only</td></tr>
+    <tr><td><code>uuid</code></td><td><span class="sev med">Moderate</span></td><td>Not affected</td><td>iOS prebuild tooling (<code>xcode</code>), which only calls <code>v4()</code>; the bug is in v3/v5/v6 with a buffer</td></tr>
+    <tr><td><code>decode-uri-component</code></td><td><span class="sev med">Moderate</span></td><td>Mitigated</td><td>Expo Router URL parsing, <b>in the app at run time</b>. Incoming links over 2,048 characters or with malformed percent-encoding are refused before Expo Router reads them; Android refuses any <code>%</code>. Fixed in Expo Router 58</td></tr>
+  </tbody>
+</table>
+<p class="small">The full per-alert assessment is in <code>docs/security/dependency-advisories.md</code>. The remaining five clear with an Expo SDK upgrade and a device retest. <code>npm audit fix --force</code> would install much older Expo versions and break the app.</p>
+
+<!-- ======================= APPENDICES ======================= -->
+<h3 id="s-files" style="break-before: page; margin-top:0"><span class="num">A</span>Where the security controls live</h3>
+<table class="compact">
+  <thead><tr><th style="width:46%">Path</th><th>What</th></tr></thead>
+  <tbody>
+    <tr><td><code>supabase/migrations/</code> (11 files)</td><td>Schema, RLS policies, grants, RPCs, triggers, Storage and Realtime policies. Migration 9 is the security review.</td></tr>
+    <tr><td><code>supabase/sql-tests/</code>, <code>supabase/tests/</code></td><td>277 plain-SQL checks, 8 pgTAP tests, API isolation scripts</td></tr>
+    <tr><td><code>supabase/admin/</code>, <code>supabase/scripts/admin.mjs</code></td><td>Administration scripts and the schema fingerprint</td></tr>
+    <tr><td><code>supabase/config.toml</code></td><td>Local Auth settings (password length, redirects)</td></tr>
+    <tr><td><code>firmware/wearwise-esp32/main/communication/</code></td><td>Bluetooth pairing, GATT security, Wi-Fi TLS server, proof-of-possession</td></tr>
+    <tr><td><code>firmware/wearwise-esp32/README.md</code></td><td>Production hardening (Secure Boot, flash encryption)</td></tr>
+    <tr><td><code>apps/mobile/src/platform/secure-storage/</code>, <code>src/data/local/</code></td><td>Secure store, SQLCipher key and database</td></tr>
+    <tr><td><code>apps/mobile/src/data/remote/public-config.ts</code>, <code>scripts/check-release-config.cjs</code></td><td>HTTPS-only release configuration checks</td></tr>
+    <tr><td><code>apps/mobile/modules/pinned-websocket/</code></td><td>Certificate-pinned Wi-Fi stream (Android, iOS)</td></tr>
+    <tr><td><code>apps/mobile/src/app/+native-intent.tsx</code></td><td>Incoming deep-link filter</td></tr>
+    <tr><td><code>apps/dashboard/scripts/deploy-headers.mjs</code></td><td>CSP and security headers</td></tr>
+    <tr><td><code>apps/dashboard/src/data/client.ts</code></td><td>PKCE sign-in, no-store requests</td></tr>
+    <tr><td><code>packages/password</code>, <code>packages/legal</code></td><td>Password rules; terms and their version</td></tr>
+    <tr><td><code>.npmrc</code>, <code>.gitignore</code>, <code>tools/audit-apk.ps1</code></td><td>Supply chain, ignored secrets, APK audit</td></tr>
+    <tr><td><code>docs/security.md</code>, <code>docs/security/</code></td><td>Security notes, the 13 October audit, the 20 September release report</td></tr>
+    <tr><td><code>docs/operations/researcher-access.md</code></td><td>Admin runbook for researcher and clinician access</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s-glossary"><span class="num">B</span>Glossary and references</h3>
+<table class="kv compact">
+  <tbody>
+    <tr><td>RLS (Row Level Security)</td><td>Postgres rules that decide which rows each user may read or change</td></tr>
+    <tr><td>RPC</td><td>A database function the apps call by name. In WearWise, <code>security definer</code> with fixed checks</td></tr>
+    <tr><td>Publishable / anon key</td><td>The public Supabase key that ships in the apps. Not a secret</td></tr>
+    <tr><td>Service-role / secret key</td><td>A Supabase key that bypasses RLS. Admin use only, never in an app</td></tr>
+    <tr><td>PKCE</td><td>Proof Key for Code Exchange: protects email sign-in and reset links from interception</td></tr>
+    <tr><td>LE Secure Connections</td><td>Bluetooth Low Energy pairing based on elliptic-curve key exchange, here with a passkey</td></tr>
+    <tr><td>Bond</td><td>Keys a patch and a phone keep after pairing, so they reconnect encrypted</td></tr>
+    <tr><td>Certificate pinning</td><td>Accepting only one known certificate (by its SHA-256) instead of any trusted one</td></tr>
+    <tr><td>PoP</td><td>Proof-of-possession: a value showing the phone read it over the authenticated link</td></tr>
+    <tr><td>SQLCipher</td><td>Encrypted SQLite, used for the phone's database</td></tr>
+    <tr><td>CSP</td><td>Content-Security-Policy: browser rules limiting where a page may load code and connect</td></tr>
+    <tr><td>eFuse</td><td>One-time programmable bits in the ESP32 that permanently enable security features</td></tr>
+  </tbody>
+</table>
+<h4>References</h4>
+<ul class="small">
+  <li>OWASP Mobile Application Security Verification Standard (MASVS): mas.owasp.org/MASVS</li>
+  <li>OWASP Top 10: owasp.org/Top10</li>
+  <li>Supabase security guidance: supabase.com/docs/guides/security</li>
+  <li>Supabase Row Level Security: supabase.com/docs/guides/database/postgres/row-level-security</li>
+  <li>Espressif ESP-IDF security guides (Secure Boot V2, flash encryption): docs.espressif.com</li>
+  <li>Bluetooth Core Specification, LE Security: bluetooth.com/specifications</li>
+</ul>
+<div class="credits">
+  <div class="t">Made by the WearWise Project Team</div>
+  <table class="kv compact"><tbody>
+    <tr><td>Zakiul Atheef</td><td>Project Lead, Scrum Master, Technical Lead, Security Engineering Lead and Integration Lead</td></tr>
+    <tr><td>Hari Bethelli</td><td>Cloud &amp; Data Engineer</td></tr>
+    <tr><td>Siri Bethelli</td><td>UI/UX &amp; Data Visualisation Engineer</td></tr>
+    <tr><td>Thevindu Kodagoda Munasinghage</td><td>Security Engineer, Documentation Lead and QA &amp; Testing Lead</td></tr>
+  </tbody></table>
+  <p class="small"><b>Project Owner:</b> Shanmuga Sundar Dhanabalan, Deputy Director, CTI, La Trobe University (original project brief and initial project context). <b>Development:</b> the WearWise Project Team, the student development team. © 2026 WearWise Project Team · La Trobe University CSE3CAP Capstone Project. Licensed under the PolyForm Noncommercial License 1.0.0: free to use, copy and change for noncommercial purposes, not for sale. See <code>LICENSE</code>, <code>NOTICE</code> and <code>TEAM.md</code> in the repository.</p>
+  <p class="small credits-end">WearWise Security Documentation · Author: Zakiul Atheef · Version 1.0, 14 October 2026 · handover release v1.0.0. WearWise is a research prototype and not a medical device. Its security practices are informed by relevant guidance; nothing about WearWise is certified or independently tested.</p>
+</div>
+
+</body>
+</html>
